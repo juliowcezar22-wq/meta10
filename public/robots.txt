@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /aluno/
+
+Sitemap: https://meta10.com.br/sitemap.xml
