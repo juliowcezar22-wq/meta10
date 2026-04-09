@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, FileText, Lock, Download, Search } from 'lucide-react'
-import { MOCK_PDFS } from '@/lib/constants'
+import { MOCK_PDFS } from '@/lib/mock-data'
 
 export default function PdfsPage() {
   const [filter, setFilter] = useState('')

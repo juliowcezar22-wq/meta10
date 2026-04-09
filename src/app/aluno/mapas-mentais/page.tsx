@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Network, Lock, Eye } from 'lucide-react'
-import { MOCK_MINDMAPS } from '@/lib/constants'
+import { MOCK_MINDMAPS } from '@/lib/mock-data'
 
 export default function MapasMentaisPage() {
   const [selectedDiscipline, setSelectedDiscipline] = useState('Todas')
