@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen } from 'lucide-react'
-import { MOCK_QUESTIONS } from '@/lib/constants'
+import { MOCK_QUESTIONS } from '@/lib/mock-data'
 
 export default function QuestoesPage() {
   const [currentIndex, setCurrentIndex] = useState(0)

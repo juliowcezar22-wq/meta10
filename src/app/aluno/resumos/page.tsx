@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, BookOpen, Lock, Eye } from 'lucide-react'
-import { MOCK_SUMMARIES } from '@/lib/constants'
+import { MOCK_SUMMARIES } from '@/lib/mock-data'
 
 export default function ResumosPage() {
   const [selectedDiscipline, setSelectedDiscipline] = useState('Todas')

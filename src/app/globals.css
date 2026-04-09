@@ -6,39 +6,139 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 10%;
+    --radius: 0.75rem;
   }
-  * {
-    border-color: #e5e7eb;
-  }
-  body {
-    @apply bg-white text-gray-900 antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
+
+  * { border-color: #e5e7eb; }
+
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
+  body {
+    @apply bg-white text-surface-800 antialiased;
+  }
+
+  /* Refined selection */
+  ::selection {
+    background-color: #F1781F33;
+    color: inherit;
+  }
+
+  /* Smooth focus rings */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary/50 rounded-sm;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #a3a3a3; }
+
+  /* Hide scrollbar utility */
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+}
+
+@layer utilities {
+  /* Animation delays */
+  .animation-delay-75 { animation-delay: 75ms; }
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-150 { animation-delay: 150ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+  .animation-delay-700 { animation-delay: 700ms; }
+
+  /* Glassmorphism */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+  }
+
+  /* Gradient text */
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-400;
+  }
+  .text-gradient-hero {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#F1781F] via-[#f59e5b] to-[#F1781F];
+  }
+
+  /* Mesh backgrounds */
+  .bg-mesh { background-image: radial-gradient(at 40% 20%, #F1781F11 0px, transparent 50%), radial-gradient(at 80% 0%, #089FA811 0px, transparent 50%), radial-gradient(at 0% 50%, #A1226511 0px, transparent 50%); }
+  .bg-mesh-warm { background-image: radial-gradient(at 30% 30%, #F1781F15 0px, transparent 50%), radial-gradient(at 70% 70%, #E9152410 0px, transparent 50%); }
+  .bg-mesh-cool { background-image: radial-gradient(at 30% 30%, #089FA815 0px, transparent 50%), radial-gradient(at 70% 70%, #A1226510 0px, transparent 50%); }
 }
 
 @layer components {
+  /* Buttons — Refined */
   .btn-primary {
-    @apply bg-primary hover:bg-primary-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200 inline-flex items-center justify-center gap-2;
+    @apply relative bg-primary hover:bg-primary-600 text-white font-semibold px-6 py-3 rounded-xl
+           transition-all duration-300 ease-out
+           shadow-[0_2px_8px_rgba(241,120,31,0.25)] hover:shadow-[0_4px_16px_rgba(241,120,31,0.35)]
+           hover:-translate-y-0.5 active:translate-y-0
+           inline-flex items-center justify-center gap-2;
   }
   .btn-secondary {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200 inline-flex items-center justify-center gap-2;
+    @apply relative border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold px-6 py-3 rounded-xl
+           transition-all duration-300 ease-out
+           hover:shadow-[0_2px_12px_rgba(241,120,31,0.2)]
+           hover:-translate-y-0.5
+           inline-flex items-center justify-center gap-2;
+  }
+  .btn-ghost {
+    @apply text-surface-600 hover:text-primary hover:bg-primary-50 font-medium px-4 py-2 rounded-xl
+           transition-all duration-200 inline-flex items-center justify-center gap-2;
   }
   .btn-outline {
-    @apply border-2 border-gray-300 text-gray-700 hover:border-primary hover:text-primary font-semibold px-6 py-3 rounded-lg transition-colors duration-200 inline-flex items-center justify-center gap-2;
+    @apply border-2 border-surface-200 text-surface-700 hover:border-primary hover:text-primary font-semibold px-6 py-3 rounded-xl
+           transition-all duration-300 ease-out
+           hover:-translate-y-0.5
+           inline-flex items-center justify-center gap-2;
   }
-  .section-padding {
-    @apply py-16 md:py-24 px-4 sm:px-6 lg:px-8;
-  }
-  .container-custom {
-    @apply max-w-7xl mx-auto;
-  }
+
+  /* Cards — Premium */
   .card {
-    @apply bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100;
+    @apply bg-white rounded-2xl shadow-card border border-surface-100/80 transition-all duration-300;
   }
   .card-hover {
-    @apply hover:-translate-y-1 transition-transform duration-300;
+    @apply hover:shadow-card-hover hover:-translate-y-1 hover:border-surface-200;
   }
+  .card-glass {
+    @apply glass rounded-2xl border border-white/50 shadow-glass transition-all duration-300;
+  }
+
+  /* Layout utilities */
+  .section-padding { @apply py-20 md:py-28 lg:py-32 px-4 sm:px-6 lg:px-8; }
+  .container-custom { @apply max-w-7xl mx-auto; }
+
+  /* Input — Refined */
+  .input-base {
+    @apply w-full px-4 py-3 rounded-xl border border-surface-200 bg-white
+           text-surface-800 placeholder:text-surface-400
+           focus:ring-2 focus:ring-primary/20 focus:border-primary focus:shadow-[0_0_0_3px_rgba(241,120,31,0.08)]
+           outline-none transition-all duration-200;
+  }
+
+  /* Badge */
+  .badge { @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium; }
+  .badge-primary { @apply badge bg-primary-50 text-primary; }
+  .badge-cyan { @apply badge bg-cyan-50 text-cyan-600; }
+  .badge-purple { @apply badge bg-purple-50 text-purple; }
+  .badge-green { @apply badge bg-success-50 text-success-600; }
 }

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle, XCircle, Clock, Award, BookOpen } from 'lucide-react'
-import { MOCK_QUESTIONS } from '@/lib/constants'
+import { MOCK_QUESTIONS } from '@/lib/mock-data'
 
 export default function SimuladosPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)

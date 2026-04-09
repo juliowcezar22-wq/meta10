@@ -1,4 +1,5 @@
-import { BookOpen, FileText, Network, ListChecks, ClipboardCheck } from 'lucide-react'
+import Link from 'next/link'
+import { ListChecks, ClipboardCheck, FileText, Network, BookOpen } from 'lucide-react'
 import { MATERIALS } from '@/lib/constants'
 
 const iconMap: Record<string, React.ElementType> = {
@@ -29,9 +30,9 @@ export default function MateriaisPage() {
             {MATERIALS.map((material) => {
               const Icon = iconMap[material.icon] || BookOpen
               return (
-                <a
+                <Link
                   key={material.id}
-                  href={`/aluno/${material.id === 'questoes' ? 'questoes' : material.id === 'simulados' ? 'simulados' : material.id === 'pdfs' ? 'pdfs' : material.id === 'mapas' ? 'mapas-mentais' : 'resumos'}`}
+                  href={`/aluno/${material.slug}`}
                   className="card card-hover p-8 text-center cursor-pointer"
                 >
                   <div className="w-16 h-16 bg-primary-50 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -39,7 +40,7 @@ export default function MateriaisPage() {
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-2">{material.title}</h3>
                   <p className="text-sm text-gray-500">{material.description}</p>
-                </a>
+                </Link>
               )
             })}
           </div>

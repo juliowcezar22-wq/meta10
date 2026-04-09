@@ -1,143 +1,135 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, User, CheckCircle } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, CheckCircle, ArrowLeft } from 'lucide-react'
 
 export default function CadastroPage() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [formData, setFormData] = useState({ nome: '', email: '', password: '', confirmPassword: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [registered, setRegistered] = useState(false)
 
-  const getPasswordStrength = (pass: string): { level: number; label: string; color: string } => {
+  const getStrength = (pass: string) => {
     if (pass.length === 0) return { level: 0, label: '', color: '' }
-    if (pass.length < 6) return { level: 1, label: 'Fraca', color: 'bg-red' }
-    if (pass.length < 8) return { level: 2, label: 'Média', color: 'bg-yellow-500' }
-    return { level: 3, label: 'Forte', color: 'bg-green' }
+    if (pass.length < 6) return { level: 1, label: 'Fraca', color: 'bg-danger-500' }
+    if (pass.length < 8) return { level: 2, label: 'Média', color: 'bg-amber-400' }
+    return { level: 3, label: 'Forte', color: 'bg-success-500' }
   }
 
-  const strength = getPasswordStrength(formData.password)
+  const strength = getStrength(formData.password)
 
   const validate = () => {
-    const newErrors: Record<string, string> = {}
-    if (!formData.nome.trim()) newErrors.nome = 'Nome é obrigatório'
-    if (!formData.email.trim()) newErrors.email = 'E-mail é obrigatório'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'E-mail inválido'
-    if (!formData.password) newErrors.password = 'Senha é obrigatória'
-    else if (formData.password.length < 8) newErrors.password = 'Mínimo de 8 caracteres'
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'As senhas não coincidem'
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    const e: Record<string, string> = {}
+    if (!formData.nome.trim()) e.nome = 'Nome é obrigatório'
+    if (!formData.email.trim()) e.email = 'E-mail é obrigatório'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = 'E-mail inválido'
+    if (!formData.password) e.password = 'Senha é obrigatória'
+    else if (formData.password.length < 8) e.password = 'Mínimo de 8 caracteres'
+    if (formData.password !== formData.confirmPassword) e.confirmPassword = 'As senhas não coincidem'
+    setErrors(e)
+    return Object.keys(e).length === 0
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validate()) {
       setRegistered(true)
-      setTimeout(() => {
-        window.location.href = '/aluno/dashboard'
-      }, 2000)
+      setTimeout(() => router.push('/aluno/dashboard'), 2000)
     }
   }
 
   if (registered) {
     return (
-      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-cyan-50 px-4 py-16">
-        <div className="card p-8 text-center max-w-md">
-          <CheckCircle className="w-16 h-16 text-green mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Conta criada com sucesso!</h2>
-          <p className="text-gray-600">Redirecionando para o dashboard...</p>
+      <section className="min-h-[100dvh] flex items-center justify-center bg-mesh px-4">
+        <div className="card p-10 text-center max-w-sm !rounded-3xl animate-scale-in">
+          <div className="w-16 h-16 bg-success-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <CheckCircle className="w-8 h-8 text-success-600" />
+          </div>
+          <h2 className="text-xl font-extrabold text-surface-900 mb-2">Conta criada com sucesso!</h2>
+          <p className="text-surface-400 text-sm">Redirecionando para o dashboard...</p>
         </div>
       </section>
     )
   }
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-cyan-50 px-4 py-16">
-      <div className="w-full max-w-md">
-        <div className="card p-8">
-          <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-1 mb-4">
-              <div className="flex items-center gap-0.5">
-                <div className="w-3 h-3 rounded-full bg-primary" />
-                <div className="w-3 h-3 rounded-full bg-cyan" />
-                <div className="w-3 h-3 rounded-full bg-purple" />
-                <div className="w-3 h-3 rounded-full bg-green" />
-              </div>
-              <span className="text-xl font-bold ml-1">
-                <span className="text-gray-500">Meta</span>
-                <span className="text-red"> 10</span>
-              </span>
-            </Link>
-            <h1 className="text-2xl font-bold text-gray-900">Crie sua conta gratuita</h1>
-            <p className="text-gray-500 mt-1">Comece a estudar agora mesmo</p>
-          </div>
+    <section className="min-h-[100dvh] flex items-center justify-center bg-mesh px-4 py-16">
+      <div className="w-full max-w-[420px]">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-full bg-primary" />
+              <div className="w-3 h-3 rounded-full bg-cyan-500" />
+              <div className="w-3 h-3 rounded-full bg-purple" />
+              <div className="w-3 h-3 rounded-full bg-success-500" />
+            </div>
+            <span className="text-xl font-bold ml-1"><span className="text-surface-400">Meta</span> <span className="text-danger">10</span></span>
+          </Link>
+          <h1 className="text-2xl font-extrabold text-surface-900">Crie sua conta gratuita</h1>
+          <p className="text-surface-400 mt-1 text-sm">Comece a estudar agora mesmo</p>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="card p-8 !rounded-3xl">
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">Nome completo</label>
+              <label htmlFor="nome" className="block text-sm font-medium text-surface-700 mb-1.5">Nome completo</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-surface-400" />
                 <input type="text" id="nome" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none ${errors.nome ? 'border-red' : 'border-gray-300'}`}
-                  placeholder="Seu nome completo" />
+                  className={`input-base !pl-11 ${errors.nome ? '!border-danger-500' : ''}`} placeholder="Seu nome completo" autoComplete="name" />
               </div>
-              {errors.nome && <p className="text-red text-sm mt-1">{errors.nome}</p>}
+              {errors.nome && <p className="text-danger text-xs mt-1.5 ml-1">{errors.nome}</p>}
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+              <label htmlFor="email" className="block text-sm font-medium text-surface-700 mb-1.5">E-mail</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-surface-400" />
                 <input type="email" id="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none ${errors.email ? 'border-red' : 'border-gray-300'}`}
-                  placeholder="seu@email.com" />
+                  className={`input-base !pl-11 ${errors.email ? '!border-danger-500' : ''}`} placeholder="seu@email.com" autoComplete="email" />
               </div>
-              {errors.email && <p className="text-red text-sm mt-1">{errors.email}</p>}
+              {errors.email && <p className="text-danger text-xs mt-1.5 ml-1">{errors.email}</p>}
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+              <label htmlFor="password" className="block text-sm font-medium text-surface-700 mb-1.5">Senha</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-surface-400" />
                 <input type={showPassword ? 'text' : 'password'} id="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none ${errors.password ? 'border-red' : 'border-gray-300'}`}
-                  placeholder="Mínimo 8 caracteres" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  className={`input-base !pl-11 !pr-11 ${errors.password ? '!border-danger-500' : ''}`} placeholder="Mínimo 8 caracteres" autoComplete="new-password" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 transition-colors" aria-label="Mostrar senha">
+                  {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
                 </button>
               </div>
               {formData.password && (
-                <div className="mt-2">
-                  <div className="flex gap-1 mb-1">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className={`h-1 flex-1 rounded-full ${i <= strength.level ? strength.color : 'bg-gray-200'}`} />
-                    ))}
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="flex gap-1 flex-1">
+                    {[1, 2, 3].map((i) => <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= strength.level ? strength.color : 'bg-surface-200'}`} />)}
                   </div>
-                  <p className="text-xs text-gray-500">Força: {strength.label}</p>
+                  <span className="text-xs text-surface-400 w-10 text-right">{strength.label}</span>
                 </div>
               )}
-              {errors.password && <p className="text-red text-sm mt-1">{errors.password}</p>}
+              {errors.password && <p className="text-danger text-xs mt-1.5 ml-1">{errors.password}</p>}
             </div>
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Confirmar senha</label>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-surface-700 mb-1.5">Confirmar senha</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-surface-400" />
                 <input type={showConfirm ? 'text' : 'password'} id="confirmPassword" value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none ${errors.confirmPassword ? 'border-red' : 'border-gray-300'}`}
-                  placeholder="Confirme sua senha" />
-                <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  {showConfirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  className={`input-base !pl-11 !pr-11 ${errors.confirmPassword ? '!border-danger-500' : ''}`} placeholder="Confirme sua senha" autoComplete="new-password" />
+                <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 transition-colors" aria-label="Mostrar senha">
+                  {showConfirm ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
                 </button>
               </div>
-              {errors.confirmPassword && <p className="text-red text-sm mt-1">{errors.confirmPassword}</p>}
+              {errors.confirmPassword && <p className="text-danger text-xs mt-1.5 ml-1">{errors.confirmPassword}</p>}
             </div>
-            <button type="submit" className="btn-primary w-full">Criar Conta</button>
+            <button type="submit" className="btn-primary w-full !py-3.5 !text-base justify-center">Criar Conta</button>
           </form>
-          <p className="text-center text-gray-600 mt-6">
-            Já tem conta?{' '}
-            <Link href="/login" className="text-primary font-semibold hover:underline">Entrar</Link>
-          </p>
+          <div className="mt-6 pt-6 border-t border-surface-100 text-center">
+            <p className="text-sm text-surface-500">Já tem conta? <Link href="/login" className="text-primary font-semibold">Entrar</Link></p>
+          </div>
         </div>
       </div>
     </section>

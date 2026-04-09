@@ -4,6 +4,7 @@ import MaterialsSection from '@/components/meta10/materials-section'
 import FreeContentSection from '@/components/meta10/free-content-section'
 import PricingSection from '@/components/meta10/pricing-section'
 import YouTubeSection from '@/components/meta10/youtube-section'
+import TestimonialsSection from '@/components/meta10/testimonials-section'
 import FinalCTA from '@/components/meta10/final-cta'
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
       <FreeContentSection />
       <PricingSection />
       <YouTubeSection />
+      <TestimonialsSection />
       <FinalCTA />
     </>
   )
