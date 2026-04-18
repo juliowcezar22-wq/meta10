@@ -25,7 +25,6 @@ export default function Header() {
     { label: 'Sobre', href: '/sobre' },
     { label: 'Materiais', href: '/materiais' },
     { label: 'Loja', href: '/loja' },
-    { label: 'Contato', href: '/contato' },
   ]
 
   return (

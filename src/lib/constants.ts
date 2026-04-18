@@ -1,13 +1,15 @@
-export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5500000000000'
+export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5575983341771'
 export const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}`
 export const INSTAGRAM_LINK = process.env.NEXT_PUBLIC_INSTAGRAM_LINK || 'https://instagram.com/meta10espacopedagogico'
-export const YOUTUBE_LINK = process.env.NEXT_PUBLIC_YOUTUBE_LINK || 'https://youtube.com/@meta10espacopedagogico'
+export const YOUTUBE_LINK = process.env.NEXT_PUBLIC_YOUTUBE_LINK || 'https://www.youtube.com/@meta10quiz'
 export const EMAIL_LINK = process.env.NEXT_PUBLIC_EMAIL_LINK || 'mailto:contato@meta10.com.br'
 
 export const HOTMART_LINKS = {
+  gratuito: process.env.NEXT_PUBLIC_HOTMART_GRATUITO || '#',
   mensal: process.env.NEXT_PUBLIC_HOTMART_MENSAL || 'https://pay.hotmart.com/placeholder-mensal',
   semestral: process.env.NEXT_PUBLIC_HOTMART_SEMESTRAL || 'https://pay.hotmart.com/placeholder-semestral',
   anual: process.env.NEXT_PUBLIC_HOTMART_ANUAL || 'https://pay.hotmart.com/placeholder-anual',
+  meta10: process.env.NEXT_PUBLIC_HOTMART_META10 || 'https://pay.hotmart.com/placeholder-meta10',
 }
 
 export const GOOGLE_MAPS_EMBED = process.env.NEXT_PUBLIC_GOOGLE_MAPS_EMBED || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3899.0294502646957!2d-38.90761412330957!3d-12.246285188006322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x71437bfdaeb5cd9%3A0xd18ae05b1b8014e2!2sMeta%2010%20Espa%C3%A7o%20Pedag%C3%B3gico%20Refor%C3%A7o%20Escolar!5e0!3m2!1spt-BR!2sbr!4v1775011916082!5m2!1spt-BR!2sbr'
@@ -22,33 +24,89 @@ export const YOUTUBE_SHORTS = [
 
 export const PLANS = [
   {
+    id: 'gratuito',
+    name: 'Gratuito',
+    price: 'R$ 0,00',
+    period: '',
+    features: [
+      'Resolução de questões (limitado)',
+      'Comentários de alunos (limitado)',
+      'Download de apostilas (limitado)',
+      'Download de provas anteriores (limitado)',
+      'Estatísticas de desempenho (limitado)'
+    ],
+    highlighted: false,
+    link: HOTMART_LINKS.gratuito,
+  },
+  {
     id: 'mensal',
     name: 'Mensal',
-    price: 'R$ 29,90',
+    price: 'R$ 22,90',
     period: '/mês',
-    features: ['Acesso a todos os PDFs', 'Banco de questões ilimitado', 'Simulados mensais', 'Mapas mentais exclusivos', 'Resumos por disciplina'],
+    total: 'Cobrança a cada 30 dias',
+    features: [
+      'Resolução de questões',
+      'Comentários de alunos',
+      'Download de apostilas',
+      'Download de provas anteriores',
+      'Estatísticas de desempenho'
+    ],
     highlighted: false,
     link: HOTMART_LINKS.mensal,
   },
   {
     id: 'semestral',
     name: 'Semestral',
-    price: 'R$ 24,90',
+    price: 'R$ 16,65',
     period: '/mês',
-    total: 'R$ 149,40 a cada 6 meses',
-    features: ['Tudo do plano Mensal', 'Simulados semanais', 'Acompanhamento de desempenho', 'Conteúdo prioritário', 'Suporte por WhatsApp'],
-    highlighted: true,
+    total: 'R$ 99,90 a cada 180 dias',
+    features: [
+      'Resolução de questões',
+      'Comentários de alunos',
+      'Download de apostilas',
+      'Download de provas anteriores',
+      'Estatísticas de desempenho'
+    ],
+    highlighted: false,
     link: HOTMART_LINKS.semestral,
   },
   {
     id: 'anual',
     name: 'Anual',
-    price: 'R$ 19,90',
+    price: 'R$ 14,16',
     period: '/mês',
-    total: 'R$ 238,80 por ano',
-    features: ['Tudo do plano Semestral', 'Acesso vitalício ao material', 'Mentoria individual mensal', 'Certificados de conclusão', 'Grupo exclusivo de alunos'],
-    highlighted: false,
+    total: 'R$ 169,90 a cada 365 dias',
+    features: [
+      'Resolução de questões',
+      'Comentários de alunos',
+      'Download de apostilas',
+      'Download de provas anteriores',
+      'Estatísticas de desempenho'
+    ],
+    highlighted: true,
     link: HOTMART_LINKS.anual,
+  },
+  {
+    id: 'meta10',
+    name: 'Meta10',
+    price: 'R$ 15,83',
+    period: '/mês',
+    total: 'R$ 189,90 a cada 365 dias',
+    features: [
+      'Resolução de questões',
+      'Comentários de alunos',
+      'Download de apostilas',
+      'Download de provas anteriores',
+      'Estatísticas de desempenho',
+      'Resumos de estudo',
+      'Comentários de professores',
+      'Resolução de simulados',
+      'Download de mapas mentais',
+      'Flashcards inteligentes',
+      'Download de jogos pedagógicos'
+    ],
+    highlighted: false,
+    link: HOTMART_LINKS.meta10,
   },
 ]
 

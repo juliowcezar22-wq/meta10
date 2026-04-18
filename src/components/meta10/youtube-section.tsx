@@ -1,5 +1,5 @@
-import { Youtube, Play, ExternalLink } from 'lucide-react'
-import { YOUTUBE_VIDEO_ID, YOUTUBE_SHORTS, YOUTUBE_LINK } from '@/lib/constants'
+import { Youtube, ExternalLink } from 'lucide-react'
+import { YOUTUBE_LINK } from '@/lib/constants'
 
 export default function YouTubeSection() {
   return (
@@ -24,48 +24,16 @@ export default function YouTubeSection() {
         <div className="max-w-4xl mx-auto mb-14">
           <div className="relative aspect-video rounded-2xl overflow-hidden shadow-glass-xl ring-1 ring-white/10">
             <iframe
-              src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}`}
-              title="Vídeo principal META 10"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              src="https://www.youtube.com/embed/t2prhcVyoYM?si=LqmVtlf12hYDp5zH"
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
-              loading="lazy"
               className="w-full h-full"
             />
           </div>
         </div>
 
-        <div className="mb-12">
-          <h3 className="text-lg font-bold text-center mb-6 text-surface-300">Shorts & Vídeos Rápidos</h3>
-          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide justify-start lg:justify-center">
-            {YOUTUBE_SHORTS.map((videoId, index) => (
-              <a
-                key={`${videoId}-${index}`}
-                href={`https://www.youtube.com/shorts/${videoId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-shrink-0 w-36 sm:w-44 snap-center group"
-              >
-                <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-surface-700 ring-1 ring-white/10">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
-                    alt={`Short vídeo ${index + 1} da META 10`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                    width={176}
-                    height={313}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-12 h-12 rounded-full bg-danger/90 flex items-center justify-center shadow-lg backdrop-blur-sm">
-                      <Play className="w-5 h-5 text-white fill-white ml-0.5" />
-                    </div>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
 
         <div className="text-center">
           <a
