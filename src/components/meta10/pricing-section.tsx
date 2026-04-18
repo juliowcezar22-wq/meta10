@@ -14,11 +14,11 @@ export default function PricingSection() {
             Invista no seu futuro com planos acessíveis e conteúdo ilimitado.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 max-w-[1400px] mx-auto items-stretch">
           {PLANS.map((plan) => (
             <div
               key={plan.id}
-              className={`relative rounded-3xl p-8 flex flex-col transition-all duration-300 hover:-translate-y-1 ${
+              className={`relative rounded-3xl p-6 lg:p-5 xl:p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 ${
                 plan.highlighted
                   ? 'bg-gradient-to-b from-primary to-primary-600 text-white shadow-[0_12px_48px_rgba(241,120,31,0.3)] ring-1 ring-primary/20 scale-[1.02] md:scale-105'
                   : 'bg-white border border-surface-200 shadow-card hover:shadow-card-hover'
@@ -35,7 +35,7 @@ export default function PricingSection() {
                   Plano {plan.name}
                 </h3>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-5xl font-extrabold tracking-tight ${plan.highlighted ? 'text-white' : 'text-surface-900'}`}>
+                  <span className={`text-3xl xl:text-4xl font-extrabold tracking-tight ${plan.highlighted ? 'text-white' : 'text-surface-900'}`}>
                     {plan.price}
                   </span>
                   <span className={`text-sm ${plan.highlighted ? 'text-white/70' : 'text-surface-400'}`}>{plan.period}</span>

@@ -5,7 +5,7 @@ import { Mail, Phone, Instagram, Youtube, MessageCircle, Send, CheckCircle } fro
 import { INSTAGRAM_LINK, YOUTUBE_LINK, WHATSAPP_LINK, EMAIL_LINK } from '@/lib/constants'
 
 const channels = [
-  { icon: MessageCircle, label: 'WhatsApp', info: '(00) 00000-0000', href: WHATSAPP_LINK, color: 'bg-success-500 hover:bg-success-600', textColor: 'text-success-600' },
+  { icon: MessageCircle, label: 'WhatsApp', info: '(75) 98334-1771', href: WHATSAPP_LINK, color: 'bg-success-500 hover:bg-success-600', textColor: 'text-success-600' },
   { icon: Mail, label: 'E-mail', info: 'contato@meta10.com.br', href: EMAIL_LINK, color: 'bg-cyan-500 hover:bg-cyan-600', textColor: 'text-cyan-600' },
   { icon: Instagram, label: 'Instagram', info: '@meta10espacopedagogico', href: INSTAGRAM_LINK, color: 'bg-purple hover:bg-purple-600', textColor: 'text-purple' },
   { icon: Youtube, label: 'YouTube', info: 'META 10 Espaço Pedagógico', href: YOUTUBE_LINK, color: 'bg-danger-500 hover:bg-danger-600', textColor: 'text-danger-500' },
