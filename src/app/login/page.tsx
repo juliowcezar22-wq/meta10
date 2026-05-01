@@ -1,29 +1,25 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useFormState, useFormStatus } from 'react-dom'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react'
+import { loginAction } from '@/app/actions/auth'
+
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  return (
+    <button type="submit" disabled={pending} className="btn-primary w-full !py-3.5 !text-base justify-center disabled:opacity-70">
+      {pending ? 'Entrando...' : 'Entrar'}
+    </button>
+  )
+}
 
 export default function LoginPage() {
-  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({ email: '', password: '' })
-  const [errors, setErrors] = useState<Record<string, string>>({})
-
-  const validate = () => {
-    const e: Record<string, string> = {}
-    if (!formData.email.trim()) e.email = 'E-mail é obrigatório'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = 'E-mail inválido'
-    if (!formData.password) e.password = 'Senha é obrigatória'
-    setErrors(e)
-    return Object.keys(e).length === 0
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (validate()) router.push('/aluno/dashboard')
-  }
+  
+  const [state, formAction] = useFormState(loginAction, { success: false })
 
   return (
     <section className="min-h-[100dvh] flex items-center justify-center bg-mesh px-4 py-16">
@@ -46,28 +42,33 @@ export default function LoginPage() {
         </div>
 
         <div className="card p-8 !rounded-3xl">
-          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+          <form action={formAction} className="space-y-5" noValidate>
+            {state.error && (
+              <div className="p-3 bg-danger-50 border border-danger-200 text-danger-700 text-sm rounded-lg">
+                {state.error}
+              </div>
+            )}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-surface-700 mb-1.5">E-mail</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-surface-400" />
                 <input
-                  type="email" id="email" value={formData.email}
+                  type="email" id="email" name="email" value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`input-base !pl-11 ${errors.email ? '!border-danger-500 !ring-danger-500/20' : ''}`}
+                  className={`input-base !pl-11 ${state.errors?.email ? '!border-danger-500 !ring-danger-500/20' : ''}`}
                   placeholder="seu@email.com" autoComplete="email"
                 />
               </div>
-              {errors.email && <p className="text-danger text-xs mt-1.5 ml-1">{errors.email}</p>}
+              {state.errors?.email && <p className="text-danger text-xs mt-1.5 ml-1">{state.errors.email}</p>}
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-surface-700 mb-1.5">Senha</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-surface-400" />
                 <input
-                  type={showPassword ? 'text' : 'password'} id="password" value={formData.password}
+                  type={showPassword ? 'text' : 'password'} id="password" name="password" value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className={`input-base !pl-11 !pr-11 ${errors.password ? '!border-danger-500 !ring-danger-500/20' : ''}`}
+                  className={`input-base !pl-11 !pr-11 ${state.errors?.password ? '!border-danger-500 !ring-danger-500/20' : ''}`}
                   placeholder="Sua senha" autoComplete="current-password"
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
@@ -75,7 +76,7 @@ export default function LoginPage() {
                   {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
                 </button>
               </div>
-              {errors.password && <p className="text-danger text-xs mt-1.5 ml-1">{errors.password}</p>}
+              {state.errors?.password && <p className="text-danger text-xs mt-1.5 ml-1">{state.errors.password}</p>}
             </div>
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 text-sm text-surface-500 cursor-pointer select-none">
@@ -84,7 +85,7 @@ export default function LoginPage() {
               </label>
               <Link href="/recuperar-senha" className="text-sm text-primary hover:text-primary-600 font-medium">Esqueci minha senha</Link>
             </div>
-            <button type="submit" className="btn-primary w-full !py-3.5 !text-base justify-center">Entrar</button>
+            <SubmitButton />
           </form>
 
           <div className="mt-6 pt-6 border-t border-surface-100 text-center">

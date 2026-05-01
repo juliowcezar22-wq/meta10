@@ -1,0 +1,101 @@
+-- ============================================================
+-- PACOTE DE TESTES RLS - EXECUTE MANUALMENTE BLOCO A BLOCO
+-- ============================================================
+-- Estes testes não modificam tabelas da aplicação permanentemente se você 
+-- rodá-los dentro de uma transação ou se limpar a sujeira após, mas 
+-- RECOMENDA-SE testar através da criação de usuários reais pelo signup.
+-- Para fins de execução via SQL Editor, usamos auth.uid() injetado ou 
+-- recomendamos manipulação.
+-- ============================================================
+
+-- IMPORTANTE: Para simular um usuário autenticado no SQL Editor do Supabase,
+-- utilize: set local role authenticated; set local request.jwt.claims to '{"sub": "<UUID_DO_USUARIO>"}';
+-- Substitua <UUID_DO_USUARIO> por um ID da sua tabela auth.users.
+
+-- ============================================================
+-- Teste 1: is_admin() não causa recursão
+-- ============================================================
+-- Como rodar: Crie um usuário admin via signup e um aluno. Obtenha os UUIDs deles na auth.users.
+-- Execute no SQL Editor após substituir os UUIDs:
+-- (A) Como Admin:
+-- set local role authenticated;
+-- set local request.jwt.claims to '{"sub": "UUID_DO_ADMIN"}';
+-- SELECT public.is_admin();
+-- Esperado: true
+
+-- (B) Como Aluno:
+-- set local role authenticated;
+-- set local request.jwt.claims to '{"sub": "UUID_DO_ALUNO"}';
+-- SELECT public.is_admin();
+-- Esperado: false
+
+-- (C) Sem auth (anon):
+-- set local role anon;
+-- SELECT public.is_admin();
+-- Esperado: false
+
+-- ============================================================
+-- Teste 2: Aluno não vê materiais pagos sem assinatura
+-- ============================================================
+-- Como rodar:
+-- 1. Insira um material pago:
+-- INSERT INTO materials (title, type, file_url, is_free) VALUES ('Mat Pago', 'pdf', 'url', false);
+-- 2. Logue como ALUNO (sem assinatura) via request.jwt.claims.
+-- 3. SELECT * FROM materials;
+-- Esperado: Retorna 0 rows (ou apenas os grátis que existirem).
+-- 4. Adicione uma assinatura ativa para o aluno na tabela subscriptions com expires_at futuro.
+-- 5. SELECT * FROM materials;
+-- Esperado: Retorna a linha inserida.
+-- 6. Logue como ADMIN via request.jwt.claims.
+-- 7. SELECT * FROM materials;
+-- Esperado: Retorna a linha inserida.
+
+-- ============================================================
+-- Teste 3: Aluno não vê outros usuários
+-- ============================================================
+-- Como rodar:
+-- 1. Garanta que há pelo menos 2 usuários na tabela public.users (admin e aluno).
+-- 2. Logue como ALUNO via request.jwt.claims.
+-- 3. SELECT * FROM public.users;
+-- Esperado: Retorna APENAS o registro do próprio aluno.
+-- 4. Logue como ADMIN.
+-- 5. SELECT * FROM public.users;
+-- Esperado: Retorna TODOS os registros.
+
+-- ============================================================
+-- Teste 4: Usuário anônimo pode INSERT em messages
+-- ============================================================
+-- Como rodar:
+-- 1. Deslogue (set local role anon).
+-- 2. Execute:
+-- INSERT INTO public.messages (name, email, message) VALUES ('Teste', 'teste@t.com', 'Msg Teste');
+-- Esperado: INSERT SUCCESS (1 row affected).
+-- 3. Execute:
+-- SELECT * FROM public.messages;
+-- Esperado: 0 rows (anon não tem política de SELECT, não pode ler).
+
+-- ============================================================
+-- Teste 5: Índice único parcial em subscriptions
+-- ============================================================
+-- Como rodar:
+-- 1. Como admin ou postgres role, insira uma assinatura para um usuário:
+-- INSERT INTO public.subscriptions (user_id, plan_id, expires_at, status) VALUES ('UUID_DO_ALUNO', 'UUID_DO_PLANO', '2030-01-01', 'active');
+-- Esperado: SUCCESS.
+-- 2. Tente inserir OUTRA assinatura ativa para o MESMO user_id:
+-- INSERT INTO public.subscriptions (user_id, plan_id, expires_at, status) VALUES ('UUID_DO_ALUNO', 'UUID_DO_PLANO', '2031-01-01', 'active');
+-- Esperado: ERROR (duplicate key value violates unique constraint "idx_active_subscription_per_user").
+
+-- ============================================================
+-- Teste 6: Trigger handle_new_user atribui admin corretamente
+-- ============================================================
+-- Como rodar (Recomendado testar via UI do Supabase Auth no Dashboard):
+-- 1. No SQL Editor, execute o config do seed (se ainda não fez):
+-- ALTER DATABASE postgres SET app.admin_seed_email = 'admin@test.com';
+-- 2. No painel do Supabase -> Authentication -> Users -> Add User com email 'admin@test.com' e auto confirm email se quiser.
+-- 3. Verifique a tabela public.users no Table Editor ou SQL:
+-- SELECT role FROM public.users WHERE email = 'admin@test.com';
+-- Esperado: 'admin'
+-- 4. Crie outro user com email 'aluno@test.com'.
+-- 5. Verifique a tabela public.users:
+-- SELECT role FROM public.users WHERE email = 'aluno@test.com';
+-- Esperado: 'aluno'
