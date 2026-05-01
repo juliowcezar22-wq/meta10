@@ -1,34 +1,26 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, User, CheckCircle, ArrowLeft } from 'lucide-react'
-import { signUpAction } from '@/app/actions/auth'
+import { Eye, EyeOff, Lock, CheckCircle } from 'lucide-react'
+import { updatePasswordAction } from '@/app/actions/auth'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
   return (
     <button type="submit" disabled={pending} className="btn-primary w-full !py-3.5 !text-base justify-center disabled:opacity-70">
-      {pending ? 'Criando Conta...' : 'Criar Conta'}
+      {pending ? 'Redefinindo...' : 'Redefinir senha'}
     </button>
   )
 }
 
-export default function CadastroPage() {
-  const router = useRouter()
+export default function RedefinirSenhaPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const [formData, setFormData] = useState({ nome: '', email: '', password: '', confirmPassword: '' })
-
-  const [state, formAction] = useFormState(signUpAction, { success: false })
-
-  useEffect(() => {
-    if (state.success && state.message === 'verificar-email') {
-      router.push('/verificar-email')
-    }
-  }, [state, router])
+  const [formData, setFormData] = useState({ password: '', confirmPassword: '' })
+  
+  const [state, formAction] = useFormState(updatePasswordAction, { success: false })
 
   const getStrength = (pass: string) => {
     if (pass.length === 0) return { level: 0, label: '', color: '' }
@@ -38,6 +30,25 @@ export default function CadastroPage() {
   }
 
   const strength = getStrength(formData.password)
+
+  if (state.success) {
+    return (
+      <section className="min-h-[100dvh] flex items-center justify-center bg-mesh px-4 py-16">
+        <div className="card p-10 text-center max-w-sm mx-auto !rounded-3xl animate-scale-in">
+          <div className="w-16 h-16 bg-success-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <CheckCircle className="w-8 h-8 text-success-600" />
+          </div>
+          <h2 className="text-xl font-extrabold text-surface-900 mb-2">Senha alterada!</h2>
+          <p className="text-surface-500 text-sm mb-6">
+            Sua senha foi redefinida com sucesso. Você já pode acessar sua conta.
+          </p>
+          <Link href="/login" className="btn-primary w-full justify-center">
+            Ir para o Login
+          </Link>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="min-h-[100dvh] flex items-center justify-center bg-mesh px-4 py-16">
@@ -52,8 +63,8 @@ export default function CadastroPage() {
             </div>
             <span className="text-xl font-bold ml-1"><span className="text-surface-400">Meta</span> <span className="text-danger">10</span></span>
           </Link>
-          <h1 className="text-2xl font-extrabold text-surface-900">Crie sua conta gratuita</h1>
-          <p className="text-surface-400 mt-1 text-sm">Comece a estudar agora mesmo</p>
+          <h1 className="text-2xl font-extrabold text-surface-900">Nova senha</h1>
+          <p className="text-surface-400 mt-1 text-sm">Crie uma nova senha para sua conta</p>
         </div>
 
         <div className="card p-8 !rounded-3xl">
@@ -63,26 +74,9 @@ export default function CadastroPage() {
                 {state.error}
               </div>
             )}
+            
             <div>
-              <label htmlFor="nome" className="block text-sm font-medium text-surface-700 mb-1.5">Nome completo</label>
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-surface-400" />
-                <input type="text" id="nome" name="nome" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  className={`input-base !pl-11 ${state.errors?.nome ? '!border-danger-500' : ''}`} placeholder="Seu nome completo" autoComplete="name" />
-              </div>
-              {state.errors?.nome && <p className="text-danger text-xs mt-1.5 ml-1">{state.errors.nome}</p>}
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-surface-700 mb-1.5">E-mail</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-surface-400" />
-                <input type="email" id="email" name="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`input-base !pl-11 ${state.errors?.email ? '!border-danger-500' : ''}`} placeholder="seu@email.com" autoComplete="email" />
-              </div>
-              {state.errors?.email && <p className="text-danger text-xs mt-1.5 ml-1">{state.errors.email}</p>}
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-surface-700 mb-1.5">Senha</label>
+              <label htmlFor="password" className="block text-sm font-medium text-surface-700 mb-1.5">Nova senha</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-surface-400" />
                 <input type={showPassword ? 'text' : 'password'} id="password" name="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -102,7 +96,7 @@ export default function CadastroPage() {
               {state.errors?.password && <p className="text-danger text-xs mt-1.5 ml-1">{state.errors.password}</p>}
             </div>
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-surface-700 mb-1.5">Confirmar senha</label>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-surface-700 mb-1.5">Confirmar nova senha</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-surface-400" />
                 <input type={showConfirm ? 'text' : 'password'} id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
@@ -113,11 +107,9 @@ export default function CadastroPage() {
               </div>
               {state.errors?.confirmPassword && <p className="text-danger text-xs mt-1.5 ml-1">{state.errors.confirmPassword}</p>}
             </div>
+            
             <SubmitButton />
           </form>
-          <div className="mt-6 pt-6 border-t border-surface-100 text-center">
-            <p className="text-sm text-surface-500">Já tem conta? <Link href="/login" className="text-primary font-semibold">Entrar</Link></p>
-          </div>
         </div>
       </div>
     </section>

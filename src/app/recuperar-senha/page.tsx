@@ -1,9 +1,22 @@
 'use client'
 
+import { useFormState, useFormStatus } from 'react-dom'
 import Link from 'next/link'
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react'
+import { resetPasswordAction } from '@/app/actions/auth'
+
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  return (
+    <button type="submit" disabled={pending} className="btn-primary w-full disabled:opacity-70">
+      {pending ? 'Enviando...' : 'Enviar Link de Recuperação'}
+    </button>
+  )
+}
 
 export default function RecuperarSenhaPage() {
+  const [state, formAction] = useFormState(resetPasswordAction, { success: false })
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-cyan-50 px-4 py-16">
       <div className="w-full max-w-md">
@@ -18,7 +31,7 @@ export default function RecuperarSenhaPage() {
             </p>
           </div>
 
-          <form onSubmit={(e) => e.preventDefault()}>
+          <form action={formAction}>
             <div className="space-y-4">
               <div>
                 <label htmlFor="recovery-email" className="block text-sm font-medium text-gray-700 mb-1">E-mail cadastrado</label>
@@ -27,26 +40,34 @@ export default function RecuperarSenhaPage() {
                   <input
                     type="email"
                     id="recovery-email"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                    name="email"
+                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary/20 outline-none ${state.errors?.email ? 'border-danger-500 focus:border-danger-500' : 'border-gray-300 focus:border-primary'}`}
                     placeholder="seu@email.com"
                     autoComplete="email"
                   />
                 </div>
+                {state.errors?.email && <p className="text-danger text-xs mt-1.5">{state.errors.email}</p>}
               </div>
-              <button type="submit" className="btn-primary w-full">
-                Enviar Link de Recuperação
-              </button>
+              <SubmitButton />
             </div>
           </form>
 
-          <div className="mt-6 p-4 bg-cyan-50 border border-cyan-200 rounded-lg">
-            <div className="flex items-start gap-2">
-              <CheckCircle className="w-5 h-5 text-cyan flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-cyan-700">
-                Esta funcionalidade será disponibilizada na fase de backend. Entre em contato pelo WhatsApp para suporte imediato.
-              </p>
+          {state.error && (
+            <div className="mt-6 p-4 bg-danger-50 border border-danger-200 rounded-lg">
+              <p className="text-sm text-danger-700">{state.error}</p>
             </div>
-          </div>
+          )}
+
+          {state.success && (
+            <div className="mt-6 p-4 bg-success-50 border border-success-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <CheckCircle className="w-5 h-5 text-success-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-success-700">
+                  {state.message}
+                </p>
+              </div>
+            </div>
+          )}
 
           <p className="text-center text-gray-600 mt-6">
             <Link href="/login" className="inline-flex items-center gap-1 text-primary font-semibold hover:underline">
