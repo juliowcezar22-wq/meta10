@@ -1,11 +1,16 @@
 import { requireAdmin } from '@/lib/auth/guards'
+import { AdminShell } from '@/components/admin/admin-shell'
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  await requireAdmin()
+  const { profile } = await requireAdmin()
 
-  return <>{children}</>
+  return (
+    <AdminShell nome={profile.nome} email={profile.email}>
+      {children}
+    </AdminShell>
+  )
 }

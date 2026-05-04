@@ -5,7 +5,8 @@ import { useFormState, useFormStatus } from 'react-dom'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react'
 import { loginAction } from '@/app/actions/auth'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -18,16 +19,42 @@ function SubmitButton() {
 
 function LoginForm() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [redirectTo, setRedirectTo] = useState('')
+  const [checking, setChecking] = useState(true)
   
   useEffect(() => {
     setRedirectTo(searchParams.get('redirect') ?? '')
   }, [searchParams])
 
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', session.user.id)
+          .single()
+        if (profile?.role === 'admin') router.push('/admin')
+        else router.push('/aluno/dashboard')
+      } else {
+        setChecking(false)
+      }
+    })
+  }, [router])
+
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({ email: '', password: '' })
   
   const [state, formAction] = useFormState(loginAction, { success: false })
+  if (checking) {
+    return (
+      <section className="min-h-[100dvh] flex items-center justify-center bg-mesh px-4">
+        <div className="text-surface-400 font-medium animate-pulse text-lg">Carregando...</div>
+      </section>
+    )
+  }
 
   return (
     <section className="min-h-[100dvh] flex items-center justify-center bg-mesh px-4 py-16">
