@@ -16,6 +16,7 @@ export type AuthState = {
 export async function loginAction(prevState: AuthState, formData: FormData): Promise<AuthState> {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const redirectTo = formData.get('redirect') as string
 
   const validation = loginSchema.safeParse({ email, password })
   if (!validation.success) {
@@ -28,16 +29,33 @@ export async function loginAction(prevState: AuthState, formData: FormData): Pro
   }
 
   const supabase = createClient()
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data: authData, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
 
-  if (error) {
-    return { success: false, error: translateAuthError(error.message) }
+  if (error || !authData.user) {
+    return { success: false, error: translateAuthError(error?.message || 'Erro ao fazer login') }
   }
 
-  redirect('/aluno/dashboard')
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', authData.user.id)
+    .single()
+
+  if (!profile) {
+    await supabase.auth.signOut()
+    return { success: false, error: 'Perfil não encontrado. Contate o suporte.' }
+  }
+
+  if (redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//') && !redirectTo.includes(':') && !redirectTo.includes('\\')) {
+    redirect(redirectTo)
+  } else if (profile.role === 'admin') {
+    redirect('/admin')
+  } else {
+    redirect('/aluno/dashboard')
+  }
 }
 
 export async function signUpAction(prevState: AuthState, formData: FormData): Promise<AuthState> {

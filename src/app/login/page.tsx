@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react'
 import { loginAction } from '@/app/actions/auth'
+import { useSearchParams } from 'next/navigation'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -15,7 +16,14 @@ function SubmitButton() {
   )
 }
 
-export default function LoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams()
+  const [redirectTo, setRedirectTo] = useState('')
+  
+  useEffect(() => {
+    setRedirectTo(searchParams.get('redirect') ?? '')
+  }, [searchParams])
+
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({ email: '', password: '' })
   
@@ -43,6 +51,7 @@ export default function LoginPage() {
 
         <div className="card p-8 !rounded-3xl">
           <form action={formAction} className="space-y-5" noValidate>
+            <input type="hidden" name="redirect" value={redirectTo} />
             {state.error && (
               <div className="p-3 bg-danger-50 border border-danger-200 text-danger-700 text-sm rounded-lg">
                 {state.error}
@@ -104,5 +113,13 @@ export default function LoginPage() {
         </div>
       </div>
     </section>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[100dvh] flex items-center justify-center text-surface-400">Carregando...</div>}>
+      <LoginForm />
+    </Suspense>
   )
 }
