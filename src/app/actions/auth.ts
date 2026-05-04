@@ -74,7 +74,7 @@ export async function signUpAction(prevState: AuthState, formData: FormData): Pr
     return { success: false, error: translateAuthError(error.message) }
   }
 
-  return { success: true, message: 'verificar-email' }
+  redirect('/verificar-email')
 }
 
 export async function resetPasswordAction(prevState: AuthState, formData: FormData): Promise<AuthState> {

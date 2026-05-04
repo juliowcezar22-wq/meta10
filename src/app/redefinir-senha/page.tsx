@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import Link from 'next/link'
 import { Eye, EyeOff, Lock, CheckCircle } from 'lucide-react'
 import { updatePasswordAction } from '@/app/actions/auth'
+import { createClient } from '@/lib/supabase/client'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -19,8 +20,22 @@ export default function RedefinirSenhaPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [formData, setFormData] = useState({ password: '', confirmPassword: '' })
+  const [checking, setChecking] = useState(true)
+  const [sessionError, setSessionError] = useState('')
   
   const [state, formAction] = useFormState(updatePasswordAction, { success: false })
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        setSessionError('Sessão expirada. Solicite uma nova recuperação de senha.')
+      }
+      setChecking(false)
+    }
+    checkSession()
+  }, [])
 
   const getStrength = (pass: string) => {
     if (pass.length === 0) return { level: 0, label: '', color: '' }
@@ -30,6 +45,20 @@ export default function RedefinirSenhaPage() {
   }
 
   const strength = getStrength(formData.password)
+
+  if (checking) return null
+
+  if (sessionError) {
+    return (
+      <section className="min-h-[100dvh] flex items-center justify-center bg-mesh px-4 py-16">
+        <div className="card p-10 text-center max-w-sm mx-auto !rounded-3xl">
+          <h2 className="text-xl font-bold text-danger mb-2">Erro</h2>
+          <p className="text-surface-500 text-sm mb-6">{sessionError}</p>
+          <Link href="/recuperar-senha" className="btn-primary w-full justify-center">Recuperar senha</Link>
+        </div>
+      </section>
+    )
+  }
 
   if (state.success) {
     return (
