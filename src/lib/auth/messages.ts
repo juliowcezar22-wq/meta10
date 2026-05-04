@@ -10,5 +10,7 @@ export function translateAuthError(error: string): string {
     'Auth session missing!': 'Sessão expirada. Por favor, tente novamente.',
   }
 
-  return messages[error] || 'Ocorreu um erro inesperado. Tente novamente.'
+  return messages[error] || (process.env.NODE_ENV === 'development' 
+    ? `[DEV] ${error}` 
+    : 'Ocorreu um erro inesperado. Tente novamente.')
 }

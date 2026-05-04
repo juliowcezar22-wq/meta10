@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, User, CheckCircle, ArrowLeft } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from 'lucide-react'
 import { signUpAction } from '@/app/actions/auth'
 
 function SubmitButton() {
@@ -17,18 +16,11 @@ function SubmitButton() {
 }
 
 export default function CadastroPage() {
-  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [formData, setFormData] = useState({ nome: '', email: '', password: '', confirmPassword: '' })
 
   const [state, formAction] = useFormState(signUpAction, { success: false })
-
-  useEffect(() => {
-    if (state.success && state.message === 'verificar-email') {
-      router.push('/verificar-email')
-    }
-  }, [state, router])
 
   const getStrength = (pass: string) => {
     if (pass.length === 0) return { level: 0, label: '', color: '' }
