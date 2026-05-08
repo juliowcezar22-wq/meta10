@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { 
   LayoutDashboard, 
   HelpCircle, 
-  CheckSquare, 
+  ShoppingBag, 
   FileText, 
   Map, 
   BookOpen,
@@ -21,7 +21,7 @@ interface AlunoSidebarProps {
 const navItems = [
   { name: 'Dashboard', href: '/aluno/dashboard', icon: LayoutDashboard },
   { name: 'Questões', href: '/aluno/questoes', icon: HelpCircle },
-  { name: 'Simulados', href: '/aluno/simulados', icon: CheckSquare },
+  { name: 'Loja', href: '/aluno/loja', icon: ShoppingBag },
   { name: 'PDFs', href: '/aluno/pdfs', icon: FileText },
   { name: 'Mapas Mentais', href: '/aluno/mapas-mentais', icon: Map },
   { name: 'Resumos', href: '/aluno/resumos', icon: BookOpen },
