@@ -4,9 +4,8 @@ import { useState, useEffect, Suspense } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react'
-import { loginAction } from '@/app/actions/auth'
+import { loginAction, getRedirectTargetIfLoggedIn } from '@/app/actions/auth'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 function SubmitButton() {
   const { pending } = useFormStatus()
@@ -28,16 +27,9 @@ function LoginForm() {
   }, [searchParams])
 
   useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session) {
-        const { data: profile } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', session.user.id)
-          .single()
-        if (profile?.role === 'admin') router.push('/admin')
-        else router.push('/aluno/dashboard')
+    getRedirectTargetIfLoggedIn().then(({ path }) => {
+      if (path) {
+        router.push(path)
       } else {
         setChecking(false)
       }

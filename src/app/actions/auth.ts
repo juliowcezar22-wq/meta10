@@ -162,3 +162,20 @@ export async function updatePasswordAction(prevState: AuthState, formData: FormD
   return { success: true, message: 'Senha alterada com sucesso!' }
 }
 
+export async function getRedirectTargetIfLoggedIn(): Promise<{ path: string | null }> {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (!user) return { path: null }
+  
+  const { data: profile } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+  
+  if (!profile) return { path: null }
+  
+  if (profile.role === 'admin') return { path: '/admin' }
+  return { path: '/aluno/dashboard' }
+}
