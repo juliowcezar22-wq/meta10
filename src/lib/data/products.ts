@@ -1,7 +1,5 @@
 import { mockProducts } from '@/lib/mocks/products'
-import type { Database } from '@/lib/supabase/types'
-
-type Product = Database['public']['Tables']['products']['Row']
+import type { Product } from '@/lib/types/product'
 
 export async function getProducts(): Promise<Product[]> {
   // REAL: 

@@ -3,6 +3,7 @@
 import { z } from 'zod'
 
 const questionSchema = z.object({
+  list_id: z.string().min(1),
   enunciado: z.string().min(1),
   alternativa_a: z.string().min(1),
   alternativa_b: z.string().min(1),
@@ -17,6 +18,7 @@ const questionSchema = z.object({
 
 export async function createQuestion(formData: FormData) {
   const validation = questionSchema.safeParse({
+    list_id: formData.get('list_id'),
     enunciado: formData.get('enunciado'),
     alternativa_a: formData.get('alternativa_a'),
     alternativa_b: formData.get('alternativa_b'),

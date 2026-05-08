@@ -12,8 +12,19 @@ export type Subject =
 
 export type DifficultyLevel = 'facil' | 'medio' | 'dificil'
 
+export interface QuestionList {
+  id: string
+  name: string
+  description?: string
+  subject: Subject
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
 export interface Question {
   id: string
+  list_id: string
   enunciado: string
   alternativa_a: string
   alternativa_b: string
@@ -28,27 +39,17 @@ export interface Question {
   updated_at: string
 }
 
-export interface Simulado {
+export interface QuestionListItem {
   id: string
-  name: string
-  subject: Subject
-  duration_minutes: number
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
-
-export interface SimuladoQuestion {
-  id: string
-  simulado_id: string
+  list_id: string
   question_id: string
   ordem: number
 }
 
-export interface QuizAttempt {
+export interface Attempt {
   id: string
   user_id: string
-  simulado_id: string
+  list_id: string
   started_at: string
   finished_at: string | null
   answers: Record<string, 'a' | 'b' | 'c' | 'd' | 'e'>

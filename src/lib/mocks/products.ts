@@ -1,6 +1,4 @@
-import type { Database } from '@/lib/supabase/types'
-
-type Product = Database['public']['Tables']['products']['Row']
+import type { Product } from '@/lib/types/product'
 
 export const mockProducts: Product[] = [
   {
@@ -9,6 +7,8 @@ export const mockProducts: Product[] = [
     description: 'Apostilas completas + simulados de matemática.',
     price: 97.00,
     hotmart_link: 'https://pay.hotmart.com/1',
+    tipo: 'pago',
+    arquivo_url: null,
     image_url: null,
     is_active: true,
     created_at: new Date().toISOString(),
@@ -20,6 +20,8 @@ export const mockProducts: Product[] = [
     description: 'Guia definitivo para a redação do ENEM.',
     price: 47.90,
     hotmart_link: 'https://pay.hotmart.com/2',
+    tipo: 'pago',
+    arquivo_url: null,
     image_url: null,
     is_active: true,
     created_at: new Date().toISOString(),
@@ -31,6 +33,8 @@ export const mockProducts: Product[] = [
     description: 'Acompanhamento individual mensal.',
     price: 297.00,
     hotmart_link: 'https://pay.hotmart.com/3',
+    tipo: 'pago',
+    arquivo_url: null,
     image_url: null,
     is_active: false,
     created_at: new Date().toISOString(),
@@ -38,13 +42,41 @@ export const mockProducts: Product[] = [
   },
   ...Array.from({ length: 3 }).map((_, i) => ({
     id: `prod-${i+4}`,
-    name: `Produto Mock ${i+4}`,
+    name: `Produto Pago ${i+4}`,
     description: `Descrição gerada para o produto ${i+4}`,
     price: 19.90 * (i+1),
     hotmart_link: `https://pay.hotmart.com/${i+4}`,
+    tipo: 'pago' as const,
+    arquivo_url: null,
     image_url: null,
     is_active: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-  }))
+  })),
+  {
+    id: 'prod-7',
+    name: 'Guia de Estudos 2026',
+    description: 'Ebook gratuito com cronograma de estudos.',
+    price: 0,
+    hotmart_link: null,
+    tipo: 'gratuito',
+    arquivo_url: 'https://drive.google.com/file/d/EXEMPLO1/view',
+    image_url: null,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 'prod-8',
+    name: 'Mapa Mental Biologia',
+    description: 'Resumo completo em formato de mapa mental.',
+    price: 0,
+    hotmart_link: null,
+    tipo: 'gratuito',
+    arquivo_url: 'https://drive.google.com/file/d/EXEMPLO2/view',
+    image_url: null,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }
 ]

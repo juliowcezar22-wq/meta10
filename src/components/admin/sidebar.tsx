@@ -10,6 +10,8 @@ import {
   ShoppingBag, 
   MessageSquareQuote, 
   Mail,
+  HelpCircle,
+  GraduationCap,
   X
 } from 'lucide-react'
 
@@ -20,11 +22,12 @@ interface SidebarProps {
 
 const navItems = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard, enabled: true },
-  { name: 'Usuários', href: '/admin/usuarios', icon: Users, enabled: false },
-  { name: 'Conteúdo', href: '/admin/conteudo', icon: BookOpen, enabled: false },
-  { name: 'Produtos', href: '/admin/produtos', icon: ShoppingBag, enabled: false },
-  { name: 'Depoimentos', href: '/admin/depoimentos', icon: MessageSquareQuote, enabled: false },
-  { name: 'Mensagens', href: '/admin/mensagens', icon: Mail, enabled: false },
+  { name: 'Usuários', href: '/admin/usuarios', icon: Users, enabled: true },
+  { name: 'Conteúdo', href: '/admin/conteudo', icon: BookOpen, enabled: true },
+  { name: 'Produtos', href: '/admin/produtos', icon: ShoppingBag, enabled: true },
+  { name: 'Depoimentos', href: '/admin/depoimentos', icon: MessageSquareQuote, enabled: true },
+  { name: 'Mensagens', href: '/admin/mensagens', icon: Mail, enabled: true },
+  { name: 'Questões', href: '/admin/questoes', icon: HelpCircle, enabled: true },
 ]
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
