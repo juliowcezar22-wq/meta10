@@ -1,22 +1,48 @@
-import { mockTestimonials } from '@/lib/mocks/testimonials'
+import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/supabase/types'
 
 type Testimonial = Database['public']['Tables']['testimonials']['Row']
 
 export async function getTestimonials(): Promise<Testimonial[]> {
-  // REAL: 
-  // const supabase = createClient()
-  // const { data } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false })
-  // return data
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('testimonials')
+    .select('*')
+    .order('created_at', { ascending: false })
   
-  return mockTestimonials
+  if (error) {
+    console.error('[getTestimonials]', error)
+    return []
+  }
+  return data ?? []
+}
+
+export async function getActiveTestimonials(): Promise<Testimonial[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('testimonials')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+  
+  if (error) {
+    console.error('[getActiveTestimonials]', error)
+    return []
+  }
+  return data ?? []
 }
 
 export async function getTestimonialById(id: string): Promise<Testimonial | null> {
-  // REAL: 
-  // const supabase = createClient()
-  // const { data } = await supabase.from('testimonials').select('*').eq('id', id).single()
-  // return data
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('testimonials')
+    .select('*')
+    .eq('id', id)
+    .single()
   
-  return mockTestimonials.find(t => t.id === id) ?? null
+  if (error) {
+    console.error('[getTestimonialById]', error)
+    return null
+  }
+  return data
 }

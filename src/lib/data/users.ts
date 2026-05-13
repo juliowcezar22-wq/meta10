@@ -1,26 +1,60 @@
-import { mockUsers } from '@/lib/mocks/users'
+import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/supabase/types'
 
 type User = Database['public']['Tables']['users']['Row']
-type UserWithSubscription = User & { plan_name?: string; plan_status?: string; expires_at?: string }
+type Subscription = Database['public']['Tables']['subscriptions']['Row']
+type Plan = Database['public']['Tables']['plans']['Row']
+
+export type UserWithSubscription = User & {
+  subscription?: (Subscription & { plan?: Plan }) | null
+}
 
 export async function getUsers(): Promise<UserWithSubscription[]> {
-  // REAL: 
-  // const supabase = createClient()
-  // const { data } = await supabase.from('users').select(`
-  //   *,
-  //   subscriptions ( status, expires_at, plans ( name ) )
-  // `)
-  // return data
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('users')
+    .select(`
+      *,
+      subscription:subscriptions(
+        *,
+        plan:plans(*)
+      )
+    `)
+    .order('created_at', { ascending: false })
   
-  return mockUsers.map(u => ({ ...u, plan_name: 'Anual', plan_status: 'active' }))
+  if (error) {
+    console.error('[getUsers]', error)
+    return []
+  }
+  
+  // Cada user pode ter múltiplas subscriptions; pegar a ativa mais recente
+  return (data ?? []).map(u => {
+    const subs = (u.subscription as unknown as (Subscription & { plan: Plan })[]) ?? []
+    const active = subs.find(s => s.status === 'active') ?? subs[0] ?? null
+    return { ...u, subscription: active }
+  })
 }
 
 export async function getUserById(id: string): Promise<UserWithSubscription | null> {
-  // REAL:
-  // const supabase = createClient()
-  // const { data } = await supabase.from('users').select('*').eq('id', id).single()
-  // return data
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('users')
+    .select(`
+      *,
+      subscription:subscriptions(
+        *,
+        plan:plans(*)
+      )
+    `)
+    .eq('id', id)
+    .single()
   
-  return mockUsers.find(u => u.id === id) ?? null
+  if (error) {
+    console.error('[getUserById]', error)
+    return null
+  }
+  
+  const subs = (data.subscription as unknown as (Subscription & { plan: Plan })[]) ?? []
+  const active = subs.find(s => s.status === 'active') ?? subs[0] ?? null
+  return { ...data, subscription: active }
 }

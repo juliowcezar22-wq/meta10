@@ -1,20 +1,46 @@
-import { mockProducts } from '@/lib/mocks/products'
+import { createClient } from '@/lib/supabase/server'
 import type { Product } from '@/lib/types/product'
 
 export async function getProducts(): Promise<Product[]> {
-  // REAL: 
-  // const supabase = createClient()
-  // const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false })
-  // return data
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false })
   
-  return mockProducts
+  if (error) {
+    console.error('[getProducts]', error)
+    return []
+  }
+  return (data ?? []) as Product[]
+}
+
+export async function getActiveProducts(): Promise<Product[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+  
+  if (error) {
+    console.error('[getActiveProducts]', error)
+    return []
+  }
+  return (data ?? []) as Product[]
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-  // REAL: 
-  // const supabase = createClient()
-  // const { data } = await supabase.from('products').select('*').eq('id', id).single()
-  // return data
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .single()
   
-  return mockProducts.find(p => p.id === id) ?? null
+  if (error) {
+    console.error('[getProductById]', error)
+    return null
+  }
+  return data as Product
 }

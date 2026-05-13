@@ -1,6 +1,9 @@
 'use server'
 
 import { z } from 'zod'
+import { createClient } from '@/lib/supabase/server'
+import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/auth/guards'
 
 const materialSchema = z.object({
   title: z.string().min(1),
@@ -12,6 +15,7 @@ const materialSchema = z.object({
 })
 
 export async function createMaterial(formData: FormData) {
+  await requireAdmin()
   const validation = materialSchema.safeParse({
     title: formData.get('title'),
     description: formData.get('description') || undefined,
@@ -25,16 +29,75 @@ export async function createMaterial(formData: FormData) {
     return { success: false, errors: validation.error.flatten().fieldErrors }
   }
   
-  console.log('[MOCK] createMaterial', validation.data)
-  return { success: true, message: 'Material criado (mock)' }
+  const supabase = createClient()
+  const { error } = await supabase.from('materials').insert({
+    title: validation.data.title,
+    description: validation.data.description,
+    type: validation.data.type,
+    subject: validation.data.subject,
+    file_url: validation.data.file_url,
+    is_free: validation.data.is_free,
+  })
+  
+  if (error) {
+    console.error('[createMaterial]', error)
+    return { success: false, errors: { _form: [error.message || 'Erro ao criar material'] } }
+  }
+  
+  revalidatePath('/admin/conteudo')
+  revalidatePath('/aluno/materiais')
+  return { success: true, message: 'Material criado com sucesso' }
 }
 
 export async function updateMaterial(id: string, formData: FormData) {
-  // Mesmo schema
-  return { success: true, message: 'Material atualizado (mock)' }
+  await requireAdmin()
+  const validation = materialSchema.safeParse({
+    title: formData.get('title'),
+    description: formData.get('description') || undefined,
+    type: formData.get('type'),
+    subject: formData.get('subject') || undefined,
+    file_url: formData.get('file_url'),
+    is_free: formData.get('is_free') === 'true',
+  })
+  
+  if (!validation.success) {
+    return { success: false, errors: validation.error.flatten().fieldErrors }
+  }
+  
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('materials')
+    .update({
+      title: validation.data.title,
+      description: validation.data.description,
+      type: validation.data.type,
+      subject: validation.data.subject,
+      file_url: validation.data.file_url,
+      is_free: validation.data.is_free,
+    })
+    .eq('id', id)
+    
+  if (error) {
+    console.error('[updateMaterial]', error)
+    return { success: false, errors: { _form: [error.message || 'Erro ao atualizar material'] } }
+  }
+  
+  revalidatePath('/admin/conteudo')
+  revalidatePath('/aluno/materiais')
+  return { success: true, message: 'Material atualizado' }
 }
 
 export async function deleteMaterial(id: string) {
-  console.log(`[MOCK] deleteMaterial ${id}`)
-  return { success: true, message: 'Material deletado (mock)' }
+  await requireAdmin()
+  const supabase = createClient()
+  const { error } = await supabase.from('materials').delete().eq('id', id)
+  
+  if (error) {
+    console.error('[deleteMaterial]', error)
+    return { success: false, errors: { _form: [error.message || 'Erro ao deletar material'] } }
+  }
+  
+  revalidatePath('/admin/conteudo')
+  revalidatePath('/aluno/materiais')
+  return { success: true, message: 'Material deletado' }
 }
