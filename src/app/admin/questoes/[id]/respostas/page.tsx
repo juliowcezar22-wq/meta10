@@ -9,11 +9,13 @@ import { ArrowLeft } from 'lucide-react'
 
 export default async function RespostasPage({ params }: { params: { id: string } }) {
   await requireAdmin()
-  const list = await getQuestionListById(params.id)
+  
+  const [list, attempts] = await Promise.all([
+    getQuestionListById(params.id),
+    getAttemptsByListId(params.id)
+  ])
   
   if (!list) redirect('/admin/questoes')
-
-  const attempts = await getAttemptsByListId(params.id)
 
   const formattedAttempts = attempts
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
