@@ -1,6 +1,6 @@
 import { requireAdmin } from '@/lib/auth/guards'
 import { getQuestionListById } from '@/lib/data/question-lists'
-import { getAttemptsByListId } from '@/lib/data/question-lists'
+import { getAttemptsByListId } from '@/lib/data/attempts'
 import { redirect } from 'next/navigation'
 import { DataTable } from '@/components/admin/data-table'
 import { Badge } from '@/components/admin/badge'
@@ -28,6 +28,7 @@ export default async function RespostasPage({ params }: { params: { id: string }
 
       return {
         ...attempt,
+        user_name: attempt.user?.nome || attempt.user?.email || 'Aluno Desconhecido',
         dataNode: <span>{new Date(attempt.finished_at || attempt.created_at).toLocaleDateString('pt-BR')}</span>,
         acertosNode: <span>{attempt.score || 0} / {attempt.total_questions || 0}</span>,
         percentNode: <Badge variant={variant}>{percentage}%</Badge>

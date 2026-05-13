@@ -1,29 +1,63 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, Loader2 } from 'lucide-react'
 import type { QuestionList, Question } from '@/lib/types/quiz'
+import { startAttempt, finishAttempt } from '@/app/actions/aluno/attempts'
 
 export function QuizClient({ list, questions }: { list: QuestionList, questions: Question[] }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [mode, setMode] = useState<'quiz' | 'result'>('quiz')
+  const [attemptId, setAttemptId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [finishing, setFinishing] = useState(false)
+
+  useEffect(() => {
+    async function init() {
+      const res = await startAttempt(list.id)
+      if (res.success && res.attemptId) {
+        setAttemptId(res.attemptId)
+      } else {
+        alert(res.errors?._form?.[0] || 'Erro ao iniciar tentativa')
+      }
+      setLoading(false)
+    }
+    init()
+  }, [list.id])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   const question = questions[currentIndex]
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!selectedOption) return
 
-    // Save answer
-    setAnswers(prev => ({ ...prev, [question.id]: selectedOption }))
+    const newAnswers = { ...answers, [question.id]: selectedOption }
+    setAnswers(newAnswers)
 
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1)
       setSelectedOption(null)
     } else {
-      setMode('result')
+      setFinishing(true)
+      if (attemptId) {
+        const res = await finishAttempt(attemptId, newAnswers)
+        if (res.success) {
+          setMode('result')
+        } else {
+          alert((res.errors as any)?._form?.[0] || 'Erro ao finalizar tentativa')
+        }
+      }
+      setFinishing(false)
     }
   }
 
@@ -175,10 +209,12 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
 
           <button
             onClick={handleNext}
-            disabled={!selectedOption}
-            className={`btn-primary w-full mt-8 justify-center py-3 text-base ${!selectedOption ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!selectedOption || finishing}
+            className={`btn-primary w-full mt-8 justify-center py-3 text-base ${(!selectedOption || finishing) ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {currentIndex < questions.length - 1 ? (
+            {finishing ? (
+              <>Salvando <Loader2 className="w-4 h-4 ml-2 animate-spin" /></>
+            ) : currentIndex < questions.length - 1 ? (
               <>Próxima Questão <ArrowRight className="w-4 h-4 ml-2" /></>
             ) : (
               <>Finalizar Lista <CheckCircle className="w-4 h-4 ml-2" /></>
