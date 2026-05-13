@@ -1,6 +1,9 @@
 'use server'
 
 import { z } from 'zod'
+import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/guards'
+import { revalidatePath } from 'next/cache'
 
 const questionListSchema = z.object({
   name: z.string().min(1),
@@ -10,6 +13,7 @@ const questionListSchema = z.object({
 })
 
 export async function createQuestionList(formData: FormData) {
+  await requireAdmin()
   const validation = questionListSchema.safeParse({
     name: formData.get('name'),
     subject: formData.get('subject'),
@@ -19,30 +23,91 @@ export async function createQuestionList(formData: FormData) {
   
   if (!validation.success) return { success: false, errors: validation.error.flatten().fieldErrors }
   
-  console.log('[MOCK] createQuestionList', validation.data)
-  return { success: true, message: 'Lista criada (mock)' }
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('question_lists')
+    .insert(validation.data)
+  
+  if (error) {
+    console.error('[createQuestionList]', error)
+    return { success: false, errors: { _form: [error.message] } }
+  }
+  
+  revalidatePath('/admin/questoes')
+  revalidatePath('/aluno/questoes')
+  return { success: true, message: 'Lista criada com sucesso' }
 }
 
 export async function updateQuestionList(id: string, formData: FormData) {
-  return { success: true, message: 'Lista atualizada (mock)' }
+  await requireAdmin()
+  const validation = questionListSchema.safeParse({
+    name: formData.get('name'),
+    subject: formData.get('subject'),
+    description: formData.get('description') || undefined,
+    is_active: formData.get('is_active') === 'true',
+  })
+  
+  if (!validation.success) return { success: false, errors: validation.error.flatten().fieldErrors }
+  
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('question_lists')
+    .update(validation.data)
+    .eq('id', id)
+  
+  if (error) {
+    console.error('[updateQuestionList]', error)
+    return { success: false, errors: { _form: [error.message] } }
+  }
+  
+  revalidatePath('/admin/questoes')
+  revalidatePath(`/admin/questoes/${id}`)
+  revalidatePath('/aluno/questoes')
+  return { success: true, message: 'Lista atualizada com sucesso' }
 }
 
 export async function deleteQuestionList(id: string) {
-  console.log(`[MOCK] deleteQuestionList ${id}`)
-  return { success: true, message: 'Lista deletada (mock)' }
+  await requireAdmin()
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('question_lists')
+    .delete()
+    .eq('id', id)
+    
+  if (error) {
+    console.error('[deleteQuestionList]', error)
+    return { success: false, errors: { _form: [error.message] } }
+  }
+  
+  revalidatePath('/admin/questoes')
+  revalidatePath('/aluno/questoes')
+  return { success: true, message: 'Lista deletada com sucesso' }
 }
 
 export async function toggleQuestionListActive(id: string) {
-  console.log(`[MOCK] toggleQuestionListActive ${id}`)
-  return { success: true, message: 'Status da lista alterado (mock)' }
-}
-
-export async function addQuestionToList(listId: string, questionId: string, ordem: number) {
-  console.log(`[MOCK] addQuestionToList ${listId} ${questionId} ${ordem}`)
-  return { success: true, message: 'Questão adicionada à lista (mock)' }
-}
-
-export async function removeQuestionFromList(listId: string, questionId: string) {
-  console.log(`[MOCK] removeQuestionFromList ${listId} ${questionId}`)
-  return { success: true, message: 'Questão removida da lista (mock)' }
+  await requireAdmin()
+  const supabase = createClient()
+  
+  const { data: list } = await supabase
+    .from('question_lists')
+    .select('is_active')
+    .eq('id', id)
+    .single()
+    
+  if (!list) return { success: false, errors: { _form: ['Lista não encontrada'] } }
+  
+  const { error } = await supabase
+    .from('question_lists')
+    .update({ is_active: !list.is_active })
+    .eq('id', id)
+    
+  if (error) {
+    console.error('[toggleQuestionListActive]', error)
+    return { success: false, errors: { _form: [error.message] } }
+  }
+  
+  revalidatePath('/admin/questoes')
+  revalidatePath(`/admin/questoes/${id}`)
+  revalidatePath('/aluno/questoes')
+  return { success: true, message: 'Status da lista alterado' }
 }
