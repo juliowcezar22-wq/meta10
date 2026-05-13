@@ -1,22 +1,47 @@
-import { mockMessages } from '@/lib/mocks/messages'
+import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/supabase/types'
 
 type Message = Database['public']['Tables']['messages']['Row']
 
 export async function getMessages(): Promise<Message[]> {
-  // REAL: 
-  // const supabase = createClient()
-  // const { data } = await supabase.from('messages').select('*').order('created_at', { ascending: false })
-  // return data
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .order('created_at', { ascending: false })
   
-  return mockMessages
+  if (error) {
+    console.error('[getMessages]', error)
+    return []
+  }
+  return data ?? []
+}
+
+export async function getUnreadMessagesCount(): Promise<number> {
+  const supabase = createClient()
+  const { count, error } = await supabase
+    .from('messages')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_read', false)
+  
+  if (error) {
+    console.error('[getUnreadMessagesCount]', error)
+    return 0
+  }
+  return count ?? 0
 }
 
 export async function getMessageById(id: string): Promise<Message | null> {
-  // REAL: 
-  // const supabase = createClient()
-  // const { data } = await supabase.from('messages').select('*').eq('id', id).single()
-  // return data
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .eq('id', id)
+    .single()
   
-  return mockMessages.find(m => m.id === id) ?? null
+  if (error) {
+    console.error('[getMessageById]', error)
+    return null
+  }
+  return data
 }

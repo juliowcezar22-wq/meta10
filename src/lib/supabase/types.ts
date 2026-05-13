@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      attempts: {
+        Row: {
+          answers: Json
+          created_at: string
+          finished_at: string | null
+          id: string
+          list_id: string
+          score: number | null
+          started_at: string
+          total_questions: number | null
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          list_id: string
+          score?: number | null
+          started_at?: string
+          total_questions?: number | null
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          list_id?: string
+          score?: number | null
+          started_at?: string
+          total_questions?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attempts_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "question_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       materials: {
         Row: {
           created_at: string
@@ -106,39 +157,170 @@ export type Database = {
       }
       products: {
         Row: {
+          arquivo_url: string | null
           created_at: string
           description: string | null
-          hotmart_link: string
+          hotmart_link: string | null
           id: string
           image_url: string | null
           is_active: boolean
           name: string
           price: number
+          tipo: string
           updated_at: string
         }
         Insert: {
+          arquivo_url?: string | null
           created_at?: string
           description?: string | null
-          hotmart_link: string
+          hotmart_link?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           name: string
           price: number
+          tipo?: string
           updated_at?: string
         }
         Update: {
+          arquivo_url?: string | null
           created_at?: string
           description?: string | null
-          hotmart_link?: string
+          hotmart_link?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           name?: string
           price?: number
+          tipo?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      question_list_items: {
+        Row: {
+          id: string
+          list_id: string
+          ordem: number
+          question_id: string
+        }
+        Insert: {
+          id?: string
+          list_id: string
+          ordem: number
+          question_id: string
+        }
+        Update: {
+          id?: string
+          list_id?: string
+          ordem?: number
+          question_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_list_items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "question_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_list_items_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_lists: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      questions: {
+        Row: {
+          alternativa_a: string
+          alternativa_b: string
+          alternativa_c: string
+          alternativa_d: string
+          alternativa_e: string
+          comentario: string | null
+          created_at: string
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          enunciado: string
+          gabarito: string
+          id: string
+          list_id: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          alternativa_a: string
+          alternativa_b: string
+          alternativa_c: string
+          alternativa_d: string
+          alternativa_e: string
+          comentario?: string | null
+          created_at?: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          enunciado: string
+          gabarito: string
+          id?: string
+          list_id: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          alternativa_a?: string
+          alternativa_b?: string
+          alternativa_c?: string
+          alternativa_d?: string
+          alternativa_e?: string
+          comentario?: string | null
+          created_at?: string
+          difficulty?: Database["public"]["Enums"]["difficulty_level"]
+          enunciado?: string
+          gabarito?: string
+          id?: string
+          list_id?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questions_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "question_lists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscription_logs: {
         Row: {
@@ -314,6 +496,7 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
+      difficulty_level: "facil" | "medio" | "dificil"
       user_role: "aluno" | "admin" | "professor"
     }
     CompositeTypes: {
@@ -442,6 +625,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      difficulty_level: ["facil", "medio", "dificil"],
       user_role: ["aluno", "admin", "professor"],
     },
   },

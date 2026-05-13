@@ -1,7 +1,9 @@
 import { Star, Quote } from 'lucide-react'
-import { TESTIMONIALS } from '@/lib/mock-data'
+import { getActiveTestimonials } from '@/lib/data/testimonials'
 
-export default function TestimonialsSection() {
+export default async function TestimonialsSection() {
+  const testimonials = await getActiveTestimonials()
+
   return (
     <section className="section-padding bg-surface-50 relative overflow-hidden">
       <div className="bg-mesh-warm absolute inset-0 pointer-events-none" />
@@ -15,7 +17,7 @@ export default function TestimonialsSection() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
-          {TESTIMONIALS.map((t, i) => (
+          {testimonials.slice(0, 3).map((t, i) => (
             <div
               key={t.id}
               className={`relative bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 border border-surface-100/80 ${i === 1 ? 'md:-mt-4 md:mb-4' : ''}`}
@@ -31,11 +33,11 @@ export default function TestimonialsSection() {
               </p>
               <div className="flex items-center gap-3 pt-5 border-t border-surface-100">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-400 flex items-center justify-center shadow-sm">
-                  <span className="text-white font-bold text-sm">{t.name.charAt(0)}</span>
+                  <span className="text-white font-bold text-sm">{t.author_name.charAt(0)}</span>
                 </div>
                 <div>
-                  <p className="font-semibold text-surface-900 text-sm">{t.name}</p>
-                  <p className="text-xs text-surface-400">{t.role}</p>
+                  <p className="font-semibold text-surface-900 text-sm">{t.author_name}</p>
+                  <p className="text-xs text-surface-400">Aluno(a)</p>
                 </div>
               </div>
             </div>
