@@ -6,11 +6,12 @@ import { ListDetailClient } from './list-detail-client'
 
 export default async function ListDetailPage({ params }: { params: { id: string } }) {
   await requireAdmin()
-  const list = await getQuestionListById(params.id)
+  const [list, questions] = await Promise.all([
+    getQuestionListById(params.id),
+    getQuestionsByListId(params.id)
+  ])
   
   if (!list) redirect('/admin/questoes')
-
-  const questions = await getQuestionsByListId(params.id)
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
