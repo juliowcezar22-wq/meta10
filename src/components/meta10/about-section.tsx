@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { BookOpen, Target, Users, Sparkles } from 'lucide-react'
 
 const features = [
-  { icon: BookOpen, label: 'Material Curado', desc: 'Conteúdo selecionado por especialistas em educação', accent: 'primary' },
+  { icon: BookOpen, label: 'Conteúdo Estratégico', desc: 'Conteúdo selecionado por especialistas em educação', accent: 'primary' },
   { icon: Target, label: 'Foco em Resultados', desc: 'Preparação direcionada para provas e vestibulares', accent: 'cyan' },
   { icon: Users, label: 'Comunidade Ativa', desc: 'Alunos engajados em constante evolução', accent: 'purple' },
 ]
@@ -30,7 +30,7 @@ export default function AboutSection() {
               <span className="text-gradient-primary">META 10</span>?
             </h2>
             <p className="text-surface-500 text-lg leading-relaxed mb-4">
-              A META 10 é um espaço pedagógico digital criado para oferecer reforço escolar de qualidade a alunos do ensino fundamental e médio.
+              O META 10 é um espaço pedagógico digital criado para oferecer reforço escolar de qualidade a alunos do ensino fundamental e médio.
             </p>
             <p className="text-surface-500 text-lg leading-relaxed mb-10">
               Nossa plataforma reúne materiais de estudo cuidadosamente elaborados — desde questões e simulados até PDFs, mapas mentais e resumos — tudo organizado para maximizar seu aprendizado.

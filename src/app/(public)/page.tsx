@@ -2,6 +2,7 @@ import HeroBanner from '@/components/meta10/hero-banner'
 import AboutSection from '@/components/meta10/about-section'
 import MaterialsSection from '@/components/meta10/materials-section'
 import FreeContentSection from '@/components/meta10/free-content-section'
+import ProductsSection from '@/components/meta10/products-section'
 import PricingSection from '@/components/meta10/pricing-section'
 import YouTubeSection from '@/components/meta10/youtube-section'
 import TestimonialsSection from '@/components/meta10/testimonials-section'
@@ -14,6 +15,7 @@ export default function Home() {
       <AboutSection />
       <MaterialsSection />
       <FreeContentSection />
+      <ProductsSection />
       <PricingSection />
       <YouTubeSection />
       <TestimonialsSection />

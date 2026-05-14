@@ -12,10 +12,10 @@ const typeColors: Record<string, string> = {
 
 export default function FreeContentSection() {
   return (
-    <section className="section-padding bg-white">
+    <section className="section-padding bg-[#2563EB]/5">
       <div className="container-custom">
         <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-surface-900 mb-4 tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#2563EB] mb-4 tracking-tight">
             Conteúdos Gratuitos
           </h2>
           <p className="text-surface-500 text-lg max-w-xl mx-auto">
