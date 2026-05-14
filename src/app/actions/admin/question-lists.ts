@@ -24,9 +24,11 @@ export async function createQuestionList(formData: FormData) {
   if (!validation.success) return { success: false, errors: validation.error.flatten().fieldErrors }
   
   const supabase = createClient()
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('question_lists')
     .insert(validation.data)
+    .select()
+    .single()
   
   if (error) {
     console.error('[createQuestionList]', error)
@@ -35,7 +37,7 @@ export async function createQuestionList(formData: FormData) {
   
   revalidatePath('/admin/questoes')
   revalidatePath('/aluno/questoes')
-  return { success: true, message: 'Lista criada com sucesso' }
+  return { success: true, message: 'Lista criada com sucesso', list: data }
 }
 
 export async function updateQuestionList(id: string, formData: FormData) {

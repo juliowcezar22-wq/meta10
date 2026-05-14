@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { DataTable } from '@/components/admin/data-table'
 import { Badge } from '@/components/admin/badge'
@@ -12,6 +12,7 @@ import type { QuestionList, Question } from '@/lib/types/quiz'
 
 export function ListDetailClient({ list, initialQuestions }: { list: QuestionList, initialQuestions: Question[] }) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   
@@ -19,6 +20,15 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+
+  const shouldOpenNewQuestion = searchParams.get('addQuestion') === '1'
+
+  useEffect(() => {
+    if (shouldOpenNewQuestion) {
+      openModal()
+      router.replace(`/admin/questoes/${list.id}`, { scroll: false })
+    }
+  }, [shouldOpenNewQuestion, list.id, router])
 
   // Form state
   const [formData, setFormData] = useState({
