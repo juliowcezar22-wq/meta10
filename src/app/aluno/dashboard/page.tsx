@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { ListChecks, ClipboardCheck, FileText, Network, BookOpen, TrendingUp, Clock, Award, BarChart3, Lock, Crown, ArrowRight } from 'lucide-react'
-import { MOCK_STATS } from '@/lib/mock-data'
+import { ListChecks, ClipboardCheck, FileText, Network, BookOpen, TrendingUp, Clock, Award, BarChart3, Lock, Crown, ArrowRight, CheckCircle2, XCircle } from 'lucide-react'
 import { getCurrentSubscription } from '@/lib/data/subscriptions'
+import { getStudentStats } from '@/lib/data/attempts'
+import { requireAuth } from '@/lib/auth/guards'
 
 const quickAccess = [
   { title: 'Questões', href: '/aluno/questoes', icon: ListChecks, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-50' },
@@ -11,17 +12,24 @@ const quickAccess = [
   { title: 'Resumos', href: '/aluno/resumos', icon: BookOpen, gradient: 'from-danger-500 to-danger-600', bg: 'bg-danger-50' },
 ]
 
-const stats = [
-  { label: 'Questões Resolvidas', value: MOCK_STATS.questionsSolved, icon: ListChecks, color: 'text-primary', bg: 'bg-primary-50' },
-  { label: 'Simulados Feitos', value: MOCK_STATS.quizzesCompleted, icon: ClipboardCheck, color: 'text-cyan-600', bg: 'bg-cyan-50' },
-  { label: 'Horas de Estudo', value: MOCK_STATS.studyHours, icon: Clock, color: 'text-purple', bg: 'bg-purple-50' },
-  { label: 'Desempenho Médio', value: `${MOCK_STATS.avgScore}%`, icon: BarChart3, color: 'text-success-600', bg: 'bg-success-50' },
-]
-
 export default async function DashboardPage() {
-  const subscription = await getCurrentSubscription()
+  const { profile } = await requireAuth()
+  
+  const [subscription, studentStats] = await Promise.all([
+    getCurrentSubscription(),
+    getStudentStats(profile.id)
+  ])
+
   const hasSub = subscription !== null
   const planName = hasSub ? subscription.plan?.name || 'Premium' : 'Plano Gratuito'
+
+  const stats = [
+    { label: 'Exercícios Feitos', value: studentStats.exerciciosFeitos, icon: ListChecks, color: 'text-primary', bg: 'bg-primary-50' },
+    { label: 'Acertos', value: studentStats.acertos, icon: CheckCircle2, color: 'text-success-600', bg: 'bg-success-50' },
+    { label: 'Erros', value: studentStats.erros, icon: XCircle, color: 'text-danger-600', bg: 'bg-danger-50' },
+    { label: 'Horas de Estudo', value: `${studentStats.horasEstudo}h`, icon: Clock, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Desempenho Médio', value: `${studentStats.desempenhoMedio}%`, icon: BarChart3, color: 'text-cyan-600', bg: 'bg-cyan-50' },
+  ]
 
   return (
     <div className="min-h-screen bg-surface-50">
@@ -48,14 +56,14 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
           {stats.map((stat) => (
             <div key={stat.label} className="card p-5 group hover:shadow-card-hover transition-all">
               <div className="flex items-center justify-between mb-3">
                 <div className={`w-10 h-10 ${stat.bg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
                 </div>
-                <TrendingUp className="w-4 h-4 text-success-500" />
+                <TrendingUp className="w-4 h-4 text-surface-300" />
               </div>
               <p className="text-2xl font-extrabold text-surface-900 tracking-tight">{stat.value}</p>
               <p className="text-xs text-surface-400 mt-0.5">{stat.label}</p>
