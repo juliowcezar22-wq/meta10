@@ -13,7 +13,7 @@ export default function FinalCTA() {
           Pronto para transformar<br className="hidden sm:block" /> seus estudos?
         </h2>
         <p className="text-lg text-white/75 mb-10 max-w-xl mx-auto font-light">
-          Junte-se a milhares de alunos que já estão conquistando melhores resultados com a META 10.
+          Junte-se a milhares de alunos que já estão conquistando melhores resultados com o META 10.
         </p>
         <Link
           href="/cadastro"

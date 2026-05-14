@@ -7,7 +7,7 @@ export default function HeroBanner() {
     <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden">
       {/* Background layers */}
       <div className="absolute inset-0 z-0">
-        <Image src="/background-meta10.jpg" alt="" fill className="object-cover object-center scale-105" priority />
+        <Image src="/adolescentes.jpg" alt="" fill className="object-cover object-center scale-105" priority />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
         {/* Animated orbs */}
         <div className="absolute top-[20%] left-[15%] w-[500px] h-[500px] bg-primary/15 rounded-full blur-[120px] animate-pulse-soft pointer-events-none" />
@@ -18,22 +18,6 @@ export default function HeroBanner() {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="max-w-5xl mx-auto text-center">
-          {/* Trust badge */}
-          <div className="animate-fade-in-up inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 mb-8">
-            <div className="flex -space-x-1">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className={`w-2 h-2 rounded-full ${['bg-primary', 'bg-cyan', 'bg-purple', 'bg-success'][i]}`} />
-              ))}
-            </div>
-            <span className="text-white/80 text-sm font-medium">Espaço Pedagógico de Referência</span>
-            <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              ))}
-            </div>
-          </div>
-
-          {/* Logo symbol */}
           <div className="animate-fade-in-up animation-delay-100 mb-8">
             <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 animate-float shadow-glass-lg">
               <Image src="/simbolo-meta10.png" alt="META 10" width={80} height={80} className="w-14 h-14 sm:w-16 sm:h-16 object-contain drop-shadow-lg" priority />
@@ -52,7 +36,7 @@ export default function HeroBanner() {
           </h1>
 
           {/* Subtitle */}
-          <p className="animate-fade-in-up animation-delay-300 text-lg sm:text-xl md:text-[1.35rem] text-white/70 max-w-2xl mx-auto font-light leading-relaxed mb-10">
+          <p className="animate-fade-in-up animation-delay-300 text-lg sm:text-xl md:text-[1.35rem] text-white/70 max-w-2xl mx-auto font-semibold leading-relaxed mb-10">
             Questões, simulados, PDFs, mapas mentais e resumos organizados para você estudar de forma eficiente e conquistar os melhores resultados.
           </p>
 

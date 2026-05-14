@@ -25,7 +25,7 @@ export default function Footer() {
               <Image src="/logomarca-meta10.png" alt="META 10" width={120} height={30} className="w-auto h-8 object-contain brightness-0 invert" />
             </div>
             <p className="text-surface-500 text-sm leading-relaxed max-w-sm mb-6">
-              Plataforma de reforço escolar de qualidade para alunos do ensino fundamental e médio. Material curado, simulados e muito mais.
+              Plataforma de reforço escolar de qualidade para alunos do ensino fundamental e médio. Conteúdo estratégico, simulados e muito mais.
             </p>
             <div className="flex gap-3">
               {socials.map(({ icon: Icon, href, label }) => (

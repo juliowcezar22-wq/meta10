@@ -19,7 +19,7 @@ export default function MateriaisPage() {
             Materiais de Estudo
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Explore todo o conteúdo disponível na META 10.
+            Explore todo o conteúdo disponível no META 10.
           </p>
         </div>
       </section>

@@ -5,7 +5,7 @@ import { INSTAGRAM_LINK, YOUTUBE_LINK, WHATSAPP_LINK, EMAIL_LINK, GOOGLE_MAPS_EM
 
 const metodos = [
   { title: 'Aprendizado Ativo', description: 'Estudante no centro do processo, resolvendo questões e simulados que reforçam o conteúdo de forma prática.', icon: Brain, color: 'text-primary', bgLight: 'bg-primary/10' },
-  { title: 'Material Curado', description: 'Conteúdo selecionado e organizado por especialistas, eliminando a sobrecarga de informações e focando no essencial.', icon: BookOpen, color: 'text-blue-600', bgLight: 'bg-blue-600/10' },
+  { title: 'Conteúdo Estratégico', description: 'Conteúdo selecionado e organizado por especialistas, eliminando a sobrecarga de informações e focando no essencial.', icon: BookOpen, color: 'text-blue-600', bgLight: 'bg-blue-600/10' },
   { title: 'Acompanhamento', description: 'Indicadores de progresso e feedback constante para que o aluno saiba exatamente onde melhorar.', icon: TrendingUp, color: 'text-purple-600', bgLight: 'bg-purple-600/10' },
 ]
 
@@ -22,7 +22,7 @@ export default function SobrePage() {
             Muito prazer!
           </span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-tight">
-            Somos a <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#fabb84]">META 10</span>
+            Somos o <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#fabb84]">META 10</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed font-light">
             Um espaço criado para descomplicar os estudos, tirar o peso das costas e ajudar você a alcançar seus objetivos no seu ritmo.
@@ -41,7 +41,7 @@ export default function SobrePage() {
               </h2>
               <div className="space-y-6 text-lg text-gray-600 leading-relaxed">
                 <p>
-                  A META 10 nasceu da paixão por educação e da vontade de tornar o reforço escolar acessível a todos os estudantes.
+                  O META 10 nasceu da paixão por educação e da vontade de tornar o reforço escolar acessível a todos os estudantes.
                 </p>
                 <p>
                   Somos uma equipe de educadores, designers e tecnólogos comprometidos em criar materiais de estudo que realmente fazem a diferença na vida dos alunos.
@@ -134,7 +134,7 @@ export default function SobrePage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 mb-1">WhatsApp</h3>
-                  <p className="text-gray-600 text-sm md:text-base group-hover:text-green-500 transition-colors">(00) 00000-0000</p>
+                  <p className="text-gray-600 text-sm md:text-base group-hover:text-green-500 transition-colors">(75) 98334-1771</p>
                 </div>
               </a>
 
