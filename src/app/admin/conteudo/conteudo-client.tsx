@@ -8,12 +8,14 @@ import { ConfirmDialog } from '@/components/admin/confirm-dialog'
 import { PageHeader } from '@/components/admin/page-header'
 import { Pencil, Trash2, X } from 'lucide-react'
 import { createMaterial, updateMaterial, deleteMaterial } from '@/app/actions/admin/materials'
+import { useToast } from '@/components/admin/toast'
 import type { Database } from '@/lib/supabase/types'
 
 type Material = Database['public']['Tables']['materials']['Row']
 
 export function ConteudoClient({ initialData }: { initialData: Material[] }) {
   const router = useRouter()
+  const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   
@@ -84,11 +86,12 @@ export function ConteudoClient({ initialData }: { initialData: Material[] }) {
     setIsSaving(false)
 
     if (result.success) {
+      toast('Material salvo com sucesso!', 'success')
       closeModal()
       router.refresh()
     } else {
       const errors = result.errors as any
-      alert(errors?._form?.[0] || 'Erro ao salvar material')
+      toast(errors?._form?.[0] || 'Erro ao salvar material', 'error')
     }
   }
 
@@ -98,6 +101,7 @@ export function ConteudoClient({ initialData }: { initialData: Material[] }) {
     await deleteMaterial(deleteId)
     setIsDeleting(false)
     setDeleteId(null)
+    toast('Material excluído com sucesso!', 'success')
     router.refresh()
   }
 

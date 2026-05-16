@@ -44,7 +44,7 @@ export default async function RespostasPage({ params }: { params: { id: string }
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-surface-900">Respostas: {list.name}</h1>
+          <h1 className="text-2xl font-bold text-surface-900">Respostas do Simulado: {list.name}</h1>
         </div>
       </div>
 
@@ -52,7 +52,7 @@ export default async function RespostasPage({ params }: { params: { id: string }
         data={formattedAttempts}
         searchKey="user_name"
         searchPlaceholder="Buscar por nome do aluno..."
-        emptyMessage="Nenhum aluno respondeu esta lista ainda."
+        emptyMessage="Nenhum aluno respondeu este simulado ainda."
         columns={[
           { header: 'Nome do Aluno', accessor: 'user_name' },
           { header: 'Data', accessor: 'dataNode' },

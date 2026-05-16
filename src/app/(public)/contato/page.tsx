@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Mail, Phone, Instagram, Youtube, MessageCircle, Send, CheckCircle } from 'lucide-react'
 import { INSTAGRAM_LINK, YOUTUBE_LINK, WHATSAPP_LINK, EMAIL_LINK } from '@/lib/constants'
 import { sendContactMessage } from '@/app/actions/public/contact'
+import { useToast } from '@/components/admin/toast'
 const channels = [
   { icon: MessageCircle, label: 'WhatsApp', info: '(75) 98334-1771', href: WHATSAPP_LINK, color: 'bg-success-500 hover:bg-success-600', textColor: 'text-success-600' },
   { icon: Mail, label: 'E-mail', info: 'contato@meta10.com.br', href: EMAIL_LINK, color: 'bg-cyan-500 hover:bg-cyan-600', textColor: 'text-cyan-600' },
@@ -15,6 +16,7 @@ export default function ContatoPage() {
   const [formData, setFormData] = useState({ nome: '', email: '', mensagem: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitted, setSubmitted] = useState(false)
+  const { toast } = useToast()
 
   const validate = () => {
     const e: Record<string, string> = {}
@@ -41,7 +43,7 @@ export default function ContatoPage() {
         setFormData({ nome: '', email: '', mensagem: '' })
         setTimeout(() => setSubmitted(false), 5000)
       } else {
-        alert((res.errors as any)?._form?.[0] || 'Erro ao enviar mensagem.')
+        toast((res.errors as any)?._form?.[0] || 'Erro ao enviar mensagem.', 'error')
       }
     }
   }

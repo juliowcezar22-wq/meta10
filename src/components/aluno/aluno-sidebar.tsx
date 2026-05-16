@@ -20,7 +20,7 @@ interface AlunoSidebarProps {
 
 const navItems = [
   { name: 'Dashboard', href: '/aluno/dashboard', icon: LayoutDashboard },
-  { name: 'Questões', href: '/aluno/questoes', icon: HelpCircle },
+  { name: 'Simulados', href: '/aluno/questoes', icon: HelpCircle },
   { name: 'Loja', href: '/aluno/loja', icon: ShoppingBag },
   { name: 'PDFs', href: '/aluno/pdfs', icon: FileText },
   { name: 'Mapas Mentais', href: '/aluno/mapas-mentais', icon: Map },

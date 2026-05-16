@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, Loader2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, Loader2, ChevronDown, ChevronUp } from 'lucide-react'
+import { useToast } from '@/components/admin/toast'
 import type { QuestionList, Question } from '@/lib/types/quiz'
 import { startAttempt, finishAttempt } from '@/app/actions/aluno/attempts'
 
@@ -11,9 +12,16 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [mode, setMode] = useState<'quiz' | 'result'>('quiz')
+  const { toast } = useToast()
   const [attemptId, setAttemptId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [finishing, setFinishing] = useState(false)
+  const [openGabaritos, setOpenGabaritos] = useState<string[]>([])
+  const [openComentarios, setOpenComentarios] = useState<string[]>([])
+
+  const toggleGabarito = (id: string) => setOpenGabaritos(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
+  const toggleComentario = (id: string) => setOpenComentarios(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
+
 
   useEffect(() => {
     async function init() {
@@ -21,12 +29,12 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
       if (res.success && res.attemptId) {
         setAttemptId(res.attemptId)
       } else {
-        alert(res.errors?._form?.[0] || 'Erro ao iniciar tentativa')
+        toast(res.errors?._form?.[0] || 'Erro ao iniciar tentativa', 'error')
       }
       setLoading(false)
     }
     init()
-  }, [list.id])
+  }, [list.id, toast])
 
   if (loading) {
     return (
@@ -54,7 +62,7 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
         if (res.success) {
           setMode('result')
         } else {
-          alert((res.errors as any)?._form?.[0] || 'Erro ao finalizar tentativa')
+          toast((res.errors as any)?._form?.[0] || 'Erro ao finalizar tentativa', 'error')
         }
       }
       setFinishing(false)
@@ -75,7 +83,7 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-6">
               <CheckCircle className="w-8 h-8" />
             </div>
-            <h2 className="text-2xl font-bold text-surface-900 mb-2">Lista Concluída!</h2>
+            <h2 className="text-2xl font-bold text-surface-900 mb-2">Simulado Concluído!</h2>
             <p className="text-surface-500 mb-6">{list.name}</p>
             
             <div className="bg-surface-50 rounded-xl p-6 mb-8 border border-surface-200 inline-block px-12">
@@ -116,14 +124,12 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
                     </div>
                   </div>
 
-                  <div className="pl-10 space-y-2 mb-4">
+                  <div className="pl-10 mb-4">
+                    <p className="text-sm text-surface-600 mb-2">Sua resposta:</p>
                     {opts.map(o => {
                       const isSelected = o.val === userAnswer
-                      const isRealCorrect = o.val === q.gabarito
-                      let bg = 'bg-surface-50 border-surface-200'
-                      if (isRealCorrect) bg = 'bg-success-50 border-success-200 text-success-800 font-medium'
-                      else if (isSelected && !isCorrect) bg = 'bg-danger-50 border-danger-200 text-danger-800'
-
+                      if (!isSelected) return null
+                      let bg = isCorrect ? 'bg-success-50 border-success-200 text-success-800' : 'bg-danger-50 border-danger-200 text-danger-800'
                       return (
                         <div key={o.val} className={`p-3 rounded border text-sm flex gap-3 ${bg}`}>
                           <span className="font-bold uppercase opacity-50">{o.val})</span>
@@ -133,14 +139,56 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
                     })}
                   </div>
 
-                  {q.comentario && (
-                    <div className="pl-10">
-                      <div className="bg-primary/5 rounded border border-primary/10 p-4 text-sm text-surface-700">
-                        <strong className="text-primary block mb-1">Comentário:</strong>
-                        {q.comentario}
-                      </div>
+                  <div className="pl-10 space-y-3">
+                    <div className="flex flex-wrap gap-3">
+                      <button 
+                        onClick={() => toggleGabarito(q.id)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-surface-600 bg-surface-50 hover:bg-surface-100 border border-surface-200 rounded-lg transition-colors"
+                      >
+                        {openGabaritos.includes(q.id) ? 'Esconder Gabarito' : 'Ver Gabarito'}
+                        {openGabaritos.includes(q.id) ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </button>
+
+                      {q.comentario && (
+                        <button 
+                          onClick={() => toggleComentario(q.id)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-surface-600 bg-surface-50 hover:bg-surface-100 border border-surface-200 rounded-lg transition-colors"
+                        >
+                          {openComentarios.includes(q.id) ? 'Esconder Comentário' : 'Comentário do Professor'}
+                          {openComentarios.includes(q.id) ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </button>
+                      )}
                     </div>
-                  )}
+
+                    {openGabaritos.includes(q.id) && (
+                      <div className="space-y-2 pt-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <p className="text-sm font-bold text-surface-600">Gabarito Completo:</p>
+                        {opts.map(o => {
+                          const isSelected = o.val === userAnswer
+                          const isRealCorrect = o.val === q.gabarito
+                          let bg = 'bg-surface-50 border-surface-200'
+                          if (isRealCorrect) bg = 'bg-success-50 border-success-200 text-success-800 font-medium'
+                          else if (isSelected && !isCorrect) bg = 'bg-danger-50 border-danger-200 text-danger-800'
+
+                          return (
+                            <div key={o.val} className={`p-3 rounded border text-sm flex gap-3 ${bg}`}>
+                              <span className="font-bold uppercase opacity-50">{o.val})</span>
+                              <span>{o.text}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+
+                    {q.comentario && openComentarios.includes(q.id) && (
+                      <div className="pt-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="bg-primary/5 rounded-lg border border-primary/10 p-4 text-sm text-surface-700">
+                          <strong className="text-primary block mb-2">Comentário:</strong>
+                          <div className="leading-relaxed whitespace-pre-wrap">{q.comentario}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )
             })}
@@ -217,7 +265,7 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
             ) : currentIndex < questions.length - 1 ? (
               <>Próxima Questão <ArrowRight className="w-4 h-4 ml-2" /></>
             ) : (
-              <>Finalizar Lista <CheckCircle className="w-4 h-4 ml-2" /></>
+              <>Finalizar Simulado <CheckCircle className="w-4 h-4 ml-2" /></>
             )}
           </button>
         </div>

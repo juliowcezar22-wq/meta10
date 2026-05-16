@@ -6,15 +6,18 @@ import Link from 'next/link'
 import { DataTable } from '@/components/admin/data-table'
 import { Badge } from '@/components/admin/badge'
 import { ConfirmDialog } from '@/components/admin/confirm-dialog'
-import { Pencil, Trash2, ArrowLeft, X } from 'lucide-react'
-import { createQuestion, updateQuestion, deleteQuestion } from '@/app/actions/admin/questions'
+import { Pencil, Trash2, ArrowLeft, X, Copy } from 'lucide-react'
+import { createQuestion, updateQuestion, deleteQuestion, duplicateQuestion } from '@/app/actions/admin/questions'
+import { useToast } from '@/components/admin/toast'
 import type { QuestionList, Question } from '@/lib/types/quiz'
 
 export function ListDetailClient({ list, initialQuestions }: { list: QuestionList, initialQuestions: Question[] }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isDuplicating, setIsDuplicating] = useState<string | null>(null)
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -100,20 +103,38 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
     setIsSaving(false)
 
     if (result.success) {
+      toast('Questão salva com sucesso!', 'success')
       closeModal()
       router.refresh()
     } else {
-      alert((result.errors as any)?._form?.[0] || 'Erro ao salvar questão')
+      toast((result.errors as any)?._form?.[0] || 'Erro ao salvar questão', 'error')
     }
   }
 
   const handleDelete = async () => {
     if (!deleteId) return
     setIsDeleting(true)
-    await deleteQuestion(deleteId)
+    const result = await deleteQuestion(deleteId)
     setIsDeleting(false)
     setDeleteId(null)
-    router.refresh()
+    if (result.success) {
+      toast('Questão excluída com sucesso!', 'success')
+      router.refresh()
+    } else {
+      toast((result.errors as any)?._form?.[0] || 'Erro ao excluir questão', 'error')
+    }
+  }
+
+  const handleDuplicate = async (questionId: string) => {
+    setIsDuplicating(questionId)
+    const result = await duplicateQuestion(questionId)
+    setIsDuplicating(null)
+    if (result.success) {
+      toast('Questão duplicada com sucesso!', 'success')
+      router.refresh()
+    } else {
+      toast((result.errors as any)?._form?.[0] || 'Erro ao duplicar questão', 'error')
+    }
   }
 
   const formattedQuestions = initialQuestions.map(q => ({
@@ -132,6 +153,13 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
           className="p-2 text-surface-400 hover:text-primary transition-colors rounded-lg hover:bg-surface-100" title="Editar Questão"
         >
           <Pencil className="w-4 h-4" />
+        </button>
+        <button 
+          onClick={() => handleDuplicate(q.id)}
+          disabled={isDuplicating === q.id}
+          className="p-2 text-surface-400 hover:text-primary transition-colors rounded-lg hover:bg-surface-100 disabled:opacity-50" title="Duplicar questão"
+        >
+          <Copy className="w-4 h-4" />
         </button>
         <button 
           onClick={() => setDeleteId(q.id)}
@@ -160,13 +188,13 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
 
       <div className="bg-white p-6 rounded-2xl border border-surface-200">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-surface-900">Questões desta Lista</h2>
+          <h2 className="text-lg font-bold text-surface-900">Questões deste Simulado</h2>
           <button onClick={() => openModal()} className="btn-primary">Nova Questão</button>
         </div>
 
         {initialQuestions.length === 0 ? (
           <div className="text-center py-12 bg-surface-50 rounded-xl border border-surface-100">
-            <p className="text-surface-500 mb-4">Nenhuma questão nesta lista ainda. Clique em &apos;Nova Questão&apos; para começar.</p>
+            <p className="text-surface-500 mb-4">Nenhuma questão neste simulado ainda. Clique em &apos;Nova Questão&apos; para começar.</p>
           </div>
         ) : (
           <DataTable 

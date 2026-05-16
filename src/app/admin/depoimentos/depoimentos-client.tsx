@@ -8,12 +8,14 @@ import { ConfirmDialog } from '@/components/admin/confirm-dialog'
 import { PageHeader } from '@/components/admin/page-header'
 import { Pencil, Trash2, X, Eye, EyeOff } from 'lucide-react'
 import { createTestimonial, updateTestimonial, deleteTestimonial, toggleTestimonialActive } from '@/app/actions/admin/testimonials'
+import { useToast } from '@/components/admin/toast'
 import type { Database } from '@/lib/supabase/types'
 
 type Testimonial = Database['public']['Tables']['testimonials']['Row']
 
 export function DepoimentosClient({ initialData }: { initialData: Testimonial[] }) {
   const router = useRouter()
+  const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   
@@ -72,10 +74,11 @@ export function DepoimentosClient({ initialData }: { initialData: Testimonial[] 
     setIsSaving(false)
 
     if (result.success) {
+      toast('Depoimento salvo com sucesso!', 'success')
       closeModal()
       router.refresh()
     } else {
-      alert('Erro ao salvar depoimento')
+      toast('Erro ao salvar depoimento', 'error')
     }
   }
 
@@ -85,6 +88,7 @@ export function DepoimentosClient({ initialData }: { initialData: Testimonial[] 
     await deleteTestimonial(deleteId)
     setIsDeleting(false)
     setDeleteId(null)
+    toast('Depoimento excluído com sucesso!', 'success')
     router.refresh()
   }
 

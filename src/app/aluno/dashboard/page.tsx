@@ -5,7 +5,7 @@ import { getStudentStats } from '@/lib/data/attempts'
 import { requireAuth } from '@/lib/auth/guards'
 
 const quickAccess = [
-  { title: 'Questões', href: '/aluno/questoes', icon: ListChecks, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-50' },
+  { title: 'Simulados', href: '/aluno/questoes', icon: ListChecks, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-50' },
   { title: 'Simulados', href: '/aluno/simulados', icon: ClipboardCheck, gradient: 'from-cyan-500 to-cyan-600', bg: 'bg-cyan-50' },
   { title: 'PDFs', href: '/aluno/pdfs', icon: FileText, gradient: 'from-purple-500 to-purple-600', bg: 'bg-purple-50' },
   { title: 'Mapas Mentais', href: '/aluno/mapas-mentais', icon: Network, gradient: 'from-success-500 to-success-600', bg: 'bg-success-50' },

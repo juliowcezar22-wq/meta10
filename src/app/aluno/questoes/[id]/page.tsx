@@ -15,7 +15,7 @@ export default async function QuizPage({ params }: { params: { id: string } }) {
   if (questions.length === 0) {
     return (
       <div className="p-8 text-center">
-        <p className="text-surface-500">Esta lista não possui questões ainda.</p>
+        <p className="text-surface-500">Este simulado não possui questões ainda.</p>
       </div>
     )
   }
