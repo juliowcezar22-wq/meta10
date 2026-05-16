@@ -12,7 +12,8 @@ import {
   Mail,
   HelpCircle,
   GraduationCap,
-  X
+  X,
+  UserX
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -23,11 +24,12 @@ interface SidebarProps {
 const navItems = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard, enabled: true },
   { name: 'Usuários', href: '/admin/usuarios', icon: Users, enabled: true },
+  { name: 'Alunos Inativos', href: '/admin/alunos-inativos', icon: UserX, enabled: true },
   { name: 'Conteúdo', href: '/admin/conteudo', icon: BookOpen, enabled: true },
   { name: 'Produtos', href: '/admin/produtos', icon: ShoppingBag, enabled: true },
   { name: 'Depoimentos', href: '/admin/depoimentos', icon: MessageSquareQuote, enabled: true },
   { name: 'Mensagens', href: '/admin/mensagens', icon: Mail, enabled: true },
-  { name: 'Questões', href: '/admin/questoes', icon: HelpCircle, enabled: true },
+  { name: 'Simulados', href: '/admin/questoes', icon: HelpCircle, enabled: true },
 ]
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {

@@ -7,9 +7,10 @@ import { DataTable } from '@/components/admin/data-table'
 import { Badge } from '@/components/admin/badge'
 import { ConfirmDialog } from '@/components/admin/confirm-dialog'
 import { PageHeader } from '@/components/admin/page-header'
-import { Pencil, Trash2, List, X, Plus } from 'lucide-react'
-import { createQuestionList, updateQuestionList, deleteQuestionList } from '@/app/actions/admin/question-lists'
+import { Pencil, Trash2, List, X, Plus, Copy } from 'lucide-react'
+import { createQuestionList, updateQuestionList, deleteQuestionList, duplicateQuestionList, toggleQuestionListActive } from '@/app/actions/admin/question-lists'
 import { createQuestion } from '@/app/actions/admin/questions'
+import { useToast } from '@/components/admin/toast'
 import type { QuestionList } from '@/lib/types/quiz'
 
 const initialQuestionState = {
@@ -26,8 +27,13 @@ const initialQuestionState = {
 
 export function QuestionListsClient({ initialData }: { initialData: any[] }) {
   const router = useRouter()
+  const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  
+  const [duplicateId, setDuplicateId] = useState<string | null>(null)
+  const [isDuplicating, setIsDuplicating] = useState(false)
+  const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set())
   
   // Modal & Wizard state
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -73,7 +79,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
 
   const handleClose = () => {
     if (step === 2 && questionsAdded.length > 0) {
-      alert('Lista salva como rascunho. Você pode finalizar depois em /admin/questoes/' + listId)
+      toast('Simulado salvo como rascunho. Você pode finalizar depois na tela de edição.', 'info')
     }
     setIsModalOpen(false)
     setEditingList(null)
@@ -94,11 +100,12 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
     const result = await updateQuestionList(editingList.id, data)
     setIsSaving(false)
     if (result.success) {
+      toast('Simulado atualizado com sucesso!', 'success')
       setIsModalOpen(false)
       setEditingList(null)
       router.refresh()
     } else {
-      alert((result.errors as any)?._form?.[0] || 'Erro ao editar lista')
+      toast((result.errors as any)?._form?.[0] || 'Erro ao editar simulado', 'error')
     }
   }
 
@@ -116,10 +123,11 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
     setIsSaving(false)
     
     if (result.success && result.list) {
+      toast('Rascunho criado, adicione questões.', 'success')
       setListId(result.list.id)
       setStep(2)
     } else {
-      alert((result.errors as any)?._form?.[0] || 'Erro ao criar lista')
+      toast((result.errors as any)?._form?.[0] || 'Erro ao criar simulado', 'error')
     }
   }
 
@@ -139,10 +147,11 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
 
     const result = await createQuestion(listId, data)
     if (result.success) {
+      toast('Questão salva com sucesso!', 'success')
       setQuestionsAdded([...questionsAdded, { id: Math.random().toString(), enunciado: currentQuestion.enunciado }])
       return true
     } else {
-      alert((result.errors as any)?._form?.[0] || 'Erro ao criar questão')
+      toast((result.errors as any)?._form?.[0] || 'Erro ao criar questão', 'error')
       return false
     }
   }
@@ -154,7 +163,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
     if (saved) {
       setCurrentQuestion(initialQuestionState)
     } else {
-      alert("Preencha todos os campos obrigatórios da questão atual.")
+      toast("Preencha todos os campos obrigatórios da questão atual.", 'error')
     }
   }
 
@@ -167,7 +176,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
       const saved = await saveCurrentQuestion()
       if (!saved) {
         setIsSaving(false)
-        alert("Preencha corretamente a questão atual ou limpe o enunciado para ignorar.")
+        toast("Preencha corretamente a questão atual ou limpe o enunciado para ignorar.", 'error')
         return
       }
     }
@@ -183,39 +192,120 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
     setIsSaving(false)
     
     if (result.success) {
+      toast('Simulado publicado com sucesso!', 'success')
       setIsModalOpen(false)
       setListId(null)
       router.refresh()
     } else {
-      alert((result.errors as any)?._form?.[0] || 'Erro ao publicar lista')
+      toast((result.errors as any)?._form?.[0] || 'Erro ao publicar simulado', 'error')
     }
   }
 
   const handleDelete = async () => {
     if (!deleteId) return
     setIsDeleting(true)
-    await deleteQuestionList(deleteId)
+    const result = await deleteQuestionList(deleteId)
     setIsDeleting(false)
     setDeleteId(null)
-    router.refresh()
+    
+    if (result.success) {
+      toast('Simulado excluído com sucesso!', 'success')
+      router.refresh()
+    } else {
+      toast((result.errors as any)?._form?.[0] || 'Erro ao excluir simulado', 'error')
+    }
+  }
+
+  const handleDuplicate = async () => {
+    if (!duplicateId) return
+    setIsDuplicating(true)
+    const result = await duplicateQuestionList(duplicateId)
+    setIsDuplicating(false)
+    setDuplicateId(null)
+    
+    if (result.success) {
+      toast(`Simulado duplicado com sucesso (${result.questionsCopied} questões copiadas)`, 'success')
+      router.refresh()
+    } else {
+      toast((result.errors as any)?._form?.[0] || 'Erro ao duplicar simulado', 'error')
+    }
+  }
+
+  const handleToggle = async (id: string, currentStatus: boolean) => {
+    setLoadingIds(prev => new Set(prev).add(id))
+    try {
+      const result = await toggleQuestionListActive(id)
+      if (result.success) {
+        toast(currentStatus ? 'Simulado desativado' : 'Simulado ativado', 'success')
+        router.refresh()
+      } else {
+        toast((result.errors as any)?._form?.[0] ?? 'Erro ao alterar status', 'error')
+      }
+    } catch (err) {
+      toast('Erro inesperado', 'error')
+    } finally {
+      setLoadingIds(prev => {
+        const next = new Set(prev)
+        next.delete(id)
+        return next
+      })
+    }
   }
 
   const formattedLists = initialData.map(list => ({
     ...list,
+    nameNode: (
+      <Link 
+        href={`/admin/questoes/${list.id}`}
+        className="text-surface-900 font-medium hover:text-primary hover:underline transition-colors"
+      >
+        {list.name}
+      </Link>
+    ),
     subjectNode: <span className="capitalize">{list.subject}</span>,
     statusNode: (
-      <Badge variant={list.is_active ? 'success' : 'gray'}>
-        {list.is_active ? 'Ativa' : 'Inativa'}
-      </Badge>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          role="switch"
+          aria-checked={list.is_active}
+          onClick={() => handleToggle(list.id, list.is_active)}
+          disabled={loadingIds.has(list.id)}
+          className={`
+            relative inline-flex h-6 w-11 shrink-0 items-center rounded-full 
+            transition-colors duration-200 ease-in-out
+            focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+            ${list.is_active ? 'bg-success-500' : 'bg-surface-300'}
+            ${loadingIds.has(list.id) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+          `}
+        >
+          <span
+            className={`
+              inline-block h-4 w-4 transform rounded-full bg-white 
+              transition-transform duration-200 ease-in-out
+              ${list.is_active ? 'translate-x-6' : 'translate-x-1'}
+            `}
+          />
+        </button>
+        <span className={`text-sm font-medium ${list.is_active ? 'text-success-600' : 'text-surface-500'}`}>
+          {list.is_active ? 'Ativa' : 'Inativa'}
+        </span>
+      </div>
     ),
     qtdNode: <span>{list.question_count || 0}</span>,
     actionsNode: (
       <div className="flex items-center gap-2">
         <button 
           onClick={() => openModal(list)}
-          className="p-2 text-surface-400 hover:text-primary transition-colors rounded-lg hover:bg-surface-100" title="Editar Lista"
+          className="p-2 text-surface-400 hover:text-primary transition-colors rounded-lg hover:bg-surface-100" title="Editar Simulado"
         >
           <Pencil className="w-4 h-4" />
+        </button>
+        <button 
+          onClick={() => setDuplicateId(list.id)}
+          className="p-2 text-surface-400 hover:text-primary transition-colors rounded-lg hover:bg-surface-100" title="Duplicar Simulado"
+        >
+          <Copy className="w-4 h-4" />
         </button>
         <Link href={`/admin/questoes/${list.id}?addQuestion=1`} className="p-2 text-surface-400 hover:text-primary transition-colors rounded-lg hover:bg-surface-100" title="Adicionar questão">
           <Plus className="w-4 h-4" />
@@ -238,19 +328,19 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
       <PageHeader 
-        title="Questões" 
-        description="Gerencie as listas de questões para os alunos."
+        title="Simulados" 
+        description="Gerencie os simulados para os alunos."
         action={
-          <button onClick={() => openModal()} className="btn-primary">Nova Lista</button>
+          <button onClick={() => openModal()} className="btn-primary">Novo Simulado</button>
         }
       />
 
       <DataTable 
         data={formattedLists}
         searchKey="name"
-        searchPlaceholder="Buscar lista..."
+        searchPlaceholder="Buscar simulado..."
         columns={[
-          { header: 'Nome da Lista', accessor: 'name' },
+          { header: 'Nome do Simulado', accessor: 'nameNode' },
           { header: 'Disciplina', accessor: 'subjectNode' },
           { header: 'Qtde Questões', accessor: 'qtdNode' },
           { header: 'Status', accessor: 'statusNode' },
@@ -262,10 +352,20 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
-        title="Excluir Lista"
-        description={`Tem certeza que deseja excluir a lista "${deletingList?.name}"? Esta ação removerá a lista e TODAS as questões dentro dela.`}
+        title="Excluir Simulado"
+        description={`Tem certeza que deseja excluir o simulado "${deletingList?.name}"? Esta ação removerá o simulado e TODAS as questões dentro dele.`}
         confirmText="Excluir"
         isLoading={isDeleting}
+      />
+
+      <ConfirmDialog 
+        isOpen={!!duplicateId}
+        onClose={() => setDuplicateId(null)}
+        onConfirm={handleDuplicate}
+        title="Duplicar simulado?"
+        description="Uma cópia do simulado e de todas as suas questões será criada como Inativa. Você pode revisar e ativar depois."
+        confirmText="Duplicar"
+        isLoading={isDuplicating}
       />
 
       {/* Modal Wizard */}
@@ -276,7 +376,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
             
             <div className="flex items-center justify-between p-6 border-b border-surface-100 shrink-0">
               <h2 className="text-xl font-bold text-surface-900">
-                {editingList ? 'Editar Lista' : (step === 1 ? 'Nova Lista - Passo 1/2' : 'Nova Lista - Passo 2/2')}
+                {editingList ? 'Editar Simulado' : (step === 1 ? 'Novo Simulado - Passo 1/2' : 'Novo Simulado - Passo 2/2')}
               </h2>
               <button type="button" onClick={handleClose} className="text-surface-400 hover:text-surface-900 transition-colors">
                 <X className="w-5 h-5" />
@@ -286,7 +386,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
             {step === 1 ? (
               <form onSubmit={editingList ? handleEditSave : handleAvancar} className="p-6 space-y-4 overflow-y-auto">
                 <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Nome da Lista</label>
+                  <label className="block text-sm font-medium text-surface-700 mb-1">Nome do Simulado</label>
                   <input 
                     type="text" 
                     value={listMeta.name}
@@ -433,7 +533,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
                       Adicionar Outra Questão
                     </button>
                     <button type="button" onClick={handlePublicar} disabled={isSaving} className="btn-primary">
-                      {isSaving ? 'Aguarde...' : 'Publicar Lista'}
+                      {isSaving ? 'Aguarde...' : 'Publicar Simulado'}
                     </button>
                   </div>
                 </div>

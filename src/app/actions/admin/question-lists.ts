@@ -113,3 +113,80 @@ export async function toggleQuestionListActive(id: string) {
   revalidatePath('/aluno/questoes')
   return { success: true, message: 'Status da lista alterado' }
 }
+
+export async function duplicateQuestionList(listId: string) {
+  await requireAdmin()
+  const supabase = createClient()
+  
+  // 1. Busca lista original
+  const { data: originalList, error: fetchError } = await supabase
+    .from('question_lists')
+    .select('*')
+    .eq('id', listId)
+    .single()
+  
+  if (fetchError || !originalList) {
+    return { success: false, errors: { _form: ['Lista não encontrada'] } }
+  }
+  
+  // 2. Cria lista nova (inativa por padrão pra revisão)
+  const { id, created_at, updated_at, ...rest } = originalList
+  const { data: newList, error: insertListError } = await supabase
+    .from('question_lists')
+    .insert({
+      ...rest,
+      name: `(Duplicada) ${originalList.name}`,
+      is_active: false,
+    })
+    .select('id')
+    .single()
+  
+  if (insertListError || !newList) {
+    console.error('[duplicateQuestionList] insert list', insertListError)
+    return { success: false, errors: { _form: [insertListError?.message ?? 'Erro ao duplicar lista'] } }
+  }
+  
+  // 3. Busca questões da lista original
+  const { data: originalQuestions, error: fetchQError } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('list_id', listId)
+  
+  if (fetchQError) {
+    console.error('[duplicateQuestionList] fetch questions', fetchQError)
+    // Não falha — lista foi criada, apenas sem questões
+    revalidatePath('/admin/questoes')
+    return { 
+      success: true, 
+      message: 'Lista duplicada (sem questões devido a erro)',
+      newListId: newList.id,
+    }
+  }
+  
+  // 4. Duplica todas as questões com novo list_id
+  if (originalQuestions && originalQuestions.length > 0) {
+    const questionsToInsert = originalQuestions.map(q => {
+      const { id: qid, created_at: qc, updated_at: qu, ...qRest } = q
+      return { ...qRest, list_id: newList.id }
+    })
+    
+    const { error: insertQError } = await supabase
+      .from('questions')
+      .insert(questionsToInsert)
+    
+    if (insertQError) {
+      console.error('[duplicateQuestionList] insert questions', insertQError)
+      return { 
+        success: false, 
+        errors: { _form: ['Lista criada mas questões falharam: ' + insertQError.message] } 
+      }
+    }
+  }
+  
+  revalidatePath('/admin/questoes')
+  return { 
+    success: true, 
+    newListId: newList.id,
+    questionsCopied: originalQuestions?.length ?? 0,
+  }
+}

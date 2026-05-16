@@ -58,3 +58,62 @@ export async function getUserById(id: string): Promise<UserWithSubscription | nu
   const active = subs.find(s => s.status === 'active') ?? subs[0] ?? null
   return { ...data, subscription: active }
 }
+
+export type InactiveStudent = {
+  id: string
+  nome: string
+  email: string
+  subscription_status: string | null  // 'cancelled', 'expired', ou null
+  expires_at: string | null
+  last_subscription_date: string | null
+  role: string
+}
+
+export async function getInactiveStudents(): Promise<InactiveStudent[]> {
+  const supabase = createClient()
+  
+  const { data, error } = await supabase
+    .from('users')
+    .select(`
+      id, nome, email, role, created_at,
+      subscriptions(status, expires_at, created_at)
+    `)
+    .eq('role', 'aluno')
+    .order('created_at', { ascending: false })
+  
+  if (error) {
+    console.error('[getInactiveStudents]', error)
+    return []
+  }
+  
+  const now = new Date().toISOString()
+  
+  const inactive = (data ?? []).filter(u => {
+    const subs = u.subscriptions as unknown as Array<{
+      status: string; expires_at: string; created_at: string
+    }>
+    if (!subs || subs.length === 0) return true
+    const hasActive = subs.some(s => 
+      s.status === 'active' && s.expires_at > now
+    )
+    return !hasActive
+  })
+  
+  return inactive.map(u => {
+    const subs = (u.subscriptions as unknown as Array<{
+      status: string; expires_at: string; created_at: string
+    }>) ?? []
+    const latest = [...subs].sort((a, b) => 
+      b.created_at.localeCompare(a.created_at)
+    )[0]
+    return {
+      id: u.id,
+      nome: u.nome,
+      email: u.email,
+      role: u.role,
+      subscription_status: latest?.status ?? null,
+      expires_at: latest?.expires_at ?? null,
+      last_subscription_date: latest?.created_at ?? null,
+    }
+  })
+}

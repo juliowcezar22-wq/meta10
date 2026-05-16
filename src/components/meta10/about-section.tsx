@@ -26,7 +26,7 @@ export default function AboutSection() {
               Quem Somos
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-[2.75rem] font-extrabold text-surface-900 mb-6 tracking-tight leading-tight">
-              O que é a{' '}
+              O que é o{' '}
               <span className="text-gradient-primary">META 10</span>?
             </h2>
             <p className="text-surface-500 text-lg leading-relaxed mb-4">

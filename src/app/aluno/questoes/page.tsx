@@ -11,8 +11,8 @@ export default async function AlunoQuestoesPage() {
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-surface-900">Listas de Questões</h1>
-        <p className="text-surface-500 mt-2">Escolha uma lista para começar a treinar.</p>
+        <h1 className="text-3xl font-extrabold text-surface-900">Simulados</h1>
+        <p className="text-surface-500 mt-2">Simulados disponíveis para você responder.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

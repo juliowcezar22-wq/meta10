@@ -8,10 +8,12 @@ import { ConfirmDialog } from '@/components/admin/confirm-dialog'
 import { PageHeader } from '@/components/admin/page-header'
 import { Pencil, Trash2, X } from 'lucide-react'
 import { createProduct, updateProduct, deleteProduct } from '@/app/actions/admin/products'
+import { useToast } from '@/components/admin/toast'
 import type { Product } from '@/lib/types/product'
 
 export function ProdutosClient({ initialData }: { initialData: Product[] }) {
   const router = useRouter()
+  const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   
@@ -87,10 +89,11 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
     setIsSaving(false)
 
     if (result.success) {
+      toast('Produto salvo com sucesso!', 'success')
       closeModal()
       router.refresh()
     } else {
-      alert('Erro ao salvar produto')
+      toast('Erro ao salvar produto', 'error')
     }
   }
 
@@ -100,6 +103,7 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
     await deleteProduct(deleteId)
     setIsDeleting(false)
     setDeleteId(null)
+    toast('Produto excluído com sucesso!', 'success')
     router.refresh()
   }
 

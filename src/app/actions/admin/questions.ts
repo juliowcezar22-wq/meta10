@@ -112,3 +112,34 @@ export async function deleteQuestion(id: string) {
   revalidatePath(`/aluno/questoes/${question.list_id}`)
   return { success: true, message: 'Questão deletada com sucesso' }
 }
+
+export async function duplicateQuestion(questionId: string) {
+  await requireAdmin()
+  const supabase = createClient()
+  
+  const { data: original, error: fetchError } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('id', questionId)
+    .single()
+  
+  if (fetchError || !original) {
+    return { success: false, errors: { _form: ['Questão não encontrada'] } }
+  }
+  
+  const { id, created_at, updated_at, ...rest } = original
+  const { error: insertError } = await supabase
+    .from('questions')
+    .insert({
+      ...rest,
+      enunciado: `(Duplicada) ${original.enunciado}`,
+    })
+  
+  if (insertError) {
+    console.error('[duplicateQuestion]', insertError)
+    return { success: false, errors: { _form: [insertError.message] } }
+  }
+  
+  revalidatePath(`/admin/questoes/${original.list_id}`)
+  return { success: true }
+}

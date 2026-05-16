@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { DataTable } from '@/components/admin/data-table'
 import { Badge } from '@/components/admin/badge'
 import { PageHeader } from '@/components/admin/page-header'
-import { Settings, X } from 'lucide-react'
+import { Settings, Shield, CreditCard, X, AlertTriangle } from 'lucide-react'
+import { useToast } from '@/components/admin/toast'
 import { updateRole, assignPlan } from '@/app/actions/admin/users'
 import type { Database } from '@/lib/supabase/types'
 
@@ -13,8 +14,10 @@ import type { Database } from '@/lib/supabase/types'
 type Plan = Database['public']['Tables']['plans']['Row']
 type User = any // since users data has nested subscription and plan 
 
-export function UsuariosClient({ initialData, initialPlans, currentUserId }: { initialData: User[], initialPlans: Plan[], currentUserId: string }) {
+export function UsuariosClient({ initialData, initialPlans, currentUserId }: { initialData: any[], initialPlans: any[], currentUserId: string }) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { toast } = useToast()
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -31,6 +34,18 @@ export function UsuariosClient({ initialData, initialPlans, currentUserId }: { i
     expiresAt: ''
   })
   const [isSavingPlan, setIsSavingPlan] = useState(false)
+
+  useEffect(() => {
+    const manageId = searchParams.get('manage')
+    if (manageId && !isModalOpen) {
+      const user = initialData.find((u: any) => u.id === manageId)
+      if (user) {
+        openModal(user)
+        router.replace('/admin/usuarios', { scroll: false })
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, initialData, router])
 
   const openModal = (user: User) => {
     setEditingUser(user)
@@ -80,10 +95,10 @@ export function UsuariosClient({ initialData, initialPlans, currentUserId }: { i
     setIsSavingRole(false)
 
     if (result.success) {
-      alert('Role atualizada com sucesso!')
+      toast('Nível de acesso atualizado com sucesso!', 'success')
       router.refresh()
     } else {
-      alert('Erro ao atualizar role')
+      toast('Erro ao atualizar nível de acesso', 'error')
     }
   }
 
@@ -101,10 +116,10 @@ export function UsuariosClient({ initialData, initialPlans, currentUserId }: { i
     setIsSavingPlan(false)
 
     if (result.success) {
-      alert('Plano atualizado com sucesso!')
+      toast('Plano atualizado com sucesso!', 'success')
       router.refresh()
     } else {
-      alert('Erro ao atualizar plano')
+      toast('Erro ao atualizar plano', 'error')
     }
   }
 

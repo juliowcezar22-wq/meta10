@@ -49,7 +49,7 @@ export default async function AdminPage() {
             <BookOpen className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm text-surface-500 font-medium">Listas de Questões</p>
+            <p className="text-sm text-surface-500 font-medium">Simulados</p>
             <p className="text-2xl font-bold text-surface-900">{stats.totalQuestionLists}</p>
           </div>
         </div>
