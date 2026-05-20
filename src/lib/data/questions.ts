@@ -8,14 +8,14 @@ export async function getQuestionsByListId(listId: string): Promise<Question[]> 
     .from('questions')
     .select('*')
     .eq('list_id', listId)
-    .eq('context' as any, 'simulado')
+    .eq('context', 'simulado')
     .order('created_at', { ascending: true })
   
   if (error) {
     console.error('[getQuestionsByListId]', error)
     return []
   }
-  return (data ?? []) as unknown as Question[]
+  return data ?? []
 }
 
 export async function getQuestionById(id: string): Promise<Question | null> {
@@ -30,7 +30,7 @@ export async function getQuestionById(id: string): Promise<Question | null> {
     console.error('[getQuestionById]', error)
     return null
   }
-  return data as unknown as Question
+  return data
 }
 
 export async function getStandaloneQuestionsBySubject(subject: string): Promise<Question[]> {
@@ -38,7 +38,7 @@ export async function getStandaloneQuestionsBySubject(subject: string): Promise<
   const { data, error } = await supabase
     .from('questions')
     .select('*')
-    .eq('context' as any, 'avulsa')
+    .eq('context', 'avulsa')
     .eq('subject', subject)
     .order('created_at', { ascending: true })
   
@@ -46,7 +46,7 @@ export async function getStandaloneQuestionsBySubject(subject: string): Promise<
     console.error('[getStandaloneQuestionsBySubject]', error)
     return []
   }
-  return (data ?? []) as unknown as Question[]
+  return data ?? []
 }
 
 export async function getStandaloneQuestionById(id: string): Promise<Question | null> {
@@ -55,12 +55,12 @@ export async function getStandaloneQuestionById(id: string): Promise<Question | 
     .from('questions')
     .select('*')
     .eq('id', id)
-    .eq('context' as any, 'avulsa')
+    .eq('context', 'avulsa')
     .single()
   
   if (error) {
     console.error('[getStandaloneQuestionById]', error)
     return null
   }
-  return data as unknown as Question
+  return data
 }

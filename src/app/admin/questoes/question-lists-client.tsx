@@ -12,17 +12,18 @@ import { createQuestionList, updateQuestionList, deleteQuestionList, duplicateQu
 import { createQuestion } from '@/app/actions/admin/questions'
 import { useToast } from '@/components/admin/toast'
 import type { QuestionList } from '@/lib/types/quiz'
+import { QuestionFormFields, type QuestionFormData } from '@/components/admin/question-form-fields'
 
-const initialQuestionState = {
+const initialQuestionState: QuestionFormData = {
+  question_type: 'multipla_escolha',
   enunciado: '',
-  alternativa_a: '',
-  alternativa_b: '',
-  alternativa_c: '',
-  alternativa_d: '',
-  alternativa_e: '',
+  alternatives: [
+    { letra: 'a', texto: '' },
+    { letra: 'b', texto: '' }
+  ],
   gabarito: 'a',
   comentario: '',
-  difficulty: 'medio',
+  difficulty: 'facil',
 }
 
 export function QuestionListsClient({ initialData }: { initialData: any[] }) {
@@ -134,20 +135,30 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
   // Helper to validate and save current question
   const saveCurrentQuestion = async () => {
     if (!listId) return false
-    if (!currentQuestion.enunciado.trim() || !currentQuestion.alternativa_a.trim() || !currentQuestion.alternativa_b.trim() || !currentQuestion.alternativa_c.trim() || !currentQuestion.alternativa_d.trim() || !currentQuestion.alternativa_e.trim()) {
-      return false
-    }
     
+    // Client-side validation
+    if (!currentQuestion.enunciado.trim()) return false
+    if (currentQuestion.question_type === 'multipla_escolha') {
+      if (currentQuestion.alternatives.some(a => !a.texto.trim())) return false
+    }
+    if (!currentQuestion.gabarito) return false
+
     const data = new FormData()
     data.append('list_id', listId)
     data.append('subject', listMeta.subject)
-    Object.entries(currentQuestion).forEach(([key, val]) => {
-      data.append(key, val)
-    })
+    data.append('question_type', currentQuestion.question_type)
+    data.append('enunciado', currentQuestion.enunciado)
+    data.append('gabarito', currentQuestion.gabarito)
+    data.append('difficulty', currentQuestion.difficulty)
+    if (currentQuestion.comentario) data.append('comentario', currentQuestion.comentario)
+    
+    if (currentQuestion.question_type === 'multipla_escolha') {
+      data.append('alternatives', JSON.stringify(currentQuestion.alternatives))
+    }
 
     const result = await createQuestion(listId, data)
     if (result.success) {
-      toast('Questão salva com sucesso!', 'success')
+      toast(`Questão adicionada (${questionsAdded.length + 1} no total)`, 'success')
       setQuestionsAdded([...questionsAdded, { id: Math.random().toString(), enunciado: currentQuestion.enunciado }])
       return true
     } else {
@@ -167,38 +178,27 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
     }
   }
 
-  const handlePublicar = async () => {
+  const handleFinalizar = async () => {
     if (!listId) return
-    setIsSaving(true)
-    
-    // Save current question if it has at least some content
+
+    // Se formulário está preenchido
     if (currentQuestion.enunciado.trim()) {
+      setIsSaving(true)
       const saved = await saveCurrentQuestion()
+      setIsSaving(false)
       if (!saved) {
-        setIsSaving(false)
         toast("Preencha corretamente a questão atual ou limpe o enunciado para ignorar.", 'error')
         return
       }
+    } else if (questionsAdded.length === 0) {
+      toast("Adicione pelo menos uma questão antes de finalizar", 'error')
+      return
     }
 
-    // Mark list as active
-    const data = new FormData()
-    data.append('name', listMeta.name)
-    data.append('subject', listMeta.subject)
-    data.append('description', listMeta.description)
-    data.append('is_active', 'true')
-    
-    const result = await updateQuestionList(listId, data)
-    setIsSaving(false)
-    
-    if (result.success) {
-      toast('Simulado publicado com sucesso!', 'success')
-      setIsModalOpen(false)
-      setListId(null)
-      router.refresh()
-    } else {
-      toast((result.errors as any)?._form?.[0] || 'Erro ao publicar simulado', 'error')
-    }
+    toast(`Simulado criado com ${questionsAdded.length + (currentQuestion.enunciado.trim() ? 1 : 0)} questões`, 'success')
+    setIsModalOpen(false)
+    setListId(null)
+    router.refresh()
   }
 
   const handleDelete = async () => {
@@ -464,64 +464,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
                     Questão {questionsAdded.length + 1}
                   </h3>
                   
-                  <div>
-                    <label className="block text-sm font-medium text-surface-700 mb-1">Enunciado *</label>
-                    <textarea 
-                      value={currentQuestion.enunciado}
-                      onChange={(e) => setCurrentQuestion({ ...currentQuestion, enunciado: e.target.value })}
-                      className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                      rows={3}
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-surface-700 mb-1">Alternativa A *</label>
-                      <input type="text" required value={currentQuestion.alternativa_a} onChange={(e) => setCurrentQuestion({ ...currentQuestion, alternativa_a: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-surface-700 mb-1">Alternativa B *</label>
-                      <input type="text" required value={currentQuestion.alternativa_b} onChange={(e) => setCurrentQuestion({ ...currentQuestion, alternativa_b: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-surface-700 mb-1">Alternativa C *</label>
-                      <input type="text" required value={currentQuestion.alternativa_c} onChange={(e) => setCurrentQuestion({ ...currentQuestion, alternativa_c: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-surface-700 mb-1">Alternativa D *</label>
-                      <input type="text" required value={currentQuestion.alternativa_d} onChange={(e) => setCurrentQuestion({ ...currentQuestion, alternativa_d: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-surface-700 mb-1">Alternativa E *</label>
-                      <input type="text" required value={currentQuestion.alternativa_e} onChange={(e) => setCurrentQuestion({ ...currentQuestion, alternativa_e: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-surface-700 mb-1">Gabarito Correto *</label>
-                      <select value={currentQuestion.gabarito} onChange={(e) => setCurrentQuestion({ ...currentQuestion, gabarito: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" required>
-                        <option value="a">A</option>
-                        <option value="b">B</option>
-                        <option value="c">C</option>
-                        <option value="d">D</option>
-                        <option value="e">E</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-surface-700 mb-1">Dificuldade *</label>
-                      <select value={currentQuestion.difficulty} onChange={(e) => setCurrentQuestion({ ...currentQuestion, difficulty: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" required>
-                        <option value="facil">Fácil</option>
-                        <option value="medio">Médio</option>
-                        <option value="dificil">Difícil</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-surface-700 mb-1">Comentário (opcional)</label>
-                      <textarea value={currentQuestion.comentario} onChange={(e) => setCurrentQuestion({ ...currentQuestion, comentario: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" rows={2} />
-                    </div>
-                  </div>
+                  <QuestionFormFields formData={currentQuestion} setFormData={setCurrentQuestion} />
                 </div>
 
                 <div className="p-6 pt-4 border-t border-surface-100 flex flex-wrap items-center justify-between gap-4 shrink-0 bg-white">
@@ -530,10 +473,10 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
                   </button>
                   <div className="flex gap-3">
                     <button type="button" onClick={handleAdicionarOutra} disabled={isSaving} className="btn-secondary">
-                      Adicionar Outra Questão
+                      + Salvar e Adicionar Outra
                     </button>
-                    <button type="button" onClick={handlePublicar} disabled={isSaving} className="btn-primary">
-                      {isSaving ? 'Aguarde...' : 'Publicar Simulado'}
+                    <button type="button" onClick={handleFinalizar} disabled={isSaving} className="btn-primary">
+                      {isSaving ? 'Aguarde...' : 'Finalizar Simulado'}
                     </button>
                   </div>
                 </div>

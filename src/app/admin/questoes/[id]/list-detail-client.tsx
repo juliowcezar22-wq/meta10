@@ -6,10 +6,11 @@ import Link from 'next/link'
 import { DataTable } from '@/components/admin/data-table'
 import { Badge } from '@/components/admin/badge'
 import { ConfirmDialog } from '@/components/admin/confirm-dialog'
-import { Pencil, Trash2, ArrowLeft, X, Copy } from 'lucide-react'
+import { Pencil, Trash2, ArrowLeft, X, Copy, Plus, Type, CheckCircle } from 'lucide-react'
 import { createQuestion, updateQuestion, deleteQuestion, duplicateQuestion } from '@/app/actions/admin/questions'
 import { useToast } from '@/components/admin/toast'
 import type { QuestionList, Question } from '@/lib/types/quiz'
+import { QuestionFormFields, type QuestionFormData } from '@/components/admin/question-form-fields'
 
 export function ListDetailClient({ list, initialQuestions }: { list: QuestionList, initialQuestions: Question[] }) {
   const router = useRouter()
@@ -34,13 +35,13 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
   }, [shouldOpenNewQuestion, list.id, router])
 
   // Form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<QuestionFormData>({
+    question_type: 'multipla_escolha',
     enunciado: '',
-    alternativa_a: '',
-    alternativa_b: '',
-    alternativa_c: '',
-    alternativa_d: '',
-    alternativa_e: '',
+    alternatives: [
+      { letra: 'a', texto: '' },
+      { letra: 'b', texto: '' }
+    ],
     gabarito: 'a',
     comentario: '',
     difficulty: 'facil',
@@ -49,13 +50,18 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
   const openModal = (q?: Question) => {
     if (q) {
       setEditingQuestion(q)
+      let alts = q.alternatives as any[]
+      if (!Array.isArray(alts) && alts) {
+        // Fallback for Phase 3.1 dict format if any exists
+        alts = Object.entries(alts).map(([letra, texto]) => ({ letra, texto: texto as string }))
+      }
+      if (!alts || alts.length < 2) {
+        alts = [{ letra: 'a', texto: '' }, { letra: 'b', texto: '' }]
+      }
       setFormData({
+        question_type: q.question_type || 'multipla_escolha',
         enunciado: q.enunciado,
-        alternativa_a: (q.alternatives as any)?.a || (q as any).alternativa_a || '',
-        alternativa_b: (q.alternatives as any)?.b || (q as any).alternativa_b || '',
-        alternativa_c: (q.alternatives as any)?.c || (q as any).alternativa_c || '',
-        alternativa_d: (q.alternatives as any)?.d || (q as any).alternativa_d || '',
-        alternativa_e: (q.alternatives as any)?.e || (q as any).alternativa_e || '',
+        alternatives: alts,
         gabarito: q.gabarito,
         comentario: q.comentario || '',
         difficulty: q.difficulty,
@@ -63,12 +69,12 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
     } else {
       setEditingQuestion(null)
       setFormData({
+        question_type: 'multipla_escolha',
         enunciado: '',
-        alternativa_a: '',
-        alternativa_b: '',
-        alternativa_c: '',
-        alternativa_d: '',
-        alternativa_e: '',
+        alternatives: [
+          { letra: 'a', texto: '' },
+          { letra: 'b', texto: '' }
+        ],
         gabarito: 'a',
         comentario: '',
         difficulty: 'facil',
@@ -82,16 +88,36 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
     setEditingQuestion(null)
   }
 
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Client-side validation
+    if (formData.question_type === 'multipla_escolha') {
+      if (formData.alternatives.some(a => !a.texto.trim())) {
+        toast('Todas as alternativas devem estar preenchidas', 'error')
+        return
+      }
+    }
+    if (!formData.gabarito) {
+      toast('Selecione o gabarito correto', 'error')
+      return
+    }
+
     setIsSaving(true)
     
     const data = new FormData()
     data.append('list_id', list.id)
-    data.append('subject', list.subject) // Inserir a disciplina da lista na questão
-    Object.entries(formData).forEach(([key, val]) => {
-      data.append(key, val)
-    })
+    data.append('subject', list.subject)
+    data.append('question_type', formData.question_type)
+    data.append('enunciado', formData.enunciado)
+    data.append('gabarito', formData.gabarito)
+    data.append('difficulty', formData.difficulty)
+    if (formData.comentario) data.append('comentario', formData.comentario)
+    
+    if (formData.question_type === 'multipla_escolha') {
+      data.append('alternatives', JSON.stringify(formData.alternatives))
+    }
 
     let result
     if (editingQuestion) {
@@ -139,6 +165,11 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
 
   const formattedQuestions = initialQuestions.map(q => ({
     ...q,
+    tipoNode: (
+      <Badge variant={q.question_type === 'multipla_escolha' ? 'primary' : 'purple'}>
+        {q.question_type === 'multipla_escolha' ? 'Múltipla Escolha' : 'V ou F'}
+      </Badge>
+    ),
     enunciadoNode: <span className="truncate max-w-[300px] block" title={q.enunciado}>{q.enunciado}</span>,
     difficultyNode: (
       <Badge variant={q.difficulty === 'facil' ? 'success' : q.difficulty === 'medio' ? 'warning' : 'danger'}>
@@ -202,6 +233,7 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
             searchKey="enunciado"
             searchPlaceholder="Buscar no enunciado..."
             columns={[
+              { header: 'Tipo', accessor: 'tipoNode' },
               { header: 'Enunciado', accessor: 'enunciadoNode' },
               { header: 'Dificuldade', accessor: 'difficultyNode' },
               { header: 'Gabarito', accessor: 'gabaritoNode' },
@@ -235,65 +267,9 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
               </button>
             </div>
             
-            <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-surface-700 mb-1">Enunciado</label>
-                <textarea 
-                  value={formData.enunciado}
-                  onChange={(e) => setFormData({ ...formData, enunciado: e.target.value })}
-                  className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                  rows={3}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Alternativa A</label>
-                  <input type="text" required value={formData.alternativa_a} onChange={(e) => setFormData({ ...formData, alternativa_a: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Alternativa B</label>
-                  <input type="text" required value={formData.alternativa_b} onChange={(e) => setFormData({ ...formData, alternativa_b: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Alternativa C</label>
-                  <input type="text" required value={formData.alternativa_c} onChange={(e) => setFormData({ ...formData, alternativa_c: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Alternativa D</label>
-                  <input type="text" required value={formData.alternativa_d} onChange={(e) => setFormData({ ...formData, alternativa_d: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Alternativa E</label>
-                  <input type="text" required value={formData.alternativa_e} onChange={(e) => setFormData({ ...formData, alternativa_e: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Gabarito Correto</label>
-                  <select value={formData.gabarito} onChange={(e) => setFormData({ ...formData, gabarito: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" required>
-                    <option value="a">A</option>
-                    <option value="b">B</option>
-                    <option value="c">C</option>
-                    <option value="d">D</option>
-                    <option value="e">E</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Dificuldade</label>
-                  <select value={formData.difficulty} onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" required>
-                    <option value="facil">Fácil</option>
-                    <option value="medio">Médio</option>
-                    <option value="dificil">Difícil</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Comentário (opcional)</label>
-                  <textarea value={formData.comentario} onChange={(e) => setFormData({ ...formData, comentario: e.target.value })} className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" rows={2} />
-                </div>
-              </div>
+            <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-6">
+              
+              <QuestionFormFields formData={formData} setFormData={setFormData} />
 
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-surface-100">
                 <button type="button" onClick={closeModal} className="px-4 py-2 text-sm font-medium text-surface-600 hover:text-surface-900 hover:bg-surface-100 rounded-lg transition-colors">
