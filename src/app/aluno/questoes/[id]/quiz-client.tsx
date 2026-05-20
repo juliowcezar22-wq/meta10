@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, CheckCircle, XCircle, BookOpen, Loader2, ChevronDown, ChevronUp } from 'lucide-react'
 import { useToast } from '@/components/admin/toast'
-import type { QuestionList, Question } from '@/lib/types/quiz'
+import type { QuestionList, Question, Alternative } from '@/lib/types/quiz'
 import { startAttempt, finishAttempt } from '@/app/actions/aluno/attempts'
 
 export function QuizClient({ list, questions }: { list: QuestionList, questions: Question[] }) {
@@ -104,13 +104,16 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
               const userAnswer = answers[q.id]
               const isCorrect = userAnswer === q.gabarito
 
-              const opts = [
-                { val: 'a', text: (q.alternatives as any)?.a || (q as any).alternativa_a || '' },
-                { val: 'b', text: (q.alternatives as any)?.b || (q as any).alternativa_b || '' },
-                { val: 'c', text: (q.alternatives as any)?.c || (q as any).alternativa_c || '' },
-                { val: 'd', text: (q.alternatives as any)?.d || (q as any).alternativa_d || '' },
-                { val: 'e', text: (q.alternatives as any)?.e || (q as any).alternativa_e || '' },
-              ]
+              let opts: { val: string, text: string }[] = []
+              if (q.question_type === 'multipla_escolha') {
+                const alts = (q.alternatives as unknown as Alternative[]) || []
+                opts = alts.map(a => ({ val: a.letra, text: a.texto }))
+              } else {
+                opts = [
+                  { val: 'verdadeiro', text: 'Verdadeiro' },
+                  { val: 'falso', text: 'Falso' }
+                ]
+              }
 
               return (
                 <div key={q.id} className="card p-6 border-l-4 overflow-hidden" style={{ borderLeftColor: isCorrect ? '#22c55e' : '#ef4444' }}>
@@ -131,9 +134,9 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
                       if (!isSelected) return null
                       let bg = isCorrect ? 'bg-success-50 border-success-200 text-success-800' : 'bg-danger-50 border-danger-200 text-danger-800'
                       return (
-                        <div key={o.val} className={`p-3 rounded border text-sm flex gap-3 ${bg}`}>
-                          <span className="font-bold uppercase opacity-50">{o.val})</span>
-                          <span>{o.text}</span>
+                        <div key={o.val} className={`p-3 rounded border text-sm flex gap-3 items-center ${bg}`}>
+                          {q.question_type === 'multipla_escolha' && <span className="font-bold uppercase opacity-50">{o.val})</span>}
+                          <span className={q.question_type === 'verdadeiro_falso' ? 'font-bold' : ''}>{o.text}</span>
                         </div>
                       )
                     })}
@@ -171,9 +174,9 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
                           else if (isSelected && !isCorrect) bg = 'bg-danger-50 border-danger-200 text-danger-800'
 
                           return (
-                            <div key={o.val} className={`p-3 rounded border text-sm flex gap-3 ${bg}`}>
-                              <span className="font-bold uppercase opacity-50">{o.val})</span>
-                              <span>{o.text}</span>
+                            <div key={o.val} className={`p-3 rounded border text-sm flex gap-3 items-center ${bg}`}>
+                              {q.question_type === 'multipla_escolha' && <span className="font-bold uppercase opacity-50">{o.val})</span>}
+                              <span className={q.question_type === 'verdadeiro_falso' ? 'font-bold' : ''}>{o.text}</span>
                             </div>
                           )
                         })}
@@ -198,13 +201,16 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
     )
   }
 
-  const options = [
-    { value: 'a', text: (question.alternatives as any)?.a || (question as any).alternativa_a || '' },
-    { value: 'b', text: (question.alternatives as any)?.b || (question as any).alternativa_b || '' },
-    { value: 'c', text: (question.alternatives as any)?.c || (question as any).alternativa_c || '' },
-    { value: 'd', text: (question.alternatives as any)?.d || (question as any).alternativa_d || '' },
-    { value: 'e', text: (question.alternatives as any)?.e || (question as any).alternativa_e || '' },
-  ]
+  let options: { value: string, text: string }[] = []
+  if (question.question_type === 'multipla_escolha') {
+    const alts = (question.alternatives as unknown as Alternative[]) || []
+    options = alts.map(a => ({ value: a.letra, text: a.texto }))
+  } else {
+    options = [
+      { value: 'verdadeiro', text: 'Verdadeiro' },
+      { value: 'falso', text: 'Falso' }
+    ]
+  }
 
   return (
     <div className="min-h-screen bg-surface-50">
@@ -229,31 +235,48 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
           </div>
           <p className="text-lg text-surface-900 mb-8 leading-relaxed">{question.enunciado}</p>
           
-          <div className="space-y-3">
-            {options.map((opt) => {
-              const isSelected = opt.value === selectedOption
-              const optionClass = isSelected 
-                ? 'border-primary bg-primary/5 text-primary' 
-                : 'border-surface-200 hover:border-primary/50 text-surface-700 hover:bg-surface-50'
+          {question.question_type === 'multipla_escolha' ? (
+            <div className="space-y-3">
+              {options.map((opt) => {
+                const isSelected = opt.value === selectedOption
+                const optionClass = isSelected 
+                  ? 'border-primary bg-primary/5 text-primary' 
+                  : 'border-surface-200 hover:border-primary/50 text-surface-700 hover:bg-surface-50'
 
-              return (
-                <button
-                  key={opt.value}
-                  onClick={() => setSelectedOption(opt.value)}
-                  className={`w-full text-left p-4 border-2 rounded-xl transition-all ${optionClass}`}
-                >
-                  <div className="flex items-center gap-4">
-                    <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                      isSelected ? 'bg-primary text-white' : 'bg-surface-100 text-surface-500'
-                    }`}>
-                      {opt.value.toUpperCase()}
-                    </span>
-                    <span className="leading-relaxed">{opt.text}</span>
-                  </div>
-                </button>
-              )
-            })}
-          </div>
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => setSelectedOption(opt.value)}
+                    className={`w-full text-left p-4 border-2 rounded-xl transition-all ${optionClass}`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                        isSelected ? 'bg-primary text-white' : 'bg-surface-100 text-surface-500'
+                      }`}>
+                        {opt.value.toUpperCase()}
+                      </span>
+                      <span className="leading-relaxed">{opt.text}</span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={() => setSelectedOption('verdadeiro')}
+                className={`flex-1 py-6 px-4 border-2 rounded-xl text-lg font-bold transition-all ${selectedOption === 'verdadeiro' ? 'border-success-500 bg-success-50 text-success-700' : 'border-surface-200 text-surface-600 hover:bg-surface-50 hover:border-surface-300'}`}
+              >
+                Verdadeiro
+              </button>
+              <button
+                onClick={() => setSelectedOption('falso')}
+                className={`flex-1 py-6 px-4 border-2 rounded-xl text-lg font-bold transition-all ${selectedOption === 'falso' ? 'border-danger-500 bg-danger-50 text-danger-700' : 'border-surface-200 text-surface-600 hover:bg-surface-50 hover:border-surface-300'}`}
+              >
+                Falso
+              </button>
+            </div>
+          )}
 
           <button
             onClick={handleNext}

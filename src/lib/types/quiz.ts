@@ -24,12 +24,7 @@ export interface Alternative {
   texto: string
 }
 
-export type Question = Omit<Database['public']['Tables']['questions']['Row'], 'alternativa_a' | 'alternativa_b' | 'alternativa_c' | 'alternativa_d' | 'alternativa_e' | 'list_id'> & {
-  list_id: string | null
-  question_type: QuestionType
-  context: QuestionContext
-  alternatives: any
-}
+export type Question = Database['public']['Tables']['questions']['Row']
 
 export type QuestionListItem = Database['public']['Tables']['question_list_items']['Row']
 

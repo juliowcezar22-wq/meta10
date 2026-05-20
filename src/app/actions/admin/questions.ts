@@ -5,50 +5,81 @@ import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth/guards'
 import { revalidatePath } from 'next/cache'
 
-const questionSchema = z.object({
-  list_id: z.string().uuid(),
-  enunciado: z.string().min(1),
-  alternativa_a: z.string().min(1),
-  alternativa_b: z.string().min(1),
-  alternativa_c: z.string().min(1),
-  alternativa_d: z.string().min(1),
-  alternativa_e: z.string().min(1),
-  gabarito: z.enum(['a', 'b', 'c', 'd', 'e']),
-  comentario: z.string().optional(),
-  subject: z.enum(['matematica', 'portugues', 'historia', 'geografia', 'ciencias', 'ingles', 'fisica', 'quimica', 'biologia', 'outros']),
-  difficulty: z.enum(['facil', 'medio', 'dificil']),
+const alternativeSchema = z.object({
+  letra: z.string(),
+  texto: z.string().min(1, 'Alternativa não pode ser vazia'),
 })
+
+const questionSchema = z.discriminatedUnion('question_type', [
+  // Múltipla escolha
+  z.object({
+    question_type: z.literal('multipla_escolha'),
+    list_id: z.string().uuid(),
+    enunciado: z.string().min(3, 'Enunciado muito curto'),
+    alternatives: z.array(alternativeSchema)
+      .min(2, 'Mínimo 2 alternativas')
+      .max(5, 'Máximo 5 alternativas'),
+    gabarito: z.string().regex(/^[a-e]$/, 'Gabarito inválido'),
+    comentario: z.string().optional().nullable(),
+    difficulty: z.enum(['facil', 'medio', 'dificil']),
+    subject: z.enum(['matematica','portugues','historia','geografia','ciencias','ingles','fisica','quimica','biologia','outros']),
+  }),
+  // Verdadeiro ou Falso
+  z.object({
+    question_type: z.literal('verdadeiro_falso'),
+    list_id: z.string().uuid(),
+    enunciado: z.string().min(3, 'Enunciado muito curto'),
+    alternatives: z.null().optional(),  // V/F não tem alternativas
+    gabarito: z.enum(['verdadeiro', 'falso']),
+    comentario: z.string().optional().nullable(),
+    difficulty: z.enum(['facil', 'medio', 'dificil']),
+    subject: z.enum(['matematica','portugues','historia','geografia','ciencias','ingles','fisica','quimica','biologia','outros']),
+  }),
+])
+
+function parseFormData(listId: string, formData: FormData) {
+  const type = formData.get('question_type') as string
+  const altString = formData.get('alternatives') as string
+  let alternatives = null
+  if (type === 'multipla_escolha' && altString) {
+    try { alternatives = JSON.parse(altString) } catch (e) { alternatives = [] }
+  }
+
+  return {
+    question_type: type,
+    list_id: listId,
+    enunciado: formData.get('enunciado'),
+    alternatives,
+    gabarito: formData.get('gabarito'),
+    comentario: formData.get('comentario') || null,
+    subject: formData.get('subject'),
+    difficulty: formData.get('difficulty'),
+  }
+}
+
+function validateGabarito(data: any) {
+  if (data.question_type === 'multipla_escolha') {
+    const exists = data.alternatives.some((a: any) => a.letra === data.gabarito)
+    if (!exists) {
+      return { success: false, errors: { _form: ['O gabarito aponta para uma alternativa que não existe'] } }
+    }
+  }
+  return { success: true }
+}
 
 export async function createQuestion(listId: string, formData: FormData) {
   await requireAdmin()
-  const validation = questionSchema.safeParse({
-    list_id: listId,
-    enunciado: formData.get('enunciado'),
-    alternativa_a: formData.get('alternativa_a'),
-    alternativa_b: formData.get('alternativa_b'),
-    alternativa_c: formData.get('alternativa_c'),
-    alternativa_d: formData.get('alternativa_d'),
-    alternativa_e: formData.get('alternativa_e'),
-    gabarito: formData.get('gabarito'),
-    comentario: formData.get('comentario') || undefined,
-    subject: formData.get('subject'),
-    difficulty: formData.get('difficulty'),
-  })
+  const rawData = parseFormData(listId, formData)
+  const validation = questionSchema.safeParse(rawData)
   
   if (!validation.success) return { success: false, errors: validation.error.flatten().fieldErrors }
   
-  const { alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, ...restData } = validation.data
+  const gabValidation = validateGabarito(validation.data)
+  if (!gabValidation.success) return gabValidation
+  
   const dbData = {
-    ...restData,
-    question_type: 'multipla_escolha',
+    ...validation.data,
     context: 'simulado',
-    alternatives: {
-      a: alternativa_a,
-      b: alternativa_b,
-      c: alternativa_c,
-      d: alternativa_d,
-      e: alternativa_e,
-    }
   }
 
   const supabase = createClient()
@@ -68,32 +99,18 @@ export async function createQuestion(listId: string, formData: FormData) {
 
 export async function updateQuestion(id: string, formData: FormData) {
   await requireAdmin()
-  const validation = questionSchema.safeParse({
-    list_id: formData.get('list_id'),
-    enunciado: formData.get('enunciado'),
-    alternativa_a: formData.get('alternativa_a'),
-    alternativa_b: formData.get('alternativa_b'),
-    alternativa_c: formData.get('alternativa_c'),
-    alternativa_d: formData.get('alternativa_d'),
-    alternativa_e: formData.get('alternativa_e'),
-    gabarito: formData.get('gabarito'),
-    comentario: formData.get('comentario') || undefined,
-    subject: formData.get('subject'),
-    difficulty: formData.get('difficulty'),
-  })
+  const listId = formData.get('list_id') as string
+  const rawData = parseFormData(listId, formData)
+  const validation = questionSchema.safeParse(rawData)
   
   if (!validation.success) return { success: false, errors: validation.error.flatten().fieldErrors }
   
-  const { alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, ...restData } = validation.data
+  const gabValidation = validateGabarito(validation.data)
+  if (!gabValidation.success) return gabValidation
+  
   const dbData = {
-    ...restData,
-    alternatives: {
-      a: alternativa_a,
-      b: alternativa_b,
-      c: alternativa_c,
-      d: alternativa_d,
-      e: alternativa_e,
-    }
+    ...validation.data,
+    context: 'simulado',
   }
 
   const supabase = createClient()
@@ -107,8 +124,8 @@ export async function updateQuestion(id: string, formData: FormData) {
     return { success: false, errors: { _form: [error.message] } }
   }
   
-  revalidatePath(`/admin/questoes/${validation.data.list_id}`)
-  revalidatePath(`/aluno/questoes/${validation.data.list_id}`)
+  revalidatePath(`/admin/questoes/${listId}`)
+  revalidatePath(`/aluno/questoes/${listId}`)
   return { success: true, message: 'Questão atualizada com sucesso' }
 }
 
@@ -159,7 +176,7 @@ export async function duplicateQuestion(questionId: string) {
     .insert({
       ...rest,
       enunciado: `(Duplicada) ${original.enunciado}`,
-    })
+    } as any)
   
   if (insertError) {
     console.error('[duplicateQuestion]', insertError)
