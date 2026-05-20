@@ -265,50 +265,44 @@ export type Database = {
       }
       questions: {
         Row: {
-          alternativa_a: string
-          alternativa_b: string
-          alternativa_c: string
-          alternativa_d: string
-          alternativa_e: string
+          alternatives: Json | null
           comentario: string | null
+          context: string
           created_at: string
           difficulty: Database["public"]["Enums"]["difficulty_level"]
           enunciado: string
           gabarito: string
           id: string
-          list_id: string
+          list_id: string | null
+          question_type: string
           subject: string
           updated_at: string
         }
         Insert: {
-          alternativa_a: string
-          alternativa_b: string
-          alternativa_c: string
-          alternativa_d: string
-          alternativa_e: string
+          alternatives?: Json | null
           comentario?: string | null
+          context?: string
           created_at?: string
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
           enunciado: string
           gabarito: string
           id?: string
-          list_id: string
+          list_id?: string | null
+          question_type?: string
           subject: string
           updated_at?: string
         }
         Update: {
-          alternativa_a?: string
-          alternativa_b?: string
-          alternativa_c?: string
-          alternativa_d?: string
-          alternativa_e?: string
+          alternatives?: Json | null
           comentario?: string | null
+          context?: string
           created_at?: string
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
           enunciado?: string
           gabarito?: string
           id?: string
-          list_id?: string
+          list_id?: string | null
+          question_type?: string
           subject?: string
           updated_at?: string
         }
@@ -318,6 +312,48 @@ export type Database = {
             columns: ["list_id"]
             isOneToOne: false
             referencedRelation: "question_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      standalone_answers: {
+        Row: {
+          answer: string
+          answered_at: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          answered_at?: string
+          id?: string
+          is_correct: boolean
+          question_id: string
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          answered_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "standalone_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "standalone_answers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]

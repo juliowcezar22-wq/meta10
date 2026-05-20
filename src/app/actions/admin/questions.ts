@@ -37,10 +37,24 @@ export async function createQuestion(listId: string, formData: FormData) {
   
   if (!validation.success) return { success: false, errors: validation.error.flatten().fieldErrors }
   
+  const { alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, ...restData } = validation.data
+  const dbData = {
+    ...restData,
+    question_type: 'multipla_escolha',
+    context: 'simulado',
+    alternatives: {
+      a: alternativa_a,
+      b: alternativa_b,
+      c: alternativa_c,
+      d: alternativa_d,
+      e: alternativa_e,
+    }
+  }
+
   const supabase = createClient()
   const { error } = await supabase
     .from('questions')
-    .insert(validation.data)
+    .insert(dbData as any)
   
   if (error) {
     console.error('[createQuestion]', error)
@@ -70,10 +84,22 @@ export async function updateQuestion(id: string, formData: FormData) {
   
   if (!validation.success) return { success: false, errors: validation.error.flatten().fieldErrors }
   
+  const { alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, ...restData } = validation.data
+  const dbData = {
+    ...restData,
+    alternatives: {
+      a: alternativa_a,
+      b: alternativa_b,
+      c: alternativa_c,
+      d: alternativa_d,
+      e: alternativa_e,
+    }
+  }
+
   const supabase = createClient()
   const { error } = await supabase
     .from('questions')
-    .update(validation.data)
+    .update(dbData as any)
     .eq('id', id)
   
   if (error) {
