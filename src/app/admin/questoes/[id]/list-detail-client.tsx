@@ -51,11 +51,11 @@ export function ListDetailClient({ list, initialQuestions }: { list: QuestionLis
       setEditingQuestion(q)
       setFormData({
         enunciado: q.enunciado,
-        alternativa_a: q.alternativa_a,
-        alternativa_b: q.alternativa_b,
-        alternativa_c: q.alternativa_c,
-        alternativa_d: q.alternativa_d,
-        alternativa_e: q.alternativa_e,
+        alternativa_a: (q.alternatives as any)?.a || (q as any).alternativa_a || '',
+        alternativa_b: (q.alternatives as any)?.b || (q as any).alternativa_b || '',
+        alternativa_c: (q.alternatives as any)?.c || (q as any).alternativa_c || '',
+        alternativa_d: (q.alternatives as any)?.d || (q as any).alternativa_d || '',
+        alternativa_e: (q.alternatives as any)?.e || (q as any).alternativa_e || '',
         gabarito: q.gabarito,
         comentario: q.comentario || '',
         difficulty: q.difficulty,

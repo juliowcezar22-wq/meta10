@@ -105,11 +105,11 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
               const isCorrect = userAnswer === q.gabarito
 
               const opts = [
-                { val: 'a', text: q.alternativa_a },
-                { val: 'b', text: q.alternativa_b },
-                { val: 'c', text: q.alternativa_c },
-                { val: 'd', text: q.alternativa_d },
-                { val: 'e', text: q.alternativa_e },
+                { val: 'a', text: (q.alternatives as any)?.a || (q as any).alternativa_a || '' },
+                { val: 'b', text: (q.alternatives as any)?.b || (q as any).alternativa_b || '' },
+                { val: 'c', text: (q.alternatives as any)?.c || (q as any).alternativa_c || '' },
+                { val: 'd', text: (q.alternatives as any)?.d || (q as any).alternativa_d || '' },
+                { val: 'e', text: (q.alternatives as any)?.e || (q as any).alternativa_e || '' },
               ]
 
               return (
@@ -199,11 +199,11 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
   }
 
   const options = [
-    { value: 'a', text: question.alternativa_a },
-    { value: 'b', text: question.alternativa_b },
-    { value: 'c', text: question.alternativa_c },
-    { value: 'd', text: question.alternativa_d },
-    { value: 'e', text: question.alternativa_e },
+    { value: 'a', text: (question.alternatives as any)?.a || (question as any).alternativa_a || '' },
+    { value: 'b', text: (question.alternatives as any)?.b || (question as any).alternativa_b || '' },
+    { value: 'c', text: (question.alternatives as any)?.c || (question as any).alternativa_c || '' },
+    { value: 'd', text: (question.alternatives as any)?.d || (question as any).alternativa_d || '' },
+    { value: 'e', text: (question.alternatives as any)?.e || (question as any).alternativa_e || '' },
   ]
 
   return (
