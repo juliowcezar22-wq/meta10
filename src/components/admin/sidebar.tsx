@@ -12,6 +12,7 @@ import {
   Mail,
   HelpCircle,
   GraduationCap,
+  MessageSquarePlus,
   X,
   UserX
 } from 'lucide-react'
@@ -29,6 +30,7 @@ const navItems = [
   { name: 'Produtos', href: '/admin/produtos', icon: ShoppingBag, enabled: true },
   { name: 'Depoimentos', href: '/admin/depoimentos', icon: MessageSquareQuote, enabled: true },
   { name: 'Mensagens', href: '/admin/mensagens', icon: Mail, enabled: true },
+  { name: 'Sugestões', href: '/admin/sugestoes', icon: MessageSquarePlus, enabled: true },
   { name: 'Simulados', href: '/admin/questoes', icon: HelpCircle, enabled: true },
 ]
 

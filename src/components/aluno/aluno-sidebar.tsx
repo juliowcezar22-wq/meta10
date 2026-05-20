@@ -10,6 +10,7 @@ import {
   FileText, 
   Map, 
   BookOpen,
+  MessageSquarePlus,
   X
 } from 'lucide-react'
 
@@ -25,6 +26,7 @@ const navItems = [
   { name: 'PDFs', href: '/aluno/pdfs', icon: FileText },
   { name: 'Mapas Mentais', href: '/aluno/mapas-mentais', icon: Map },
   { name: 'Resumos', href: '/aluno/resumos', icon: BookOpen },
+  { name: 'Sugestões', href: '/aluno/sugestoes', icon: MessageSquarePlus },
 ]
 
 export function AlunoSidebar({ isOpen, onClose }: AlunoSidebarProps) {
