@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { requireAdmin } from '@/lib/auth/guards'
+import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { revalidatePath } from 'next/cache'
 
 const alternativeSchema = z.object({
@@ -68,7 +68,7 @@ function validateGabarito(data: any) {
 }
 
 export async function createQuestion(listId: string, formData: FormData) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const rawData = parseFormData(listId, formData)
   const validation = questionSchema.safeParse(rawData)
   
@@ -98,7 +98,7 @@ export async function createQuestion(listId: string, formData: FormData) {
 }
 
 export async function updateQuestion(id: string, formData: FormData) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const listId = formData.get('list_id') as string
   const rawData = parseFormData(listId, formData)
   const validation = questionSchema.safeParse(rawData)
@@ -130,7 +130,7 @@ export async function updateQuestion(id: string, formData: FormData) {
 }
 
 export async function deleteQuestion(id: string) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const supabase = createClient()
   
   const { data: question } = await supabase
@@ -157,7 +157,7 @@ export async function deleteQuestion(id: string) {
 }
 
 export async function duplicateQuestion(questionId: string) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const supabase = createClient()
   
   const { data: original, error: fetchError } = await supabase

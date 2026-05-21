@@ -1,11 +1,11 @@
-import { requireAdmin } from '@/lib/auth/guards'
+import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { getQuestionListById } from '@/lib/data/question-lists'
 import { getQuestionsByListId } from '@/lib/data/questions'
 import { redirect } from 'next/navigation'
 import { ListDetailClient } from './list-detail-client'
 
 export default async function ListDetailPage({ params }: { params: { id: string } }) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const [list, questions] = await Promise.all([
     getQuestionListById(params.id),
     getQuestionsByListId(params.id)

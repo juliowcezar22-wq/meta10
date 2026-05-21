@@ -77,3 +77,19 @@ export async function requireAdmin(): Promise<AuthenticatedUser> {
 
   return user
 }
+
+/**
+ * Garante que o usuário autenticado tem role='admin' ou role='professor'.
+ * Redireciona para /login se sem sessão.
+ * Redireciona para /aluno/dashboard se logado mas não é admin nem professor.
+ */
+export async function requireAdminOrProfessor(): Promise<AuthenticatedUser> {
+  const user = await requireAuth()
+
+  if (user.profile.role !== 'admin' && user.profile.role !== 'professor') {
+    redirect('/aluno/dashboard')
+  }
+
+  return user
+}
+

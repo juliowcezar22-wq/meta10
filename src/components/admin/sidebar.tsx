@@ -21,6 +21,7 @@ import {
 interface SidebarProps {
   isOpen: boolean
   onClose: () => void
+  role?: string
 }
 
 const navItems = [
@@ -30,14 +31,20 @@ const navItems = [
   { name: 'Conteúdo', href: '/admin/conteudo', icon: BookOpen, enabled: true },
   { name: 'Produtos', href: '/admin/produtos', icon: ShoppingBag, enabled: true },
   { name: 'Depoimentos', href: '/admin/depoimentos', icon: MessageSquareQuote, enabled: true },
-  { name: 'Mensagens', href: '/admin/mensagens', icon: Mail, enabled: true },
   { name: 'Sugestões', href: '/admin/sugestoes', icon: MessageSquarePlus, enabled: true },
   { name: 'Simulados', href: '/admin/questoes', icon: HelpCircle, enabled: true },
   { name: 'Questões', href: '/admin/questoes-avulsas', icon: ListChecks, enabled: true },
 ]
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+export function Sidebar({ isOpen, onClose, role }: SidebarProps) {
   const pathname = usePathname()
+
+  const visibleNavItems = navItems.filter((item) => {
+    if (role === 'professor') {
+      return item.name === 'Simulados' || item.name === 'Questões'
+    }
+    return true
+  })
 
   return (
     <>
@@ -72,7 +79,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="p-4 space-y-1">
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
 

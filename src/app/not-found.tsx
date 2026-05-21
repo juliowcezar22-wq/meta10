@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Home, MessageCircle, ArrowRight } from 'lucide-react'
+import { WHATSAPP_LINK } from '@/lib/constants'
 
 export default function NotFound() {
   return (
@@ -12,9 +13,9 @@ export default function NotFound() {
           <Link href="/" className="btn-primary justify-center">
             <Home className="w-4 h-4" /> Voltar ao Início
           </Link>
-          <Link href="/contato" className="btn-outline justify-center">
+          <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="btn-outline justify-center">
             <MessageCircle className="w-4 h-4" /> Fale Conosco
-          </Link>
+          </a>
         </div>
       </div>
     </section>

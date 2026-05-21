@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { requireAdmin } from '@/lib/auth/guards'
+import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { revalidatePath } from 'next/cache'
 
 const questionListSchema = z.object({
@@ -13,7 +13,7 @@ const questionListSchema = z.object({
 })
 
 export async function createQuestionList(formData: FormData) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const validation = questionListSchema.safeParse({
     name: formData.get('name'),
     subject: formData.get('subject'),
@@ -41,7 +41,7 @@ export async function createQuestionList(formData: FormData) {
 }
 
 export async function updateQuestionList(id: string, formData: FormData) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const validation = questionListSchema.safeParse({
     name: formData.get('name'),
     subject: formData.get('subject'),
@@ -69,7 +69,7 @@ export async function updateQuestionList(id: string, formData: FormData) {
 }
 
 export async function deleteQuestionList(id: string) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const supabase = createClient()
   const { error } = await supabase
     .from('question_lists')
@@ -87,7 +87,7 @@ export async function deleteQuestionList(id: string) {
 }
 
 export async function toggleQuestionListActive(id: string) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const supabase = createClient()
   
   const { data: list } = await supabase
@@ -115,7 +115,7 @@ export async function toggleQuestionListActive(id: string) {
 }
 
 export async function duplicateQuestionList(listId: string) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const supabase = createClient()
   
   // 1. Busca lista original

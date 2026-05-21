@@ -53,6 +53,8 @@ export async function loginAction(prevState: AuthState, formData: FormData): Pro
     redirect(redirectTo)
   } else if (profile.role === 'admin') {
     redirect('/admin')
+  } else if (profile.role === 'professor') {
+    redirect('/admin/questoes')
   } else {
     redirect('/aluno/dashboard')
   }
@@ -177,5 +179,6 @@ export async function getRedirectTargetIfLoggedIn(): Promise<{ path: string | nu
   if (!profile) return { path: null }
   
   if (profile.role === 'admin') return { path: '/admin' }
+  if (profile.role === 'professor') return { path: '/admin/questoes' }
   return { path: '/aluno/dashboard' }
 }

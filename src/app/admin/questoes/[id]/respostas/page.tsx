@@ -1,4 +1,4 @@
-import { requireAdmin } from '@/lib/auth/guards'
+import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { getQuestionListById } from '@/lib/data/question-lists'
 import { getAttemptsByListId } from '@/lib/data/attempts'
 import { redirect } from 'next/navigation'
@@ -7,8 +7,10 @@ import { Badge } from '@/components/admin/badge'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function RespostasPage({ params }: { params: { id: string } }) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   
   const [list, attempts] = await Promise.all([
     getQuestionListById(params.id),
