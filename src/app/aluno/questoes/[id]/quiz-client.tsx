@@ -93,7 +93,7 @@ export function QuizClient({ list, questions }: { list: QuestionList, questions:
 
             <div className="flex justify-center">
               <Link href="/aluno/questoes" className="btn-primary">
-                Voltar para Questões
+                Voltar para Simulados
               </Link>
             </div>
           </div>
