@@ -14,7 +14,8 @@ import {
   GraduationCap,
   MessageSquarePlus,
   X,
-  UserX
+  UserX,
+  ListChecks
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -32,6 +33,7 @@ const navItems = [
   { name: 'Mensagens', href: '/admin/mensagens', icon: Mail, enabled: true },
   { name: 'Sugestões', href: '/admin/sugestoes', icon: MessageSquarePlus, enabled: true },
   { name: 'Simulados', href: '/admin/questoes', icon: HelpCircle, enabled: true },
+  { name: 'Questões', href: '/admin/questoes-avulsas', icon: ListChecks, enabled: true },
 ]
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
