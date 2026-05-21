@@ -1,5 +1,6 @@
 import { requireAuth } from '@/lib/auth/guards'
 import Link from 'next/link'
+import { PageHeader } from '@/components/admin/page-header' // can reuse the layout
 import { BookOpen, Calculator, Globe, Atom, Binary, Languages, Milestone, Dna, FlaskConical, Library } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -17,14 +18,14 @@ const subjects = [
   { id: 'outros', name: 'Outros', icon: Binary, color: 'bg-slate-500' },
 ]
 
-export default async function SimuladosMateriaSelectPage() {
+export default async function QuestoesAvulsasAlunoPage() {
   await requireAuth()
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
       <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-surface-900">Simulados</h1>
-        <p className="text-surface-500 mt-2">Escolha uma matéria para visualizar os simulados disponíveis.</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-surface-900">Questões Avulsas</h1>
+        <p className="text-surface-500 mt-2">Escolha uma matéria para praticar questões de forma livre.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -33,7 +34,7 @@ export default async function SimuladosMateriaSelectPage() {
           return (
             <Link 
               key={sub.id} 
-              href={`/aluno/questoes/materia/${sub.id}`}
+              href={`/aluno/questoes-avulsas/${sub.id}`}
               className="group block bg-white rounded-2xl p-6 border border-surface-200 shadow-sm hover:shadow-md transition-all hover:border-primary-200"
             >
               <div className="flex items-center gap-4">
@@ -42,7 +43,7 @@ export default async function SimuladosMateriaSelectPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-surface-900 group-hover:text-primary transition-colors">{sub.name}</h3>
-                  <p className="text-sm text-surface-500 mt-0.5">Ver simulados</p>
+                  <p className="text-sm text-surface-500 mt-0.5">Ver questões</p>
                 </div>
               </div>
             </Link>

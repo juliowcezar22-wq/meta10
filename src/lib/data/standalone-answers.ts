@@ -35,3 +35,18 @@ export async function getAllStandaloneAnswers(): Promise<StandaloneAnswerWithDet
   if (error) { console.error('[getAllStandaloneAnswers]', error); return [] }
   return (data ?? []) as StandaloneAnswerWithDetails[]
 }
+
+export async function getStandaloneAnswersByQuestion(questionId: string): Promise<StandaloneAnswerWithDetails[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('standalone_answers')
+    .select(`
+      *,
+      question:questions(id, enunciado, subject, gabarito),
+      user:users(id, nome, email)
+    `)
+    .eq('question_id', questionId)
+    .order('answered_at', { ascending: false })
+  if (error) { console.error('[getStandaloneAnswersByQuestion]', error); return [] }
+  return (data ?? []) as StandaloneAnswerWithDetails[]
+}

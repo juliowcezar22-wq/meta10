@@ -64,3 +64,18 @@ export async function getStandaloneQuestionById(id: string): Promise<Question | 
   }
   return data
 }
+
+export async function getAllStandaloneQuestions(): Promise<Question[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('context', 'avulsa')
+    .order('created_at', { ascending: false })
+  
+  if (error) {
+    console.error('[getAllStandaloneQuestions]', error)
+    return []
+  }
+  return data ?? []
+}
