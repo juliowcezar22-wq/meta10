@@ -1,8 +1,12 @@
-import { requireAdmin } from '@/lib/auth/guards'
+import { requireAdmin, requireAuth } from '@/lib/auth/guards'
 import { getDashboardStats } from '@/lib/data/dashboard-stats'
-import { Users, UserCheck, MessageSquare, BookOpen, ShoppingBag, Target } from 'lucide-react'
+import { Users, UserCheck, BookOpen, ShoppingBag, Target } from 'lucide-react'
+import { redirect } from 'next/navigation'
 
 export default async function AdminPage() {
+  const session = await requireAuth()
+  if (session.profile.role === 'professor') redirect('/admin/questoes')
+
   const { profile } = await requireAdmin()
   const stats = await getDashboardStats()
 
@@ -34,15 +38,7 @@ export default async function AdminPage() {
           </div>
         </div>
 
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-warning-500/10 flex items-center justify-center text-warning-600 flex-shrink-0">
-            <MessageSquare className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-sm text-surface-500 font-medium">Msgs. Não Lidas</p>
-            <p className="text-2xl font-bold text-surface-900">{stats.unreadMessages}</p>
-          </div>
-        </div>
+
 
         <div className="card p-6 flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 flex-shrink-0">

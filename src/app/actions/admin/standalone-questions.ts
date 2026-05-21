@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { requireAdmin } from '@/lib/auth/guards'
+import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { revalidatePath } from 'next/cache'
 
 const alternativeSchema = z.object({
@@ -68,7 +68,7 @@ function validateGabarito(data: any) {
 }
 
 export async function createStandaloneQuestion(formData: FormData) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const rawData = parseFormData(formData)
   const validation = questionSchema.safeParse(rawData)
   
@@ -100,7 +100,7 @@ export async function createStandaloneQuestion(formData: FormData) {
 }
 
 export async function updateStandaloneQuestion(id: string, formData: FormData) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const rawData = parseFormData(formData)
   const validation = questionSchema.safeParse(rawData)
   
@@ -134,7 +134,7 @@ export async function updateStandaloneQuestion(id: string, formData: FormData) {
 }
 
 export async function deleteStandaloneQuestion(id: string) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const supabase = createClient()
   
   const { data: question } = await supabase
@@ -164,7 +164,7 @@ export async function deleteStandaloneQuestion(id: string) {
 }
 
 export async function duplicateStandaloneQuestion(questionId: string) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   const supabase = createClient()
   
   const { data: original, error: fetchError } = await supabase

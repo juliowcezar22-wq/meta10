@@ -1,4 +1,4 @@
-import { requireAdmin } from '@/lib/auth/guards'
+import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { getStandaloneQuestionById } from '@/lib/data/questions'
 import { getStandaloneAnswersByQuestion } from '@/lib/data/standalone-answers'
 import { redirect } from 'next/navigation'
@@ -10,7 +10,7 @@ import { ArrowLeft } from 'lucide-react'
 export const dynamic = 'force-dynamic'
 
 export default async function RespostasAvulsaPage({ params }: { params: { id: string } }) {
-  await requireAdmin()
+  await requireAdminOrProfessor()
   
   const [question, answers] = await Promise.all([
     getStandaloneQuestionById(params.id),
