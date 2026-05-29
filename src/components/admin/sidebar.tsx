@@ -27,13 +27,15 @@ interface SidebarProps {
 const navItems = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard, enabled: true },
   { name: 'Usuários', href: '/admin/usuarios', icon: Users, enabled: true },
+  { name: 'Professores', href: '/admin/professores', icon: GraduationCap, enabled: true },
+  { name: 'Alunos Ativos', href: '/admin/alunos-ativos', icon: Users, enabled: true },
   { name: 'Alunos Inativos', href: '/admin/alunos-inativos', icon: UserX, enabled: true },
   { name: 'Conteúdo', href: '/admin/conteudo', icon: BookOpen, enabled: true },
-  { name: 'Loja', href: '/admin/produtos', icon: ShoppingBag, enabled: true },
-  { name: 'Simulados', href: '/admin/questoes', icon: HelpCircle, enabled: true },
   { name: 'Questões', href: '/admin/questoes-avulsas', icon: ListChecks, enabled: true },
-  { name: 'Sugestões', href: '/admin/sugestoes', icon: MessageSquarePlus, enabled: true },
+  { name: 'Simulados', href: '/admin/questoes', icon: HelpCircle, enabled: true },
+  { name: 'Loja', href: '/admin/produtos', icon: ShoppingBag, enabled: true },
   { name: 'Depoimentos', href: '/admin/depoimentos', icon: MessageSquareQuote, enabled: true },
+  { name: 'Sugestões', href: '/admin/sugestoes', icon: MessageSquarePlus, enabled: true },
 ]
 
 export function Sidebar({ isOpen, onClose, role }: SidebarProps) {
