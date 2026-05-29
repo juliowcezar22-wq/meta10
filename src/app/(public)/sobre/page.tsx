@@ -13,19 +13,19 @@ export default function SobrePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative bg-slate-900 py-24 lg:py-32 overflow-hidden">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/20 rounded-full blur-[120px] -z-0 transform translate-x-1/3 -translate-y-1/3 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] -z-0 transform -translate-x-1/3 translate-y-1/3 pointer-events-none" />
+      <section className="relative bg-orange-600 py-24 lg:py-32 overflow-hidden">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-orange-400/20 rounded-full blur-[120px] -z-0 transform translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-orange-500/20 rounded-full blur-[120px] -z-0 transform -translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <span className="inline-block py-1 px-4 rounded-full bg-white/10 text-primary text-sm font-semibold tracking-wider uppercase mb-6 border border-white/10 backdrop-blur-sm">
+          <span className="inline-block py-1 px-4 rounded-full bg-white/20 text-white text-sm font-semibold tracking-wider uppercase mb-6 border border-white/20 backdrop-blur-sm">
             Muito prazer!
           </span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-tight">
-            Somos o <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#fabb84]">META 10</span>
+            Somos o <span className="text-white">META 10</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto leading-relaxed font-light">
-            Um espaço criado para descomplicar os estudos, tirar o peso das costas e ajudar você a alcançar seus objetivos no seu ritmo.
+          <p className="text-xl md:text-2xl text-gray-100 max-w-2xl mx-auto leading-relaxed font-light">
+            Um espaço criado para descomplicar os estudos, praticar as atividades e ajudar você a alcançar seus objetivos no seu ritmo.
           </p>
         </div>
       </section>
@@ -58,7 +58,7 @@ export default function SobrePage() {
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-slate-200 rounded-[2.5rem] transform translate-x-4 translate-y-4 -z-10 transition-transform duration-500 group-hover:translate-x-6 group-hover:translate-y-6" />
               <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-black/10 aspect-[4/3] sm:aspect-square bg-gray-100">
                 <Image
-                  src="/seçaosobre.jpeg"
+                  src="/secao-sobre.jpeg"
                   alt="Equipe META 10"
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -70,11 +70,11 @@ export default function SobrePage() {
       </section>
 
       {/* Nosso Método */}
-      <section className="relative py-20 lg:py-28 bg-gray-50 border-y border-gray-100">
+      <section className="relative py-20 lg:py-28 bg-success-600 border-y border-success-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16 lg:mb-20">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Nosso Método</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto font-light">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Nosso Método</h2>
+            <p className="text-xl text-success-50 max-w-2xl mx-auto font-light">
               Uma abordagem comprovada para maximizar o aprendizado.
             </p>
           </div>
@@ -124,7 +124,7 @@ export default function SobrePage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 mb-1">Endereço</h3>
-                  <p className="text-gray-600 text-sm md:text-base">Endereço do espaço pedagógico<br />Cidade - Estado, CEP</p>
+                  <p className="text-gray-600 text-sm md:text-base">Av Artêmia Pires, Shopping Pátio Artêmia, Sala 38<br />Feira de Santana - BA</p>
                 </div>
               </div>
 
@@ -134,7 +134,7 @@ export default function SobrePage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 mb-1">WhatsApp</h3>
-                  <p className="text-gray-600 text-sm md:text-base group-hover:text-green-500 transition-colors">(75) 98334-1771</p>
+                  <p className="text-gray-600 text-sm md:text-base group-hover:text-green-500 transition-colors">(75) 98112-2334</p>
                 </div>
               </a>
 
@@ -144,7 +144,7 @@ export default function SobrePage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 mb-1">E-mail</h3>
-                  <p className="text-gray-600 text-sm md:text-base group-hover:text-blue-600 transition-colors">contato@meta10.com.br</p>
+                  <p className="text-gray-600 text-sm md:text-base group-hover:text-blue-600 transition-colors">meta10espacopedagogico@gmail.com</p>
                 </div>
               </a>
 

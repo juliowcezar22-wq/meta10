@@ -17,15 +17,26 @@ export default function YouTubeSection() {
             Aprenda com Nossos <span className="text-gradient-primary">Vídeos</span>
           </h2>
           <p className="text-surface-400 text-lg max-w-xl mx-auto">
-            Aulas em vídeo para complementar seus estudos. Assista quando e onde quiser.
+            Aulas em vídeo para complementar seus estudos.<br />
+            Assista quando e onde quiser.  
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto mb-14">
+        <div className="max-w-6xl mx-auto mb-14 grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="relative aspect-video rounded-2xl overflow-hidden shadow-glass-xl ring-1 ring-white/10">
             <iframe
               src="https://www.youtube.com/embed/t2prhcVyoYM?si=LqmVtlf12hYDp5zH"
               title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+          <div className="relative aspect-video rounded-2xl overflow-hidden shadow-glass-xl ring-1 ring-white/10">
+            <iframe
+              src="https://www.youtube.com/embed/K9xi_55css4?si=zYuUHhAKm-0Onqtb"
+              title="YouTube video player 2"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
