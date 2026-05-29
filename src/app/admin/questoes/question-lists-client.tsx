@@ -13,6 +13,7 @@ import { createQuestion } from '@/app/actions/admin/questions'
 import { useToast } from '@/components/admin/toast'
 import type { QuestionList } from '@/lib/types/quiz'
 import { QuestionFormFields, type QuestionFormData } from '@/components/admin/question-form-fields'
+import { SUBJECT_LABELS } from '@/lib/constants'
 
 const initialQuestionState: QuestionFormData = {
   question_type: 'multipla_escolha',
@@ -262,7 +263,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
         {list.name}
       </Link>
     ),
-    subjectNode: <span className="capitalize">{list.subject}</span>,
+    subjectNode: <span className="capitalize">{SUBJECT_LABELS[list.subject] || list.subject}</span>,
     statusNode: (
       <div className="flex items-center gap-3">
         <button
