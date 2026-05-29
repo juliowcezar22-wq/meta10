@@ -12,6 +12,7 @@ import { createStandaloneQuestion, updateStandaloneQuestion, deleteStandaloneQue
 import { useToast } from '@/components/admin/toast'
 import type { Question } from '@/lib/types/quiz'
 import { QuestionFormFields, type QuestionFormData } from '@/components/admin/question-form-fields'
+import { SUBJECT_LABELS } from '@/lib/constants'
 
 export function StandaloneClient({ initialQuestions }: { initialQuestions: Question[] }) {
   const router = useRouter()
@@ -157,7 +158,7 @@ export function StandaloneClient({ initialQuestions }: { initialQuestions: Quest
 
   const formattedQuestions = initialQuestions.map(q => ({
     ...q,
-    subjectNode: <span className="capitalize">{q.subject}</span>,
+    subjectNode: <span className="capitalize">{SUBJECT_LABELS[q.subject] || q.subject}</span>,
     tipoNode: (
       <Badge variant={q.question_type === 'multipla_escolha' ? 'primary' : 'purple'}>
         {q.question_type === 'multipla_escolha' ? 'Múltipla Escolha' : 'V ou F'}

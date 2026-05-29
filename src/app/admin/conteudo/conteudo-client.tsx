@@ -10,6 +10,7 @@ import { Pencil, Trash2, X } from 'lucide-react'
 import { createMaterial, updateMaterial, deleteMaterial } from '@/app/actions/admin/materials'
 import { useToast } from '@/components/admin/toast'
 import type { Database } from '@/lib/supabase/types'
+import { SUBJECT_LABELS } from '@/lib/constants'
 
 type Material = Database['public']['Tables']['materials']['Row']
 
@@ -112,7 +113,7 @@ export function ConteudoClient({ initialData }: { initialData: Material[] }) {
         {material.type}
       </Badge>
     ),
-    subjectNode: <span className="capitalize">{material.subject || '-'}</span>,
+    subjectNode: <span className="capitalize">{material.subject ? (SUBJECT_LABELS[material.subject] || material.subject) : '-'}</span>,
     accessNode: (
       <Badge variant={material.is_free ? 'success' : 'primary'}>
         {material.is_free ? 'Gratuito' : 'Premium'}

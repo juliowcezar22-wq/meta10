@@ -4,6 +4,18 @@ export const INSTAGRAM_LINK = process.env.NEXT_PUBLIC_INSTAGRAM_LINK || 'https:/
 export const YOUTUBE_LINK = process.env.NEXT_PUBLIC_YOUTUBE_LINK || 'https://www.youtube.com/@meta10quiz'
 export const EMAIL_LINK = process.env.NEXT_PUBLIC_EMAIL_LINK || 'mailto:contato@meta10.com.br'
 
+export const SUBJECT_LABELS: Record<string, string> = {
+  portugues: 'Português',
+  matematica: 'Matemática',
+  historia: 'História',
+  geografia: 'Geografia',
+  ciencias: 'Ciências',
+  ingles: 'Inglês',
+  fisica: 'Física',
+  quimica: 'Química',
+  biologia: 'Biologia',
+  outros: 'Outros'
+}
 export const HOTMART_LINKS = {
   gratuito: process.env.NEXT_PUBLIC_HOTMART_GRATUITO || '#',
   mensal: process.env.NEXT_PUBLIC_HOTMART_MENSAL || 'https://pay.hotmart.com/placeholder-mensal',

@@ -89,11 +89,11 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
     setIsSaving(false)
 
     if (result.success) {
-      toast('Produto salvo com sucesso!', 'success')
+      toast('Item salvo com sucesso!', 'success')
       closeModal()
       router.refresh()
     } else {
-      toast('Erro ao salvar produto', 'error')
+      toast('Erro ao salvar item', 'error')
     }
   }
 
@@ -103,7 +103,7 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
     await deleteProduct(deleteId)
     setIsDeleting(false)
     setDeleteId(null)
-    toast('Produto excluído com sucesso!', 'success')
+    toast('Item excluído com sucesso!', 'success')
     router.refresh()
   }
 
@@ -152,10 +152,10 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
       <PageHeader 
-        title="Produtos" 
-        description="Gerencie os produtos vendidos na plataforma."
+        title="Loja" 
+        description="Gerencie os itens vendidos na loja."
         action={
-          <button onClick={() => openModal()} className="btn-primary">Novo Produto</button>
+          <button onClick={() => openModal()} className="btn-primary">Novo Item da Loja</button>
         }
       />
 
@@ -177,8 +177,8 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
-        title="Excluir Produto"
-        description={`Tem certeza que deseja excluir o produto "${deletingProduct?.name}"? Esta ação não pode ser desfeita.`}
+        title="Excluir Item da Loja"
+        description={`Tem certeza que deseja excluir o item "${deletingProduct?.name}"? Esta ação não pode ser desfeita.`}
         confirmText="Excluir"
         isLoading={isDeleting}
       />
@@ -190,7 +190,7 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
           <div className="bg-white rounded-2xl w-full max-w-md relative z-10 shadow-xl overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-surface-100">
               <h2 className="text-xl font-bold text-surface-900">
-                {editingProduct ? 'Editar Produto' : 'Novo Produto'}
+                {editingProduct ? 'Editar Item da Loja' : 'Novo Item da Loja'}
               </h2>
               <button type="button" onClick={closeModal} className="text-surface-400 hover:text-surface-900 transition-colors">
                 <X className="w-5 h-5" />
@@ -212,7 +212,7 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-surface-700 mb-1">Nome do Produto</label>
+                <label className="block text-sm font-medium text-surface-700 mb-1">Nome do Item</label>
                 <input 
                   type="text" 
                   value={formData.name}
