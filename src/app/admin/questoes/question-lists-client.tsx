@@ -179,6 +179,18 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
     }
   }
 
+  const handleDuplicarParaProxima = async () => {
+    setIsSaving(true)
+    const saved = await saveCurrentQuestion()
+    setIsSaving(false)
+    if (saved) {
+      toast("Questão salva, próxima já pré-preenchida", 'success')
+      // Mantém os dados no formData para a próxima questão
+    } else {
+      toast("Preencha todos os campos obrigatórios da questão atual.", 'error')
+    }
+  }
+
   const handleFinalizar = async () => {
     if (!listId) return
 
@@ -475,6 +487,9 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
                   <div className="flex gap-3">
                     <button type="button" onClick={handleAdicionarOutra} disabled={isSaving} className="btn-secondary">
                       + Salvar e Adicionar Outra
+                    </button>
+                    <button type="button" onClick={handleDuplicarParaProxima} disabled={isSaving} className="btn-secondary">
+                      Salvar e Duplicar pra Próxima
                     </button>
                     <button type="button" onClick={handleFinalizar} disabled={isSaving} className="btn-primary">
                       {isSaving ? 'Aguarde...' : 'Finalizar Simulado'}

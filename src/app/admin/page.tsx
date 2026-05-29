@@ -1,7 +1,8 @@
 import { requireAdmin, requireAuth } from '@/lib/auth/guards'
 import { getDashboardStats } from '@/lib/data/dashboard-stats'
-import { Users, UserCheck, BookOpen, ShoppingBag, Target } from 'lucide-react'
+import { Users, UserCheck, BookOpen, ShoppingBag, Target, GraduationCap, UserX, ListChecks, HelpCircle, MessageSquareQuote, MessageSquarePlus } from 'lucide-react'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 
 export default async function AdminPage() {
   const session = await requireAuth()
@@ -17,58 +18,108 @@ export default async function AdminPage() {
         <p className="text-surface-600">Olá, {profile.nome}. Aqui está o resumo do sistema.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        
+        <Link href="/admin/usuarios" className="card p-6 flex items-center gap-4 hover:border-primary/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
             <Users className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm text-surface-500 font-medium">Total de Usuários</p>
+            <p className="text-sm text-surface-500 font-medium">Usuários</p>
             <p className="text-2xl font-bold text-surface-900">{stats.totalUsers}</p>
           </div>
-        </div>
+        </Link>
 
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-success-500/10 flex items-center justify-center text-success-600 flex-shrink-0">
+        <Link href="/admin/professores" className="card p-6 flex items-center gap-4 hover:border-primary/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+            <GraduationCap className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-sm text-surface-500 font-medium">Professores</p>
+            <p className="text-2xl font-bold text-surface-900">{stats.totalProfessores}</p>
+          </div>
+        </Link>
+
+        <Link href="/admin/alunos-ativos" className="card p-6 flex items-center gap-4 hover:border-success-500/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-success-500/10 flex items-center justify-center text-success-600 flex-shrink-0 group-hover:bg-success-500 group-hover:text-white transition-colors">
             <UserCheck className="w-6 h-6" />
           </div>
           <div>
             <p className="text-sm text-surface-500 font-medium">Alunos Ativos</p>
             <p className="text-2xl font-bold text-surface-900">{stats.activeStudents}</p>
           </div>
-        </div>
+        </Link>
 
+        <Link href="/admin/alunos-inativos" className="card p-6 flex items-center gap-4 hover:border-surface-400/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-surface-200 flex items-center justify-center text-surface-600 flex-shrink-0 group-hover:bg-surface-400 group-hover:text-white transition-colors">
+            <UserX className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-sm text-surface-500 font-medium">Alunos Inativos</p>
+            <p className="text-2xl font-bold text-surface-900">{stats.inactiveStudents}</p>
+          </div>
+        </Link>
 
+        <Link href="/admin/questoes-avulsas" className="card p-6 flex items-center gap-4 hover:border-purple-500/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-600 flex-shrink-0 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+            <ListChecks className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-sm text-surface-500 font-medium">Questões</p>
+            <p className="text-2xl font-bold text-surface-900">{stats.totalQuestoesAvulsas}</p>
+          </div>
+        </Link>
 
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 flex-shrink-0">
-            <BookOpen className="w-6 h-6" />
+        <Link href="/admin/questoes" className="card p-6 flex items-center gap-4 hover:border-blue-500/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+            <HelpCircle className="w-6 h-6" />
           </div>
           <div>
             <p className="text-sm text-surface-500 font-medium">Simulados</p>
-            <p className="text-2xl font-bold text-surface-900">{stats.totalQuestionLists}</p>
+            <p className="text-2xl font-bold text-surface-900">{stats.totalSimulados}</p>
           </div>
-        </div>
+        </Link>
 
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-600 flex-shrink-0">
+        <Link href="/admin/conteudo" className="card p-6 flex items-center gap-4 hover:border-orange-500/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600 flex-shrink-0 group-hover:bg-orange-500 group-hover:text-white transition-colors">
+            <BookOpen className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-sm text-surface-500 font-medium">Materiais</p>
+            <p className="text-2xl font-bold text-surface-900">{stats.totalMaterials}</p>
+          </div>
+        </Link>
+
+        <Link href="/admin/produtos" className="card p-6 flex items-center gap-4 hover:border-teal-500/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-teal-500/10 flex items-center justify-center text-teal-600 flex-shrink-0 group-hover:bg-teal-500 group-hover:text-white transition-colors">
             <ShoppingBag className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm text-surface-500 font-medium">Produtos Ativos</p>
+            <p className="text-sm text-surface-500 font-medium">Loja</p>
             <p className="text-2xl font-bold text-surface-900">{stats.totalProducts}</p>
           </div>
-        </div>
+        </Link>
 
-        <div className="card p-6 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-teal-500/10 flex items-center justify-center text-teal-600 flex-shrink-0">
-            <Target className="w-6 h-6" />
+        <Link href="/admin/depoimentos" className="card p-6 flex items-center gap-4 hover:border-pink-500/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-pink-500/10 flex items-center justify-center text-pink-600 flex-shrink-0 group-hover:bg-pink-500 group-hover:text-white transition-colors">
+            <MessageSquareQuote className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm text-surface-500 font-medium">Tentativas Concluídas</p>
-            <p className="text-2xl font-bold text-surface-900">{stats.totalAttempts}</p>
+            <p className="text-sm text-surface-500 font-medium">Depoimentos</p>
+            <p className="text-2xl font-bold text-surface-900">{stats.totalDepoimentos}</p>
           </div>
-        </div>
+        </Link>
+
+        <Link href="/admin/sugestoes" className="card p-6 flex items-center gap-4 hover:border-amber-500/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600 flex-shrink-0 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+            <MessageSquarePlus className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-sm text-surface-500 font-medium">Sugestões</p>
+            <p className="text-2xl font-bold text-surface-900">{stats.totalSugestoes}</p>
+          </div>
+        </Link>
+
       </div>
     </main>
   )
