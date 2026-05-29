@@ -16,7 +16,7 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="bg-surface-900 text-surface-300">
+    <footer className="bg-surface-900 text-white/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-8">
           {/* Brand */}
@@ -24,7 +24,7 @@ export default function Footer() {
             <div className="mb-4">
               <Image src="/logomarca-meta10.png" alt="META 10" width={120} height={30} className="w-auto h-8 object-contain brightness-0 invert" />
             </div>
-            <p className="text-surface-500 text-sm leading-relaxed max-w-sm mb-6">
+            <p className="text-white/80 text-sm leading-relaxed max-w-sm mb-6">
               Plataforma de reforço escolar de qualidade para alunos do ensino fundamental e médio. Conteúdo estratégico, simulados e muito mais.
             </p>
             <div className="flex gap-3">
@@ -44,7 +44,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {navLinks.map((item) => (
                 <li key={item.href}>
-                  <Link href={item.href} className="text-surface-500 hover:text-primary transition-colors text-sm">{item.label}</Link>
+                  <Link href={item.href} className="text-white/80 hover:text-white transition-colors text-sm">{item.label}</Link>
                 </li>
               ))}
             </ul>
@@ -53,10 +53,10 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-surface-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-surface-600 text-xs">
+          <p className="text-white/80 text-xs">
             © {new Date().getFullYear()} META 10 Espaço Pedagógico. Todos os direitos reservados.
           </p>
-          <p className="text-surface-600 text-xs flex items-center gap-1">
+          <p className="text-white/80 text-xs flex items-center gap-1">
             Feito com <Heart className="w-3 h-3 text-danger fill-danger" /> para educação
           </p>
         </div>

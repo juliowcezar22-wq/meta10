@@ -30,10 +30,10 @@ export default function AboutSection() {
               <span className="text-gradient-primary">META 10</span>?
             </h2>
             <p className="text-surface-500 text-lg leading-relaxed mb-4">
-              O META 10 é um espaço pedagógico digital criado para oferecer reforço escolar de qualidade a alunos do ensino fundamental e médio.
+              O META 10 é um espaço pedagógico criado para oferecer reforço escolar de qualidade a alunos do ensino fundamental e médio.
             </p>
             <p className="text-surface-500 text-lg leading-relaxed mb-10">
-              Nossa plataforma reúne materiais de estudo cuidadosamente elaborados — desde questões e simulados até PDFs, mapas mentais e resumos — tudo organizado para maximizar seu aprendizado.
+              Nossa plataforma reúne materiais de estudo cuidadosamente elaborados — desde questões, simulados, atividades em PDF, mapas mentais e resumos — tudo organizado para maximizar seu aprendizado.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -55,7 +55,7 @@ export default function AboutSection() {
           <div className="relative animate-fade-in-up animation-delay-200">
             <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 via-cyan/10 to-purple/20 rounded-[2rem] blur-2xl opacity-60" />
             <div className="relative rounded-3xl overflow-hidden shadow-glass-xl aspect-[4/5] lg:aspect-square ring-1 ring-surface-200/50">
-              <Image src="/seçaosobre.jpeg" alt="META 10 Espaço Pedagógico" fill className="object-cover transition-transform duration-700 hover:scale-[1.03]" sizes="(max-width: 768px) 100vw, 50vw" />
+              <Image src="/secao-sobre.jpeg" alt="META 10 Espaço Pedagógico" fill className="object-cover transition-transform duration-700 hover:scale-[1.03]" sizes="(max-width: 768px) 100vw, 50vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
             </div>
           </div>

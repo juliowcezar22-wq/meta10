@@ -10,8 +10,8 @@ export default function HeroBanner() {
         <Image src="/adolescentes.jpg" alt="" fill className="object-cover object-center scale-105" priority />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
         {/* Animated orbs */}
-        <div className="absolute top-[20%] left-[15%] w-[500px] h-[500px] bg-primary/15 rounded-full blur-[120px] animate-pulse-soft pointer-events-none" />
-        <div className="absolute bottom-[20%] right-[15%] w-[400px] h-[400px] bg-cyan/15 rounded-full blur-[100px] animate-pulse-soft pointer-events-none" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-[10%] left-[-10%] w-[500px] h-[500px] bg-primary/15 rounded-full blur-[120px] animate-pulse-soft pointer-events-none" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[400px] h-[400px] bg-cyan/15 rounded-full blur-[100px] animate-pulse-soft pointer-events-none" style={{ animationDelay: '1.5s' }} />
         <div className="absolute top-[60%] left-[50%] w-[300px] h-[300px] bg-purple/10 rounded-full blur-[100px] animate-pulse-soft pointer-events-none" style={{ animationDelay: '3s' }} />
       </div>
 
@@ -25,7 +25,7 @@ export default function HeroBanner() {
           </div>
 
           {/* Headline */}
-          <h1 className="animate-fade-in-up animation-delay-200 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem] font-extrabold text-white leading-[1.08] tracking-tight mb-6">
+          <h1 className="animate-fade-in-up animation-delay-200 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem] font-extrabold text-white leading-[1.08] tracking-tight mb-6 drop-shadow-2xl">
             Seu reforço escolar{' '}
             <span className="relative inline-block">
               <span className="text-gradient-hero">começa aqui</span>
@@ -36,8 +36,8 @@ export default function HeroBanner() {
           </h1>
 
           {/* Subtitle */}
-          <p className="animate-fade-in-up animation-delay-300 text-lg sm:text-xl md:text-[1.35rem] text-white/70 max-w-2xl mx-auto font-semibold leading-relaxed mb-10">
-            Questões, simulados, PDFs, mapas mentais e resumos organizados para você estudar de forma eficiente e conquistar os melhores resultados.
+          <p className="animate-fade-in-up animation-delay-300 text-lg sm:text-xl md:text-[1.35rem] text-white/90 max-w-2xl mx-auto font-semibold leading-relaxed mb-10 drop-shadow-lg">
+            Questões, simulados, atividades em PDF, mapas mentais e resumos organizados para você estudar de forma eficiente e conquistar os melhores resultados.
           </p>
 
           {/* CTAs */}

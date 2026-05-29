@@ -1,4 +1,4 @@
-export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5575983341771'
+export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5575981122334'
 export const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}`
 export const INSTAGRAM_LINK = process.env.NEXT_PUBLIC_INSTAGRAM_LINK || 'https://instagram.com/meta10espacopedagogico'
 export const YOUTUBE_LINK = process.env.NEXT_PUBLIC_YOUTUBE_LINK || 'https://www.youtube.com/@meta10quiz'
@@ -12,7 +12,7 @@ export const HOTMART_LINKS = {
   meta10: process.env.NEXT_PUBLIC_HOTMART_META10 || 'https://pay.hotmart.com/placeholder-meta10',
 }
 
-export const GOOGLE_MAPS_EMBED = process.env.NEXT_PUBLIC_GOOGLE_MAPS_EMBED || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3899.0294502646957!2d-38.90761412330957!3d-12.246285188006322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x71437bfdaeb5cd9%3A0xd18ae05b1b8014e2!2sMeta%2010%20Espa%C3%A7o%20Pedag%C3%B3gico%20Refor%C3%A7o%20Escolar!5e0!3m2!1spt-BR!2sbr!4v1775011916082!5m2!1spt-BR!2sbr'
+export const GOOGLE_MAPS_EMBED = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3899.0294500875407!2d-38.9050392!3d-12.246285199999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x71437bfdaeb5cd9%3A0xd18ae05b1b8014e2!2sMeta%2010%20Espa%C3%A7o%20Pedag%C3%B3gico%20Refor%C3%A7o%20Escolar!5e0!3m2!1spt-BR!2sbr!4v1779921119710!5m2!1spt-BR!2sbr'
 
 export const YOUTUBE_VIDEO_ID = process.env.NEXT_PUBLIC_YOUTUBE_VIDEO_ID || 'dQw4w9WgXcQ'
 export const YOUTUBE_SHORTS = [
@@ -83,7 +83,7 @@ export const PLANS = [
       'Download de provas anteriores',
       'Estatísticas de desempenho'
     ],
-    highlighted: true,
+    highlighted: false,
     link: HOTMART_LINKS.anual,
   },
   {
@@ -100,12 +100,12 @@ export const PLANS = [
       'Estatísticas de desempenho',
       'Resumos de estudo',
       'Comentários de professores',
-      'Resolução de simulados',
+      'Simulados',
       'Download de mapas mentais',
       'Flashcards inteligentes',
       'Download de jogos pedagógicos'
     ],
-    highlighted: false,
+    highlighted: true,
     link: HOTMART_LINKS.meta10,
   },
 ]
@@ -113,16 +113,15 @@ export const PLANS = [
 export const MATERIALS = [
   { id: 'questoes', title: 'Banco de Questões', description: 'Milhares de questões organizadas por disciplina e tema.', icon: 'ListChecks', slug: 'questoes' },
   { id: 'simulados', title: 'Simulados', description: 'Simulados completos com correção automática e comentários.', icon: 'ClipboardCheck', slug: 'simulados' },
-  { id: 'pdfs', title: 'PDFs', description: 'Apostilas, listas de exercícios e materiais complementares.', icon: 'FileText', slug: 'pdfs' },
+  { id: 'pdfs', title: 'Atividades em PDF', description: 'Apostilas, listas de exercícios e materiais complementares.', icon: 'FileText', slug: 'pdfs' },
   { id: 'mapas', title: 'Mapas Mentais', description: 'Mapas visuais para organizar e fixar o conteúdo.', icon: 'Network', slug: 'mapas-mentais' },
   { id: 'resumos', title: 'Resumos', description: 'Resumos objetivos das matérias mais cobradas.', icon: 'BookOpen', slug: 'resumos' },
+  { id: 'jogos', title: 'Jogos Pedagógicos', description: 'Aprenda brincando com nossos jogos educativos.', icon: 'Gamepad2', slug: 'jogos' },
 ]
 
 export const FREE_CONTENTS = [
-  { title: 'Introdução à Física', type: 'PDF', pages: '12 páginas' },
-  { title: 'Gramática Essencial', type: 'Resumo', pages: '8 páginas' },
-  { title: 'Equações do 2º Grau', type: 'Mapa Mental', pages: '1 página' },
-  { title: 'Simulado ENEM - Matemática', type: 'Simulado', pages: '45 questões' },
+  { title: 'Banco de Questões', type: 'PDF', pages: '12 páginas' },
+  { title: 'Atividades em PDF', type: 'Resumo', pages: '8 páginas' },
 ]
 
 export const STORE_PRODUCTS = [

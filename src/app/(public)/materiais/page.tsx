@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ListChecks, ClipboardCheck, FileText, Network, BookOpen } from 'lucide-react'
+import { ListChecks, ClipboardCheck, FileText, Network, BookOpen, Gamepad2 } from 'lucide-react'
 import { MATERIALS } from '@/lib/constants'
 
 const iconMap: Record<string, React.ElementType> = {
@@ -8,6 +8,7 @@ const iconMap: Record<string, React.ElementType> = {
   FileText,
   Network,
   BookOpen,
+  Gamepad2,
 }
 
 export default function MateriaisPage() {
@@ -26,7 +27,7 @@ export default function MateriaisPage() {
 
       <section className="section-padding bg-white">
         <div className="container-custom">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {MATERIALS.map((material) => {
               const Icon = iconMap[material.icon] || BookOpen
               return (

@@ -35,17 +35,17 @@ export default function Header() {
           : 'bg-transparent py-4'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14">
+          <div className="flex items-center justify-between h-14 relative">
             <Link href="/" className="relative z-10 flex items-center gap-2 group">
               <Image src="/logomarca-meta10.png" alt="META 10" width={140} height={36} className="h-7 w-auto object-contain transition-all duration-300 group-hover:scale-105" priority />
             </Link>
 
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="relative px-4 py-2 text-sm font-medium text-surface-600 hover:text-primary transition-colors duration-200 rounded-xl hover:bg-primary-50/60"
+                  className={`relative px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-xl hover:bg-primary-50/20 ${scrolled ? 'text-surface-600 hover:text-primary' : 'text-white hover:text-white/80'}`}
                 >
                   {item.label}
                 </Link>
@@ -53,7 +53,7 @@ export default function Header() {
             </nav>
 
             <div className="hidden md:flex items-center gap-3">
-              <Link href="/login" className="btn-ghost text-sm">
+              <Link href="/login" className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl transition-colors ${scrolled ? 'text-surface-600 hover:bg-surface-100 hover:text-primary' : 'text-white hover:bg-white/10'}`}>
                 <User className="w-4 h-4" />
                 Entrar
               </Link>
@@ -65,7 +65,7 @@ export default function Header() {
 
             <button
               onClick={() => setIsOpen(true)}
-              className="md:hidden relative z-10 p-2 text-surface-700 hover:text-primary transition-colors rounded-xl hover:bg-surface-100"
+              className={`md:hidden relative z-10 p-2 transition-colors rounded-xl hover:bg-surface-100/20 ${scrolled ? 'text-surface-700 hover:text-primary' : 'text-white'}`}
               aria-label="Abrir menu"
             >
               <Menu className="w-6 h-6" />
