@@ -37,7 +37,7 @@ export function AlunosAtivosClient({ students }: { students: ActiveStudent[] }) 
   })
 
   return (
-    <>
+    <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-surface-900">Alunos Ativos</h1>
         <p className="text-surface-500 text-sm mt-1">
@@ -66,6 +66,6 @@ export function AlunosAtivosClient({ students }: { students: ActiveStudent[] }) 
           />
         )}
       </div>
-    </>
+    </div>
   )
 }

@@ -77,12 +77,22 @@ export async function createQuestion(listId: string, formData: FormData) {
   const gabValidation = validateGabarito(validation.data)
   if (!gabValidation.success) return gabValidation
   
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Fetch subject_id from question_lists to inherit
+  const { data: listData } = await supabase
+    .from('question_lists')
+    .select('subject_id')
+    .eq('id', listId)
+    .single()
+
   const dbData = {
     ...validation.data,
     context: 'simulado',
+    subject_id: listData?.subject_id || null,
+    created_by: user?.id
   }
-
-  const supabase = createClient()
   const { error } = await supabase
     .from('questions')
     .insert(dbData as any)
@@ -170,12 +180,15 @@ export async function duplicateQuestion(questionId: string) {
     return { success: false, errors: { _form: ['Questão não encontrada'] } }
   }
   
+  const { data: { user } } = await supabase.auth.getUser()
+
   const { id, created_at, updated_at, ...rest } = original
   const { error: insertError } = await supabase
     .from('questions')
     .insert({
       ...rest,
       enunciado: `(Duplicada) ${original.enunciado}`,
+      created_by: user?.id
     } as any)
   
   if (insertError) {

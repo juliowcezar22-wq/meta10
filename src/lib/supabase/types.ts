@@ -68,6 +68,7 @@ export type Database = {
       materials: {
         Row: {
           created_at: string
+          created_by: string | null
           description: string | null
           file_url: string
           id: string
@@ -79,6 +80,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           description?: string | null
           file_url: string
           id?: string
@@ -90,6 +92,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           description?: string | null
           file_url?: string
           id?: string
@@ -236,32 +239,46 @@ export type Database = {
       question_lists: {
         Row: {
           created_at: string
+          created_by: string | null
           description: string | null
           id: string
           is_active: boolean
           name: string
           subject: string
+          subject_id: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean
           name: string
           subject: string
+          subject_id?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean
           name?: string
           subject?: string
+          subject_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "question_lists_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       questions: {
         Row: {
@@ -269,6 +286,7 @@ export type Database = {
           comentario: string | null
           context: string
           created_at: string
+          created_by: string | null
           difficulty: Database["public"]["Enums"]["difficulty_level"]
           enunciado: string
           gabarito: string
@@ -276,6 +294,7 @@ export type Database = {
           list_id: string | null
           question_type: string
           subject: string
+          subject_id: string | null
           updated_at: string
         }
         Insert: {
@@ -283,6 +302,7 @@ export type Database = {
           comentario?: string | null
           context?: string
           created_at?: string
+          created_by?: string | null
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
           enunciado: string
           gabarito: string
@@ -290,6 +310,7 @@ export type Database = {
           list_id?: string | null
           question_type?: string
           subject: string
+          subject_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -297,6 +318,7 @@ export type Database = {
           comentario?: string | null
           context?: string
           created_at?: string
+          created_by?: string | null
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
           enunciado?: string
           gabarito?: string
@@ -304,6 +326,7 @@ export type Database = {
           list_id?: string | null
           question_type?: string
           subject?: string
+          subject_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -312,6 +335,13 @@ export type Database = {
             columns: ["list_id"]
             isOneToOne: false
             referencedRelation: "question_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "questions_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
             referencedColumns: ["id"]
           },
         ]
@@ -357,6 +387,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subjects: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          discipline: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          discipline: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          discipline?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
       }
       subscription_logs: {
         Row: {

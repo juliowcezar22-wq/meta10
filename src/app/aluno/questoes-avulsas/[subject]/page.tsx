@@ -1,16 +1,21 @@
 import { requireAuth } from '@/lib/auth/guards'
 import { getStandaloneQuestionsBySubject } from '@/lib/data/questions'
 import { getMyStandaloneAnswers } from '@/lib/data/standalone-answers'
+import { getAllSubjects } from '@/lib/data/subjects'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle2, Circle } from 'lucide-react'
 import { Badge } from '@/components/admin/badge'
+import { SubjectFilter } from '@/components/aluno/subject-filter'
 
 export const dynamic = 'force-dynamic'
 
-export default async function QuestoesAvulsasSubjectPage({ params }: { params: { subject: string } }) {
+export default async function QuestoesAvulsasSubjectPage({ params, searchParams }: { params: { subject: string }, searchParams: { assunto?: string } }) {
   const user = await requireAuth()
-  const questions = await getStandaloneQuestionsBySubject(params.subject)
+  const assuntoId = searchParams.assunto
+  const questions = await getStandaloneQuestionsBySubject(params.subject, assuntoId)
   const myAnswers = await getMyStandaloneAnswers(user.profile.id)
+  const allSubjects = await getAllSubjects()
+  const currentSubjects = allSubjects.filter(s => s.discipline === params.subject)
 
   const answeredIds = new Set(myAnswers.map(a => a.question_id))
 
@@ -28,9 +33,11 @@ export default async function QuestoesAvulsasSubjectPage({ params }: { params: {
         </div>
       </div>
 
+      <SubjectFilter subjects={currentSubjects} discipline={params.subject} />
+
       {questions.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-surface-200">
-          <p className="text-surface-500">Nenhuma questão encontrada para esta matéria.</p>
+          <p className="text-surface-500">Nenhuma questão encontrada para este filtro.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">

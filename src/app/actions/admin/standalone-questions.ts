@@ -23,6 +23,7 @@ const questionSchema = z.discriminatedUnion('question_type', [
     comentario: z.string().optional().nullable(),
     difficulty: z.enum(['facil', 'medio', 'dificil']),
     subject: z.enum(['matematica','portugues','historia','geografia','ciencias','ingles','fisica','quimica','biologia','outros']),
+    subject_id: z.string().uuid('ID de assunto inválido').optional().nullable(),
   }),
   // Verdadeiro ou Falso
   z.object({
@@ -34,6 +35,7 @@ const questionSchema = z.discriminatedUnion('question_type', [
     comentario: z.string().optional().nullable(),
     difficulty: z.enum(['facil', 'medio', 'dificil']),
     subject: z.enum(['matematica','portugues','historia','geografia','ciencias','ingles','fisica','quimica','biologia','outros']),
+    subject_id: z.string().uuid('ID de assunto inválido').optional().nullable(),
   }),
 ])
 
@@ -53,6 +55,7 @@ function parseFormData(formData: FormData) {
     gabarito: formData.get('gabarito'),
     comentario: formData.get('comentario') || null,
     subject: formData.get('subject'),
+    subject_id: formData.get('subject_id') || null,
     difficulty: formData.get('difficulty'),
   }
 }
@@ -77,13 +80,16 @@ export async function createStandaloneQuestion(formData: FormData) {
   const gabValidation = validateGabarito(validation.data)
   if (!gabValidation.success) return gabValidation
   
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   const dbData = {
     ...validation.data,
     context: 'avulsa',
-    list_id: null
+    list_id: null,
+    created_by: user?.id
   }
 
-  const supabase = createClient()
   const { error } = await supabase
     .from('questions')
     .insert(dbData as any)
@@ -109,13 +115,14 @@ export async function updateStandaloneQuestion(id: string, formData: FormData) {
   const gabValidation = validateGabarito(validation.data)
   if (!gabValidation.success) return gabValidation
   
+  const supabase = createClient()
+
   const dbData = {
     ...validation.data,
     context: 'avulsa',
     list_id: null
   }
 
-  const supabase = createClient()
   const { error } = await supabase
     .from('questions')
     .update(dbData as any)
