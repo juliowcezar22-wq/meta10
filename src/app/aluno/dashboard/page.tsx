@@ -1,13 +1,13 @@
 import Link from 'next/link'
-import { ListChecks, ClipboardCheck, FileText, Network, BookOpen, TrendingUp, Clock, Award, BarChart3, Lock, Crown, ArrowRight, CheckCircle2, XCircle } from 'lucide-react'
+import { ListChecks, ClipboardCheck, FileText, Network, BookOpen, TrendingUp, Clock, Award, BarChart3, Lock, Crown, ArrowRight, CheckCircle2, XCircle, Gamepad2 } from 'lucide-react'
 import { getCurrentSubscription } from '@/lib/data/subscriptions'
 import { getStudentStats } from '@/lib/data/attempts'
 import { requireAuth } from '@/lib/auth/guards'
 
 const quickAccess = [
   { title: 'Simulados', href: '/aluno/questoes', icon: ListChecks, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-50' },
-  { title: 'Simulados', href: '/aluno/simulados', icon: ClipboardCheck, gradient: 'from-cyan-500 to-cyan-600', bg: 'bg-cyan-50' },
-  { title: 'PDFs', href: '/aluno/pdfs', icon: FileText, gradient: 'from-purple-500 to-purple-600', bg: 'bg-purple-50' },
+  { title: 'Jogos Pedagógicos', href: '/aluno/jogos-pedagogicos', icon: Gamepad2, gradient: 'from-amber-500 to-amber-600', bg: 'bg-amber-50' },
+  { title: 'Atividades em PDF', href: '/aluno/atividades-pdf', icon: FileText, gradient: 'from-purple-500 to-purple-600', bg: 'bg-purple-50' },
   { title: 'Mapas Mentais', href: '/aluno/mapas-mentais', icon: Network, gradient: 'from-success-500 to-success-600', bg: 'bg-success-50' },
   { title: 'Resumos', href: '/aluno/resumos', icon: BookOpen, gradient: 'from-danger-500 to-danger-600', bg: 'bg-danger-50' },
 ]
