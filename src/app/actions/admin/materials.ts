@@ -30,6 +30,8 @@ export async function createMaterial(formData: FormData) {
   }
   
   const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   const { error } = await supabase.from('materials').insert({
     title: validation.data.title,
     description: validation.data.description,
@@ -37,6 +39,7 @@ export async function createMaterial(formData: FormData) {
     subject: validation.data.subject,
     file_url: validation.data.file_url,
     is_free: validation.data.is_free,
+    created_by: user?.id,
   })
   
   if (error) {

@@ -27,7 +27,7 @@ const initialQuestionState: QuestionFormData = {
   difficulty: 'facil',
 }
 
-export function QuestionListsClient({ initialData }: { initialData: any[] }) {
+export function QuestionListsClient({ initialData, subjects }: { initialData: any[], subjects: any[] }) {
   const router = useRouter()
   const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
@@ -48,6 +48,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
   const [listMeta, setListMeta] = useState({
     name: '',
     subject: 'matematica',
+    subject_id: '',
     description: '',
   })
 
@@ -66,6 +67,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
       setListMeta({
         name: list.name,
         subject: list.subject,
+        subject_id: (list as any).subject_id || '',
         description: list.description || '',
       })
     } else {
@@ -73,6 +75,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
       setListMeta({
         name: '',
         subject: 'matematica',
+        subject_id: '',
         description: '',
       })
     }
@@ -96,6 +99,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
     const data = new FormData()
     data.append('name', listMeta.name)
     data.append('subject', listMeta.subject)
+    if (listMeta.subject_id) data.append('subject_id', listMeta.subject_id)
     data.append('description', listMeta.description)
     data.append('is_active', String(editingList.is_active))
 
@@ -118,6 +122,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
     const data = new FormData()
     data.append('name', listMeta.name)
     data.append('subject', listMeta.subject)
+    if (listMeta.subject_id) data.append('subject_id', listMeta.subject_id)
     data.append('description', listMeta.description)
     data.append('is_active', 'false') // Inativa até publicar
 
@@ -276,6 +281,7 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
       </Link>
     ),
     subjectNode: <span className="capitalize">{SUBJECT_LABELS[list.subject] || list.subject}</span>,
+    assuntoNode: <span className="text-surface-600 text-sm">{list.subject_id ? subjects.find(s => s.id === list.subject_id)?.name || 'Desconhecido' : 'Sem assunto'}</span>,
     statusNode: (
       <div className="flex items-center gap-3">
         <button
@@ -353,8 +359,9 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
         searchKey="name"
         searchPlaceholder="Buscar simulado..."
         columns={[
-          { header: 'Nome do Simulado', accessor: 'nameNode' },
+          { header: 'Nome', accessor: 'nameNode' },
           { header: 'Disciplina', accessor: 'subjectNode' },
+          { header: 'Assunto', accessor: 'assuntoNode' },
           { header: 'Qtde Questões', accessor: 'qtdNode' },
           { header: 'Status', accessor: 'statusNode' },
           { header: 'Ações', accessor: 'actionsNode' }
@@ -410,23 +417,33 @@ export function QuestionListsClient({ initialData }: { initialData: any[] }) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-surface-700 mb-1">Disciplina</label>
+                  <label className="block text-sm font-medium text-surface-900 mb-1">Disciplina</label>
                   <select 
                     value={listMeta.subject}
-                    onChange={(e) => setListMeta({ ...listMeta, subject: e.target.value })}
-                    className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    onChange={(e) => setListMeta({ ...listMeta, subject: e.target.value, subject_id: '' })}
+                    className="w-full px-4 py-2 border border-surface-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                     required
                   >
-                    <option value="matematica">Matemática</option>
-                    <option value="portugues">Português</option>
-                    <option value="historia">História</option>
-                    <option value="geografia">Geografia</option>
-                    <option value="ciencias">Ciências</option>
-                    <option value="ingles">Inglês</option>
-                    <option value="fisica">Física</option>
-                    <option value="quimica">Química</option>
-                    <option value="biologia">Biologia</option>
-                    <option value="outros">Outros</option>
+                    {Object.entries(SUBJECT_LABELS).map(([key, label]) => (
+                      <option key={key} value={key}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-surface-900 mb-1">Assunto (Opcional)</label>
+                  <select 
+                    value={listMeta.subject_id}
+                    onChange={(e) => setListMeta({ ...listMeta, subject_id: e.target.value })}
+                    className="w-full px-4 py-2 border border-surface-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  >
+                    <option value="">Nenhum assunto selecionado</option>
+                    {subjects.filter(s => s.discipline === listMeta.subject).map(sub => (
+                      <option key={sub.id} value={sub.id}>{sub.name}</option>
+                    ))}
+                    {subjects.filter(s => s.discipline === listMeta.subject).length === 0 && (
+                      <option value="" disabled>Nenhum assunto cadastrado para esta disciplina</option>
+                    )}
                   </select>
                 </div>
 

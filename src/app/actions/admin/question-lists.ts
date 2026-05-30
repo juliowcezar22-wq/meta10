@@ -8,6 +8,7 @@ import { revalidatePath } from 'next/cache'
 const questionListSchema = z.object({
   name: z.string().min(1),
   subject: z.enum(['matematica', 'portugues', 'historia', 'geografia', 'ciencias', 'ingles', 'fisica', 'quimica', 'biologia', 'outros']),
+  subject_id: z.string().uuid().optional().nullable(),
   description: z.string().optional(),
   is_active: z.boolean().default(true),
 })
@@ -17,6 +18,7 @@ export async function createQuestionList(formData: FormData) {
   const validation = questionListSchema.safeParse({
     name: formData.get('name'),
     subject: formData.get('subject'),
+    subject_id: formData.get('subject_id') || null,
     description: formData.get('description') || undefined,
     is_active: formData.get('is_active') === 'true',
   })
@@ -24,9 +26,14 @@ export async function createQuestionList(formData: FormData) {
   if (!validation.success) return { success: false, errors: validation.error.flatten().fieldErrors }
   
   const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   const { data, error } = await supabase
     .from('question_lists')
-    .insert(validation.data)
+    .insert({
+      ...validation.data,
+      created_by: user?.id
+    })
     .select()
     .single()
   
@@ -45,6 +52,7 @@ export async function updateQuestionList(id: string, formData: FormData) {
   const validation = questionListSchema.safeParse({
     name: formData.get('name'),
     subject: formData.get('subject'),
+    subject_id: formData.get('subject_id') || null,
     description: formData.get('description') || undefined,
     is_active: formData.get('is_active') === 'true',
   })
@@ -131,12 +139,15 @@ export async function duplicateQuestionList(listId: string) {
   
   // 2. Cria lista nova (inativa por padrão pra revisão)
   const { id, created_at, updated_at, ...rest } = originalList
+  const { data: { user } } = await supabase.auth.getUser()
+
   const { data: newList, error: insertListError } = await supabase
     .from('question_lists')
     .insert({
       ...rest,
       name: `(Duplicada) ${originalList.name}`,
       is_active: false,
+      created_by: user?.id
     })
     .select('id')
     .single()

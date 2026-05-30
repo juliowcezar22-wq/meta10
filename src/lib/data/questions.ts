@@ -33,14 +33,19 @@ export async function getQuestionById(id: string): Promise<Question | null> {
   return data
 }
 
-export async function getStandaloneQuestionsBySubject(subject: string): Promise<Question[]> {
+export async function getStandaloneQuestionsBySubject(subject: string, subjectId?: string): Promise<Question[]> {
   const supabase = createClient()
-  const { data, error } = await supabase
+  let query = supabase
     .from('questions')
     .select('*')
     .eq('context', 'avulsa')
     .eq('subject', subject)
-    .order('created_at', { ascending: true })
+    
+  if (subjectId) {
+    query = query.eq('subject_id', subjectId)
+  }
+
+  const { data, error } = await query.order('created_at', { ascending: true })
   
   if (error) {
     console.error('[getStandaloneQuestionsBySubject]', error)

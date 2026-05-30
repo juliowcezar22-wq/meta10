@@ -14,7 +14,7 @@ import type { Question } from '@/lib/types/quiz'
 import { QuestionFormFields, type QuestionFormData } from '@/components/admin/question-form-fields'
 import { SUBJECT_LABELS } from '@/lib/constants'
 
-export function StandaloneClient({ initialQuestions }: { initialQuestions: Question[] }) {
+export function StandaloneClient({ initialQuestions, subjects }: { initialQuestions: Question[], subjects: any[] }) {
   const router = useRouter()
   const { toast } = useToast()
   
@@ -28,9 +28,10 @@ export function StandaloneClient({ initialQuestions }: { initialQuestions: Quest
   const [isSaving, setIsSaving] = useState(false)
   
   // Form State
-  const [formData, setFormData] = useState<QuestionFormData & { subject: string }>({
+  const [formData, setFormData] = useState<QuestionFormData & { subject: string, subject_id: string }>({
     question_type: 'multipla_escolha',
     subject: 'matematica',
+    subject_id: '',
     enunciado: '',
     alternatives: [
       { letra: 'a', texto: '' },
@@ -54,6 +55,7 @@ export function StandaloneClient({ initialQuestions }: { initialQuestions: Quest
       setFormData({
         question_type: q.question_type || 'multipla_escolha',
         subject: q.subject || 'matematica',
+        subject_id: (q as any).subject_id || '',
         enunciado: q.enunciado,
         alternatives: alts,
         gabarito: q.gabarito,
@@ -65,6 +67,7 @@ export function StandaloneClient({ initialQuestions }: { initialQuestions: Quest
       setFormData({
         question_type: 'multipla_escolha',
         subject: 'matematica',
+        subject_id: '',
         enunciado: '',
         alternatives: [
           { letra: 'a', texto: '' },
@@ -102,6 +105,7 @@ export function StandaloneClient({ initialQuestions }: { initialQuestions: Quest
     
     const data = new FormData()
     data.append('subject', formData.subject)
+    if (formData.subject_id) data.append('subject_id', formData.subject_id)
     data.append('question_type', formData.question_type)
     data.append('enunciado', formData.enunciado)
     data.append('gabarito', formData.gabarito)
@@ -159,6 +163,7 @@ export function StandaloneClient({ initialQuestions }: { initialQuestions: Quest
   const formattedQuestions = initialQuestions.map(q => ({
     ...q,
     subjectNode: <span className="capitalize">{SUBJECT_LABELS[q.subject] || q.subject}</span>,
+    assuntoNode: <span className="text-surface-600 text-sm">{(q as any).subject_id ? subjects.find(s => s.id === (q as any).subject_id)?.name || 'Desconhecido' : 'Sem assunto'}</span>,
     tipoNode: (
       <Badge variant={q.question_type === 'multipla_escolha' ? 'primary' : 'purple'}>
         {q.question_type === 'multipla_escolha' ? 'Múltipla Escolha' : 'V ou F'}
@@ -218,6 +223,7 @@ export function StandaloneClient({ initialQuestions }: { initialQuestions: Quest
             searchPlaceholder="Buscar no enunciado..."
             columns={[
               { header: 'Disciplina', accessor: 'subjectNode' },
+              { header: 'Assunto', accessor: 'assuntoNode' },
               { header: 'Tipo', accessor: 'tipoNode' },
               { header: 'Enunciado', accessor: 'enunciadoNode' },
               { header: 'Ações', accessor: 'actionsNode' }
@@ -256,7 +262,7 @@ export function StandaloneClient({ initialQuestions }: { initialQuestions: Quest
                 <label className="block text-sm font-medium text-surface-700 mb-1">Disciplina</label>
                 <select 
                   value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, subject: e.target.value, subject_id: '' })}
                   className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   required
                 >
@@ -273,9 +279,26 @@ export function StandaloneClient({ initialQuestions }: { initialQuestions: Quest
                 </select>
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-surface-700 mb-1">Assunto (Opcional)</label>
+                <select 
+                  value={formData.subject_id}
+                  onChange={(e) => setFormData({ ...formData, subject_id: e.target.value })}
+                  className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                >
+                  <option value="">Nenhum assunto selecionado</option>
+                  {subjects.filter(s => s.discipline === formData.subject).map(sub => (
+                    <option key={sub.id} value={sub.id}>{sub.name}</option>
+                  ))}
+                  {subjects.filter(s => s.discipline === formData.subject).length === 0 && (
+                    <option value="" disabled>Nenhum assunto cadastrado para esta disciplina</option>
+                  )}
+                </select>
+              </div>
+
               <QuestionFormFields 
                 formData={formData} 
-                setFormData={(data) => setFormData({ ...data, subject: formData.subject })} 
+                setFormData={(data) => setFormData({ ...data, subject: formData.subject, subject_id: formData.subject_id })} 
               />
 
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-surface-100">

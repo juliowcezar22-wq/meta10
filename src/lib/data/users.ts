@@ -199,3 +199,69 @@ export async function getProfessores(): Promise<Professor[]> {
   
   return data ?? []
 }
+
+export type ProfessorMetrics = Professor & {
+  metricas: {
+    questoes: number
+    simulados: number
+    atividades: number
+    jogos: number
+    mapas: number
+    resumos: number
+    mediaDia: number
+  }
+}
+
+export async function getProfessoresWithMetrics(period: '7d' | '30d' | 'total'): Promise<ProfessorMetrics[]> {
+  const supabase = createClient()
+  
+  const { data: professores, error } = await supabase
+    .from('users')
+    .select('id, nome, email, role, created_at')
+    .eq('role', 'professor')
+    .order('created_at', { ascending: false })
+  
+  if (error || !professores) {
+    console.error('[getProfessoresWithMetrics]', error)
+    return []
+  }
+
+  let dateFilter = new Date(0).toISOString()
+  if (period === '7d') {
+    dateFilter = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+  } else if (period === '30d') {
+    dateFilter = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+  }
+
+  const result = await Promise.all(professores.map(async (prof) => {
+    const profDateFilter = period === 'total' ? prof.created_at : dateFilter
+    const actualFilter = profDateFilter > prof.created_at ? profDateFilter : prof.created_at
+
+    const [{ count: qCount }, { count: sCount }, { count: aCount }, { count: jCount }, { count: mCount }, { count: rCount }] = await Promise.all([
+      supabase.from('questions').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).gte('created_at', actualFilter),
+      supabase.from('question_lists').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).gte('created_at', actualFilter),
+      supabase.from('materials').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).eq('type', 'atividade_pdf').gte('created_at', actualFilter),
+      supabase.from('materials').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).eq('type', 'jogo').gte('created_at', actualFilter),
+      supabase.from('materials').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).eq('type', 'mapa_mental').gte('created_at', actualFilter),
+      supabase.from('materials').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).eq('type', 'resumo').gte('created_at', actualFilter),
+    ])
+
+    const dias = Math.max(1, Math.ceil((Date.now() - new Date(actualFilter).getTime()) / (1000 * 60 * 60 * 24)))
+    const totalItens = (qCount || 0) + (sCount || 0) + (aCount || 0) + (jCount || 0) + (mCount || 0) + (rCount || 0)
+    
+    return {
+      ...prof,
+      metricas: {
+        questoes: qCount || 0,
+        simulados: sCount || 0,
+        atividades: aCount || 0,
+        jogos: jCount || 0,
+        mapas: mCount || 0,
+        resumos: rCount || 0,
+        mediaDia: parseFloat((totalItens / dias).toFixed(1))
+      }
+    }
+  }))
+
+  return result
+}

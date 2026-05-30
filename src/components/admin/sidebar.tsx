@@ -18,7 +18,8 @@ import {
   ListChecks,
   FileText,
   Gamepad2,
-  Network
+  Network,
+  BookmarkPlus
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -38,6 +39,7 @@ const navItems = [
   { name: 'Jogos Pedagógicos', href: '/admin/jogos-pedagogicos', icon: Gamepad2, enabled: true },
   { name: 'Questões', href: '/admin/questoes-avulsas', icon: ListChecks, enabled: true },
   { name: 'Simulados', href: '/admin/questoes', icon: HelpCircle, enabled: true },
+  { name: 'Assuntos', href: '/admin/assuntos', icon: BookmarkPlus, enabled: true },
   { name: 'Resumos', href: '/admin/resumos', icon: BookOpen, enabled: true },
   { name: 'Loja', href: '/admin/produtos', icon: ShoppingBag, enabled: true },
   { name: 'Depoimentos', href: '/admin/depoimentos', icon: MessageSquareQuote, enabled: true },
@@ -49,7 +51,7 @@ export function Sidebar({ isOpen, onClose, role }: SidebarProps) {
 
   const visibleNavItems = navItems.filter((item) => {
     if (role === 'professor') {
-      return item.name === 'Simulados' || item.name === 'Questões' || item.name === 'Atividades em PDF' || item.name === 'Jogos Pedagógicos' || item.name === 'Mapas Mentais' || item.name === 'Resumos'
+      return item.name === 'Simulados' || item.name === 'Questões' || item.name === 'Atividades em PDF' || item.name === 'Jogos Pedagógicos' || item.name === 'Mapas Mentais' || item.name === 'Resumos' || item.name === 'Assuntos'
     }
     return true
   })

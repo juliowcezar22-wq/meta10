@@ -1,14 +1,24 @@
 import { requireAuth } from '@/lib/auth/guards'
 import { getQuestionLists } from '@/lib/data/question-lists'
+import { getAllSubjects } from '@/lib/data/subjects'
 import Link from 'next/link'
 import { BookOpen, ArrowRight, ArrowLeft } from 'lucide-react'
+import { SubjectFilter } from '@/components/aluno/subject-filter'
 
 export const dynamic = 'force-dynamic'
 
-export default async function SimuladosMateriaPage({ params }: { params: { subject: string } }) {
+export default async function SimuladosMateriaPage({ params, searchParams }: { params: { subject: string }, searchParams: { assunto?: string } }) {
   await requireAuth()
   const lists = await getQuestionLists()
-  const activeLists = lists.filter(l => l.is_active && l.subject === params.subject)
+  const assuntoId = searchParams.assunto
+  const activeLists = lists.filter(l => {
+    if (!l.is_active || l.subject !== params.subject) return false
+    if (assuntoId && (l as any).subject_id !== assuntoId) return false
+    return true
+  })
+
+  const allSubjects = await getAllSubjects()
+  const currentSubjects = allSubjects.filter(s => s.discipline === params.subject)
 
   const subjectName = params.subject.charAt(0).toUpperCase() + params.subject.slice(1)
 
@@ -24,9 +34,11 @@ export default async function SimuladosMateriaPage({ params }: { params: { subje
         </div>
       </div>
 
+      <SubjectFilter subjects={currentSubjects} discipline={params.subject} />
+
       {activeLists.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-surface-200">
-          <p className="text-surface-500">Nenhum simulado encontrado para esta matéria.</p>
+          <p className="text-surface-500">Nenhum simulado encontrado para este filtro.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
