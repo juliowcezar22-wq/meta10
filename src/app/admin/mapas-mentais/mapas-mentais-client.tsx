@@ -14,7 +14,7 @@ import { SUBJECT_LABELS } from '@/lib/constants'
 
 type Material = Database['public']['Tables']['materials']['Row']
 
-export function ConteudoClient({ initialData }: { initialData: Material[] }) {
+export function MapasMentaisClient({ initialData }: { initialData: Material[] }) {
   const router = useRouter()
   const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
@@ -29,7 +29,7 @@ export function ConteudoClient({ initialData }: { initialData: Material[] }) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: 'pdf',
+    type: 'mapa_mental',
     subject: '',
     file_url: '',
     is_free: false,
@@ -51,7 +51,7 @@ export function ConteudoClient({ initialData }: { initialData: Material[] }) {
       setFormData({
         title: '',
         description: '',
-        type: 'pdf',
+        type: 'mapa_mental',
         subject: '',
         file_url: '',
         is_free: false,
@@ -87,12 +87,12 @@ export function ConteudoClient({ initialData }: { initialData: Material[] }) {
     setIsSaving(false)
 
     if (result.success) {
-      toast('Material salvo com sucesso!', 'success')
+      toast('Mapa mental salvo com sucesso!', 'success')
       closeModal()
       router.refresh()
     } else {
       const errors = result.errors as any
-      toast(errors?._form?.[0] || 'Erro ao salvar material', 'error')
+      toast(errors?._form?.[0] || 'Erro ao salvar mapa mental', 'error')
     }
   }
 
@@ -102,7 +102,7 @@ export function ConteudoClient({ initialData }: { initialData: Material[] }) {
     await deleteMaterial(deleteId)
     setIsDeleting(false)
     setDeleteId(null)
-    toast('Material excluído com sucesso!', 'success')
+    toast('Mapa mental excluído com sucesso!', 'success')
     router.refresh()
   }
 
@@ -142,32 +142,39 @@ export function ConteudoClient({ initialData }: { initialData: Material[] }) {
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto w-full">
       <PageHeader 
-        title="Conteúdo e Materiais" 
-        description="Gerencie PDFs, mapas mentais e resumos."
+        title="Mapas Mentais" 
+        description="Gerencie os mapas mentais disponíveis para os alunos."
         action={
-          <button onClick={() => openModal()} className="btn-primary">Novo Material</button>
+          <button onClick={() => openModal()} className="btn-primary">Novo Mapa Mental</button>
         }
       />
       
-      <DataTable 
-        data={formattedMaterials}
-        searchKey="title"
-        searchPlaceholder="Buscar por título..."
-        columns={[
-          { header: 'Título', accessor: 'title' },
-          { header: 'Tipo', accessor: 'typeNode' },
-          { header: 'Disciplina', accessor: 'subjectNode' },
-          { header: 'Acesso', accessor: 'accessNode' },
-          { header: 'Ações', accessor: 'actionsNode' }
-        ]}
-      />
+      <div className="bg-white p-6 rounded-2xl border border-surface-200">
+        {initialData.length === 0 ? (
+          <div className="text-center py-12 bg-surface-50 rounded-xl border border-surface-100">
+            <p className="text-surface-500">Nenhum mapa mental cadastrado ainda.</p>
+          </div>
+        ) : (
+          <DataTable 
+            data={formattedMaterials}
+            searchKey="title"
+            searchPlaceholder="Buscar por título..."
+            columns={[
+              { header: 'Título', accessor: 'title' },
+              { header: 'Disciplina', accessor: 'subjectNode' },
+              { header: 'Acesso', accessor: 'accessNode' },
+              { header: 'Ações', accessor: 'actionsNode' }
+            ]}
+          />
+        )}
+      </div>
 
       <ConfirmDialog 
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
-        title="Excluir Material"
-        description={`Tem certeza que deseja excluir o material "${deletingMaterial?.title}"? Esta ação não pode ser desfeita.`}
+        title="Excluir Mapa Mental"
+        description={`Tem certeza que deseja excluir o mapa mental "${deletingMaterial?.title}"? Esta ação não pode ser desfeita.`}
         confirmText="Excluir"
         isLoading={isDeleting}
       />
@@ -179,7 +186,7 @@ export function ConteudoClient({ initialData }: { initialData: Material[] }) {
           <div className="bg-white rounded-2xl w-full max-w-md relative z-10 shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between p-6 border-b border-surface-100 shrink-0">
               <h2 className="text-xl font-bold text-surface-900">
-                {editingMaterial ? 'Editar Material' : 'Novo Material'}
+                {editingMaterial ? 'Editar Mapa Mental' : 'Novo Mapa Mental'}
               </h2>
               <button type="button" onClick={closeModal} className="text-surface-400 hover:text-surface-900 transition-colors">
                 <X className="w-5 h-5" />
@@ -196,21 +203,6 @@ export function ConteudoClient({ initialData }: { initialData: Material[] }) {
                   className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   required
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-surface-700 mb-1">Tipo</label>
-                <select 
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                  required
-                >
-                  <option value="pdf">PDF</option>
-                  <option value="mapa_mental">Mapa Mental</option>
-                  <option value="resumo">Resumo</option>
-                  <option value="video">Vídeo</option>
-                </select>
               </div>
 
               <div>

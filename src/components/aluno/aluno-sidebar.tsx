@@ -12,7 +12,9 @@ import {
   BookOpen,
   MessageSquarePlus,
   X,
-  ListChecks
+  ListChecks,
+  Gamepad2,
+  FileEdit
 } from 'lucide-react'
 
 interface AlunoSidebarProps {
@@ -25,9 +27,10 @@ const navItems = [
   { name: 'Simulados', href: '/aluno/questoes', icon: HelpCircle },
   { name: 'Questões', href: '/aluno/questoes-avulsas', icon: ListChecks },
   { name: 'Loja', href: '/aluno/loja', icon: ShoppingBag },
-  { name: 'PDFs', href: '/aluno/pdfs', icon: FileText },
+  { name: 'Atividades em PDF', href: '/aluno/atividades-pdf', icon: FileEdit },
   { name: 'Mapas Mentais', href: '/aluno/mapas-mentais', icon: Map },
   { name: 'Resumos', href: '/aluno/resumos', icon: BookOpen },
+  { name: 'Jogos Pedagógicos', href: '/aluno/jogos-pedagogicos', icon: Gamepad2 },
   { name: 'Sugestões', href: '/aluno/sugestoes', icon: MessageSquarePlus },
 ]
 

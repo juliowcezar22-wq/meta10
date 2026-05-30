@@ -7,10 +7,13 @@ export interface DashboardStats {
   inactiveStudents: number
   totalQuestoesAvulsas: number
   totalSimulados: number
-  totalMaterials: number
+  totalMapasMentais: number
+  totalResumos: number
   totalProducts: number
   totalDepoimentos: number
   totalSugestoes: number
+  totalAtividadesPdf: number
+  totalJogosPedagogicos: number
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -24,10 +27,13 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     activeSubs, 
     questoes, 
     simulados, 
-    materials, 
+    mapasMentais,
+    resumos,
     products, 
     depoimentos, 
-    sugestoes
+    sugestoes,
+    atividadesPdf,
+    jogosPedagogicos
   ] = await Promise.all([
     supabase.from('users').select('*', { count: 'exact', head: true }),
     supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'professor'),
@@ -36,10 +42,13 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     supabase.from('subscriptions').select('*', { count: 'exact', head: true }).eq('status', 'active').gt('expires_at', now),
     supabase.from('questions').select('*', { count: 'exact', head: true }).eq('context', 'avulsa'),
     supabase.from('question_lists').select('*', { count: 'exact', head: true }),
-    supabase.from('materials').select('*', { count: 'exact', head: true }),
+    supabase.from('materials').select('*', { count: 'exact', head: true }).eq('type', 'mapa_mental'),
+    supabase.from('materials').select('*', { count: 'exact', head: true }).eq('type', 'resumo'),
     supabase.from('products').select('*', { count: 'exact', head: true }),
     supabase.from('testimonials').select('*', { count: 'exact', head: true }),
-    supabase.from('suggestions').select('*', { count: 'exact', head: true })
+    supabase.from('suggestions').select('*', { count: 'exact', head: true }),
+    supabase.from('materials').select('*', { count: 'exact', head: true }).eq('type', 'atividade_pdf'),
+    supabase.from('materials').select('*', { count: 'exact', head: true }).eq('type', 'jogo')
   ])
   
   const activeStudentsCount = activeSubs.count ?? 0
@@ -53,9 +62,12 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     inactiveStudents: inactiveStudentsCount,
     totalQuestoesAvulsas: questoes.count ?? 0,
     totalSimulados: simulados.count ?? 0,
-    totalMaterials: materials.count ?? 0,
+    totalMapasMentais: mapasMentais.count ?? 0,
+    totalResumos: resumos.count ?? 0,
     totalProducts: products.count ?? 0,
     totalDepoimentos: depoimentos.count ?? 0,
     totalSugestoes: sugestoes.count ?? 0,
+    totalAtividadesPdf: atividadesPdf.count ?? 0,
+    totalJogosPedagogicos: jogosPedagogicos.count ?? 0,
   }
 }

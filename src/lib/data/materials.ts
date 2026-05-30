@@ -46,3 +46,19 @@ export async function getMaterialById(id: string): Promise<Material | null> {
   }
   return data
 }
+
+export async function getMaterialsByTypeAndSubject(type: string, subject: string): Promise<Material[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('materials')
+    .select('*')
+    .eq('type', type)
+    .eq('subject', subject)
+    .order('created_at', { ascending: false })
+  
+  if (error) {
+    console.error('[getMaterialsByTypeAndSubject]', error)
+    return []
+  }
+  return data ?? []
+}

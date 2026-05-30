@@ -17,14 +17,14 @@ const subjects = [
   { id: 'outros', name: 'Outros', icon: Binary, color: 'bg-slate-500' },
 ]
 
-export default async function MapasMentaisAlunoPage() {
+export default async function JogosPedagogicosAlunoPage() {
   await requireAuth()
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
       <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-surface-900">Mapas Mentais</h1>
-        <p className="text-surface-500 mt-2">Escolha uma matéria para ver os mapas mentais disponíveis.</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-surface-900">Jogos Pedagógicos</h1>
+        <p className="text-surface-500 mt-2">Escolha uma matéria para acessar dinâmicas e jogos de aprendizagem.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -33,7 +33,7 @@ export default async function MapasMentaisAlunoPage() {
           return (
             <Link 
               key={sub.id} 
-              href={`/aluno/mapas-mentais/${sub.id}`}
+              href={`/aluno/jogos-pedagogicos/${sub.id}`}
               className="group block bg-white rounded-2xl p-6 border border-surface-200 shadow-sm hover:shadow-md transition-all hover:border-primary-200"
             >
               <div className="flex items-center gap-4">
@@ -42,7 +42,7 @@ export default async function MapasMentaisAlunoPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-surface-900 group-hover:text-primary transition-colors">{sub.name}</h3>
-                  <p className="text-sm text-surface-500 mt-0.5">Ver mapas</p>
+                  <p className="text-sm text-surface-500 mt-0.5">Ver jogos</p>
                 </div>
               </div>
             </Link>
