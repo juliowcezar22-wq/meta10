@@ -4,6 +4,7 @@ import { getAllSubjects } from '@/lib/data/subjects'
 import Link from 'next/link'
 import { BookOpen, ArrowRight, ArrowLeft } from 'lucide-react'
 import { SubjectFilter } from '@/components/aluno/subject-filter'
+import { SUBJECT_LABELS } from '@/lib/constants'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,7 +21,7 @@ export default async function SimuladosMateriaPage({ params, searchParams }: { p
   const allSubjects = await getAllSubjects()
   const currentSubjects = allSubjects.filter(s => s.discipline === params.subject)
 
-  const subjectName = params.subject.charAt(0).toUpperCase() + params.subject.slice(1)
+  const subjectName = SUBJECT_LABELS[params.subject] || (params.subject.charAt(0).toUpperCase() + params.subject.slice(1))
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">

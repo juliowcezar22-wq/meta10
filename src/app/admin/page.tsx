@@ -1,6 +1,6 @@
 import { requireAdmin, requireAuth } from '@/lib/auth/guards'
 import { getDashboardStats } from '@/lib/data/dashboard-stats'
-import { Users, UserCheck, BookOpen, ShoppingBag, Target, GraduationCap, UserX, ListChecks, HelpCircle, MessageSquareQuote, MessageSquarePlus, FileText, Gamepad2, Network } from 'lucide-react'
+import { Users, UserCheck, BookOpen, ShoppingBag, Target, GraduationCap, UserX, ListChecks, HelpCircle, MessageSquareQuote, MessageSquarePlus, FileText, Gamepad2, Network, Library } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
@@ -147,6 +147,16 @@ export default async function AdminPage() {
           <div>
             <p className="text-sm text-surface-500 font-medium">Sugestões</p>
             <p className="text-2xl font-bold text-surface-900">{stats.totalSugestoes}</p>
+          </div>
+        </Link>
+
+        <Link href="/admin/disciplinas" className="card p-6 flex items-center gap-4 hover:border-indigo-500/50 transition-colors group">
+          <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-600 flex-shrink-0 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+            <Library className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-sm text-surface-500 font-medium">Disciplinas</p>
+            <p className="text-2xl font-bold text-surface-900">{stats.totalDisciplinas}</p>
           </div>
         </Link>
 

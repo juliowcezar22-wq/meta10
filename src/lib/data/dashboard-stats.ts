@@ -14,6 +14,7 @@ export interface DashboardStats {
   totalSugestoes: number
   totalAtividadesPdf: number
   totalJogosPedagogicos: number
+  totalDisciplinas: number
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
@@ -33,7 +34,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     depoimentos, 
     sugestoes,
     atividadesPdf,
-    jogosPedagogicos
+    jogosPedagogicos,
+    disciplinas
   ] = await Promise.all([
     supabase.from('users').select('*', { count: 'exact', head: true }),
     supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'professor'),
@@ -48,7 +50,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     supabase.from('testimonials').select('*', { count: 'exact', head: true }),
     supabase.from('suggestions').select('*', { count: 'exact', head: true }),
     supabase.from('materials').select('*', { count: 'exact', head: true }).eq('type', 'atividade_pdf'),
-    supabase.from('materials').select('*', { count: 'exact', head: true }).eq('type', 'jogo')
+    supabase.from('materials').select('*', { count: 'exact', head: true }).eq('type', 'jogo'),
+    supabase.from('disciplines').select('*', { count: 'exact', head: true })
   ])
   
   const activeStudentsCount = activeSubs.count ?? 0
@@ -69,5 +72,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     totalSugestoes: sugestoes.count ?? 0,
     totalAtividadesPdf: atividadesPdf.count ?? 0,
     totalJogosPedagogicos: jogosPedagogicos.count ?? 0,
+    totalDisciplinas: disciplinas.count ?? 0,
   }
 }

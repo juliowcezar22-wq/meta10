@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -64,6 +64,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      disciplines: {
+        Row: {
+          slug: string
+          name: string
+          icon: string | null
+          color: string | null
+          order_index: number
+          created_at: string
+        }
+        Insert: {
+          slug: string
+          name: string
+          icon?: string | null
+          color?: string | null
+          order_index?: number
+          created_at?: string
+        }
+        Update: {
+          slug?: string
+          name?: string
+          icon?: string | null
+          color?: string | null
+          order_index?: number
+          created_at?: string
+        }
+        Relationships: []
       }
       materials: {
         Row: {
