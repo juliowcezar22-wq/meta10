@@ -132,8 +132,8 @@ export const MATERIALS = [
 ]
 
 export const FREE_CONTENTS = [
-  { title: 'Banco de Questões', type: 'PDF', pages: '12 páginas' },
-  { title: 'Atividades em PDF', type: 'Resumo', pages: '8 páginas' },
+  { title: 'Banco de Questões', type: '', pages: '' },
+  { title: 'Atividades em PDF', type: 'PDF', pages: '' },
 ]
 
 export const STORE_PRODUCTS = [
