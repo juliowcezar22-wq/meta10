@@ -25,7 +25,7 @@ export default function SobrePage() {
             Somos o <span className="text-white">META 10</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-100 max-w-2xl mx-auto leading-relaxed font-light">
-            Um espaço criado para descomplicar os estudos, praticar as atividades e ajudar você a alcançar seus objetivos no seu ritmo.
+            Um espaço criado para descomplicar os estudos, praticar as atividades e ajudar você a alcançar seus objetivos, no seu ritmo.
           </p>
         </div>
       </section>

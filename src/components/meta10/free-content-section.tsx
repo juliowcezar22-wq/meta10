@@ -1,5 +1,6 @@
 import { LockOpen, FileText, ClipboardList, Network, BookOpen, Download } from 'lucide-react'
 import { FREE_CONTENTS } from '@/lib/constants'
+import Link from 'next/link'
 
 const iconMap: Record<string, React.ElementType> = {
   PDF: FileText, Resumo: BookOpen, 'Mapa Mental': Network, Simulado: ClipboardList,
@@ -62,27 +63,25 @@ export default function FreeContentSection() {
                     <div className={`w-16 h-16 rounded-2xl ${theme.iconBg} flex items-center justify-center group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500 ease-out`}>
                       <Icon className={`w-8 h-8 ${theme.iconColor}`} />
                     </div>
-                    <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${theme.badge}`}>
-                      {content.type}
-                    </span>
+                    {content.type && (
+                      <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${theme.badge}`}>
+                        {content.type}
+                      </span>
+                    )}
                   </div>
                   
                   <div className="flex-grow">
-                    <h3 className="font-extrabold text-surface-900 text-2xl mb-3 group-hover:text-primary transition-colors duration-300">
+                    <h3 className="font-extrabold text-surface-900 text-2xl mb-8 group-hover:text-primary transition-colors duration-300">
                       {content.title}
                     </h3>
-                    <p className="text-surface-500 font-medium mb-8 flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-surface-400" />
-                      {content.pages} de conteúdo selecionado
-                    </p>
                   </div>
                   
-                  <button className="relative overflow-hidden w-full bg-surface-900 hover:bg-primary text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 group/btn mt-auto">
+                  <Link href="/cadastro" className="relative overflow-hidden w-full bg-surface-900 hover:bg-primary text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 group/btn mt-auto">
                     <span className="relative z-10 flex items-center gap-2">
                       Acessar Grátis Agora
                       <Download className="w-5 h-5 group-hover/btn:translate-y-0.5 transition-transform duration-300" />
                     </span>
-                  </button>
+                  </Link>
                 </div>
               </div>
             )
@@ -92,3 +91,4 @@ export default function FreeContentSection() {
     </section>
   )
 }
+
