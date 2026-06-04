@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ArrowLeft, CheckCircle2, Circle } from 'lucide-react'
 import { Badge } from '@/components/admin/badge'
 import { SubjectFilter } from '@/components/aluno/subject-filter'
+import { SUBJECT_LABELS } from '@/lib/constants'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,7 +20,7 @@ export default async function QuestoesAvulsasSubjectPage({ params, searchParams 
 
   const answeredIds = new Set(myAnswers.map(a => a.question_id))
 
-  const subjectName = params.subject.charAt(0).toUpperCase() + params.subject.slice(1)
+  const subjectName = SUBJECT_LABELS[params.subject] || (params.subject.charAt(0).toUpperCase() + params.subject.slice(1))
 
   return (
     <div className="p-4 md:p-8 max-w-5xl mx-auto w-full">

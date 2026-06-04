@@ -1,24 +1,13 @@
 import { requireAuth } from '@/lib/auth/guards'
 import Link from 'next/link'
-import { BookOpen, Calculator, Globe, Atom, Binary, Languages, Milestone, Dna, FlaskConical, Library } from 'lucide-react'
+import { getDisciplinesGrid } from '@/lib/data/disciplines'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
 
 export const dynamic = 'force-dynamic'
 
-const subjects = [
-  { id: 'matematica', name: 'Matemática', icon: Calculator, color: 'bg-blue-500' },
-  { id: 'portugues', name: 'Português', icon: BookOpen, color: 'bg-red-500' },
-  { id: 'historia', name: 'História', icon: Library, color: 'bg-amber-600' },
-  { id: 'geografia', name: 'Geografia', icon: Globe, color: 'bg-emerald-600' },
-  { id: 'ciencias', name: 'Ciências', icon: Atom, color: 'bg-teal-500' },
-  { id: 'ingles', name: 'Inglês', icon: Languages, color: 'bg-indigo-500' },
-  { id: 'fisica', name: 'Física', icon: Milestone, color: 'bg-cyan-600' },
-  { id: 'quimica', name: 'Química', icon: FlaskConical, color: 'bg-violet-500' },
-  { id: 'biologia', name: 'Biologia', icon: Dna, color: 'bg-green-600' },
-  { id: 'outros', name: 'Outros', icon: Binary, color: 'bg-slate-500' },
-]
-
 export default async function JogosPedagogicosAlunoPage() {
   await requireAuth()
+  const subjects = await getDisciplinesGrid()
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
@@ -29,7 +18,6 @@ export default async function JogosPedagogicosAlunoPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {subjects.map((sub) => {
-          const Icon = sub.icon
           return (
             <Link 
               key={sub.id} 
@@ -38,10 +26,10 @@ export default async function JogosPedagogicosAlunoPage() {
             >
               <div className="flex items-center gap-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white ${sub.color} bg-opacity-90 group-hover:bg-opacity-100 transition-all`}>
-                  <Icon className="w-6 h-6" />
+                  <DynamicIcon name={sub.iconName} className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-surface-900 group-hover:text-primary transition-colors">{sub.name}</h3>
+                  <h3 className="text-lg font-bold text-surface-900 group-hover:text-primary transition-colors">{sub.title}</h3>
                   <p className="text-sm text-surface-500 mt-0.5">Ver jogos</p>
                 </div>
               </div>
