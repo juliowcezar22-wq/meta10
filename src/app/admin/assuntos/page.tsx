@@ -1,3 +1,4 @@
+import { getDisciplines } from '@/lib/data/disciplines'
 import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { getAllSubjects } from '@/lib/data/subjects'
 import { AssuntosClient } from './assuntos-client'
@@ -9,5 +10,7 @@ export default async function AssuntosPage() {
   
   const subjects = await getAllSubjects()
 
-  return <AssuntosClient subjects={subjects} />
+  const disciplines = await getDisciplines()
+
+  return <AssuntosClient subjects={subjects}  disciplines={disciplines} />
 }

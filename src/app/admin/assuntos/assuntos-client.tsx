@@ -17,7 +17,7 @@ type Subject = {
   created_by: string | null
 }
 
-export function AssuntosClient({ subjects }: { subjects: Subject[] }) {
+export function AssuntosClient({ subjects, disciplines }: { subjects: Subject[], disciplines: any[] }) {
   const router = useRouter()
   const { toast } = useToast()
   
@@ -147,7 +147,9 @@ export function AssuntosClient({ subjects }: { subjects: Subject[] }) {
           </div>
         ) : (
           <div className="space-y-8">
-            {Object.entries(SUBJECT_LABELS).map(([key, label]) => {
+            {disciplines.map((discipline) => {
+              const key = discipline.slug
+              const label = discipline.name
               const discSubjects = groupedSubjects[key] || []
               if (discSubjects.length === 0 && !searchTerm) {
                  return (
@@ -220,8 +222,8 @@ export function AssuntosClient({ subjects }: { subjects: Subject[] }) {
                     className="w-full px-4 py-2.5 border border-surface-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                     required
                   >
-                    {Object.entries(SUBJECT_LABELS).map(([key, label]) => (
-                      <option key={key} value={key}>{label}</option>
+                    {disciplines.map((d) => (
+                      <option key={d.slug} value={d.slug}>{d.name}</option>
                     ))}
                   </select>
                 </div>

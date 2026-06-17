@@ -1,3 +1,4 @@
+import { getDisciplines } from '@/lib/data/disciplines'
 import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { getQuestionLists } from '@/lib/data/question-lists'
 import { getAllSubjects } from '@/lib/data/subjects'
@@ -8,5 +9,7 @@ export default async function QuestoesPage() {
   const lists = await getQuestionLists()
   const subjects = await getAllSubjects()
 
-  return <QuestionListsClient initialData={lists} subjects={subjects} />
+  const disciplines = await getDisciplines()
+
+  return <QuestionListsClient initialData={lists} subjects={subjects}  disciplines={disciplines} />
 }
