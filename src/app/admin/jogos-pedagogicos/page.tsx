@@ -1,3 +1,4 @@
+import { getDisciplines } from '@/lib/data/disciplines'
 import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { getMaterialsByType } from '@/lib/data/materials'
 import { JogosPedagogicosClient } from './jogos-pedagogicos-client'
@@ -8,5 +9,7 @@ export default async function JogosPedagogicosPage() {
   await requireAdminOrProfessor()
   const materials = await getMaterialsByType('jogo')
 
-  return <JogosPedagogicosClient initialData={materials} />
+  const disciplines = await getDisciplines()
+
+  return <JogosPedagogicosClient initialData={materials}  disciplines={disciplines} />
 }

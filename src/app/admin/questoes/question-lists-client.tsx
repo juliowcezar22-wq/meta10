@@ -27,7 +27,7 @@ const initialQuestionState: QuestionFormData = {
   difficulty: 'facil',
 }
 
-export function QuestionListsClient({ initialData, subjects }: { initialData: any[], subjects: any[] }) {
+export function QuestionListsClient({ initialData, subjects , disciplines }: { initialData: any[], subjects: any[] , disciplines: any[] }) {
   const router = useRouter()
   const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
@@ -280,7 +280,7 @@ export function QuestionListsClient({ initialData, subjects }: { initialData: an
         {list.name}
       </Link>
     ),
-    subjectNode: <span className="capitalize">{SUBJECT_LABELS[list.subject] || list.subject}</span>,
+    subjectNode: <span className="capitalize">{disciplines.find(d => d.slug === list.subject)?.name || list.subject}</span>,
     assuntoNode: <span className="text-surface-600 text-sm">{list.subject_id ? subjects.find(s => s.id === list.subject_id)?.name || 'Desconhecido' : 'Sem assunto'}</span>,
     statusNode: (
       <div className="flex items-center gap-3">
@@ -424,8 +424,8 @@ export function QuestionListsClient({ initialData, subjects }: { initialData: an
                     className="w-full px-4 py-2 border border-surface-300 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                     required
                   >
-                    {Object.entries(SUBJECT_LABELS).map(([key, label]) => (
-                      <option key={key} value={key}>{label}</option>
+                    {disciplines.map((d) => (
+                      <option key={d.slug} value={d.slug}>{d.name}</option>
                     ))}
                   </select>
                 </div>

@@ -14,7 +14,7 @@ import type { Question } from '@/lib/types/quiz'
 import { QuestionFormFields, type QuestionFormData } from '@/components/admin/question-form-fields'
 import { SUBJECT_LABELS } from '@/lib/constants'
 
-export function StandaloneClient({ initialQuestions, subjects }: { initialQuestions: Question[], subjects: any[] }) {
+export function StandaloneClient({ initialQuestions, subjects , disciplines }: { initialQuestions: Question[], subjects: any[] , disciplines: any[] }) {
   const router = useRouter()
   const { toast } = useToast()
   
@@ -162,7 +162,7 @@ export function StandaloneClient({ initialQuestions, subjects }: { initialQuesti
 
   const formattedQuestions = initialQuestions.map(q => ({
     ...q,
-    subjectNode: <span className="capitalize">{SUBJECT_LABELS[q.subject] || q.subject}</span>,
+    subjectNode: <span className="capitalize">{disciplines.find(d => d.slug === q.subject)?.name || q.subject}</span>,
     assuntoNode: <span className="text-surface-600 text-sm">{(q as any).subject_id ? subjects.find(s => s.id === (q as any).subject_id)?.name || 'Desconhecido' : 'Sem assunto'}</span>,
     tipoNode: (
       <Badge variant={q.question_type === 'multipla_escolha' ? 'primary' : 'purple'}>
@@ -266,16 +266,9 @@ export function StandaloneClient({ initialQuestions, subjects }: { initialQuesti
                   className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   required
                 >
-                  <option value="matematica">Matemática</option>
-                  <option value="portugues">Português</option>
-                  <option value="historia">História</option>
-                  <option value="geografia">Geografia</option>
-                  <option value="ciencias">Ciências</option>
-                  <option value="ingles">Inglês</option>
-                  <option value="fisica">Física</option>
-                  <option value="quimica">Química</option>
-                  <option value="biologia">Biologia</option>
-                  <option value="outros">Outros</option>
+                  {disciplines.map((d) => (
+                    <option key={d.slug} value={d.slug}>{d.name}</option>
+                  ))}
                 </select>
               </div>
 

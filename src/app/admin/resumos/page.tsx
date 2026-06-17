@@ -1,3 +1,4 @@
+import { getDisciplines } from '@/lib/data/disciplines'
 import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { getMaterialsByType } from '@/lib/data/materials'
 import { ResumosClient } from './resumos-client'
@@ -8,5 +9,7 @@ export default async function ResumosAdminPage() {
   await requireAdminOrProfessor()
   const materials = await getMaterialsByType('resumo')
 
-  return <ResumosClient initialData={materials} />
+  const disciplines = await getDisciplines()
+
+  return <ResumosClient initialData={materials}  disciplines={disciplines} />
 }

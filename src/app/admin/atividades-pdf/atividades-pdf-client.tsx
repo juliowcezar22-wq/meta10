@@ -14,7 +14,7 @@ import { SUBJECT_LABELS } from '@/lib/constants'
 
 type Material = Database['public']['Tables']['materials']['Row']
 
-export function AtividadesPdfClient({ initialData }: { initialData: Material[] }) {
+export function AtividadesPdfClient({ initialData , disciplines }: { initialData: Material[] , disciplines: any[] }) {
   const router = useRouter()
   const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
@@ -108,7 +108,7 @@ export function AtividadesPdfClient({ initialData }: { initialData: Material[] }
 
   const formattedMaterials = initialData.map(material => ({
     ...material,
-    subjectNode: <span className="capitalize">{material.subject ? (SUBJECT_LABELS[material.subject] || material.subject) : '-'}</span>,
+    subjectNode: <span className="capitalize">{material.subject ? (disciplines.find(d => d.slug === material.subject)?.name || material.subject) : '-'}</span>,
     accessNode: (
       <Badge variant={material.is_free ? 'success' : 'primary'}>
         {material.is_free ? 'Gratuito' : 'Premium'}
@@ -209,16 +209,9 @@ export function AtividadesPdfClient({ initialData }: { initialData: Material[] }
                   required
                 >
                   <option value="">Selecione uma disciplina</option>
-                  <option value="matematica">Matemática</option>
-                  <option value="portugues">Português</option>
-                  <option value="historia">História</option>
-                  <option value="geografia">Geografia</option>
-                  <option value="ciencias">Ciências</option>
-                  <option value="ingles">Inglês</option>
-                  <option value="fisica">Física</option>
-                  <option value="quimica">Química</option>
-                  <option value="biologia">Biologia</option>
-                  <option value="outros">Outros</option>
+                  {disciplines.map((d) => (
+                    <option key={d.slug} value={d.slug}>{d.name}</option>
+                  ))}
                 </select>
               </div>
 

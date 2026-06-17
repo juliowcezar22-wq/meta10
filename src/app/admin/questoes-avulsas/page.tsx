@@ -1,3 +1,4 @@
+import { getDisciplines } from '@/lib/data/disciplines'
 import { requireAdminOrProfessor } from '@/lib/auth/guards'
 import { getAllStandaloneQuestions } from '@/lib/data/questions'
 import { getAllSubjects } from '@/lib/data/subjects'
@@ -10,5 +11,7 @@ export default async function QuestoesAvulsasPage() {
   const questions = await getAllStandaloneQuestions()
   const subjects = await getAllSubjects()
 
-  return <StandaloneClient initialQuestions={questions} subjects={subjects} />
+  const disciplines = await getDisciplines()
+
+  return <StandaloneClient initialQuestions={questions} subjects={subjects}  disciplines={disciplines} />
 }
