@@ -45,7 +45,7 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-xl hover:bg-primary-50/20 ${scrolled ? 'text-surface-600 hover:text-primary' : 'text-white hover:text-white/80'}`}
+                  className={`relative px-3 lg:px-4 py-2 text-base lg:text-lg font-semibold transition-colors duration-200 rounded-xl ${scrolled ? 'text-surface-700 hover:text-primary hover:bg-primary-50/60' : 'text-white hover:text-white hover:bg-white/15 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]'}`}
                 >
                   {item.label}
                 </Link>
@@ -53,7 +53,7 @@ export default function Header() {
             </nav>
 
             <div className="hidden md:flex items-center gap-3">
-              <Link href="/login" className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl transition-colors ${scrolled ? 'text-surface-600 hover:bg-surface-100 hover:text-primary' : 'text-white hover:bg-white/10'}`}>
+              <Link href="/login" className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl transition-colors ${scrolled ? 'text-surface-600 hover:bg-surface-100 hover:text-primary' : 'text-white hover:bg-white/15 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]'}`}>
                 <User className="w-4 h-4" />
                 Entrar
               </Link>
@@ -96,7 +96,7 @@ export default function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className="block px-4 py-3 text-base font-medium text-surface-700 hover:text-primary hover:bg-primary-50 rounded-xl transition-colors"
+                className="block px-4 py-3 text-lg font-semibold text-surface-700 hover:text-primary hover:bg-primary-50 rounded-xl transition-colors"
               >
                 {item.label}
               </Link>
