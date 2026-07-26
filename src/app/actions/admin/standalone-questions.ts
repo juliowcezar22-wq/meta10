@@ -16,6 +16,7 @@ const questionSchema = z.discriminatedUnion('question_type', [
     question_type: z.literal('multipla_escolha'),
     list_id: z.null().optional(),
     enunciado: z.string().min(3, 'Enunciado muito curto'),
+    image_url: z.string().url('URL de imagem inválida').nullable(),
     alternatives: z.array(alternativeSchema)
       .min(2, 'Mínimo 2 alternativas')
       .max(5, 'Máximo 5 alternativas'),
@@ -30,6 +31,7 @@ const questionSchema = z.discriminatedUnion('question_type', [
     question_type: z.literal('verdadeiro_falso'),
     list_id: z.null().optional(),
     enunciado: z.string().min(3, 'Enunciado muito curto'),
+    image_url: z.string().url('URL de imagem inválida').nullable(),
     alternatives: z.null().optional(),  // V/F não tem alternativas
     gabarito: z.enum(['verdadeiro', 'falso']),
     comentario: z.string().optional().nullable(),
@@ -51,6 +53,7 @@ function parseFormData(formData: FormData) {
     question_type: type,
     list_id: null,
     enunciado: formData.get('enunciado'),
+    image_url: (formData.get('image_url') as string) || null,
     alternatives,
     gabarito: formData.get('gabarito'),
     comentario: formData.get('comentario') || null,

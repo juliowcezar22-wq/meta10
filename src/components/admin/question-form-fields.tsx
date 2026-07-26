@@ -1,8 +1,10 @@
 import { Plus, X, Type, CheckCircle } from 'lucide-react'
+import { ImageUploadField } from '@/components/admin/image-upload-field'
 
 export interface QuestionFormData {
   question_type: string
   enunciado: string
+  image_url: string | null
   alternatives: { letra: string, texto: string }[]
   gabarito: string
   comentario: string
@@ -70,7 +72,7 @@ export function QuestionFormFields({ formData, setFormData }: QuestionFormFields
 
       <div>
         <label className="block text-sm font-medium text-surface-700 mb-1">Enunciado</label>
-        <textarea 
+        <textarea
           value={formData.enunciado}
           onChange={(e) => setFormData({ ...formData, enunciado: e.target.value })}
           className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
@@ -79,6 +81,13 @@ export function QuestionFormFields({ formData, setFormData }: QuestionFormFields
           minLength={3}
         />
       </div>
+
+      <ImageUploadField
+        bucket="question-images"
+        label="Imagem do Enunciado (opcional)"
+        value={formData.image_url}
+        onChange={(url) => setFormData({ ...formData, image_url: url })}
+      />
 
       {formData.question_type === 'multipla_escolha' && (
         <div>
