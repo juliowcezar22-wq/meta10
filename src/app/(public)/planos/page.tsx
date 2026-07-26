@@ -1,6 +1,5 @@
 import { Check } from 'lucide-react'
-import Link from 'next/link'
-import { PLANS } from '@/lib/constants'
+import { PLANS } from '@/lib/plans'
 
 export default function PlanosPage() {
   return (
@@ -18,10 +17,10 @@ export default function PlanosPage() {
 
       <section className="section-padding bg-gray-50">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 max-w-[1400px] mx-auto items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
             {PLANS.map((plan) => (
               <div
-                key={plan.id}
+                key={plan.slug}
                 className={`card card-hover p-6 lg:p-5 xl:p-6 flex flex-col relative h-full ${
                   plan.highlighted ? 'border-2 border-primary ring-4 ring-primary/10' : ''
                 }`}
@@ -49,11 +48,10 @@ export default function PlanosPage() {
                 </ul>
                 <a
                   href={plan.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...(plan.link.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   className={`w-full text-center ${plan.highlighted ? 'btn-primary' : 'btn-outline'}`}
                 >
-                  Assinar Agora
+                  {plan.cta}
                 </a>
               </div>
             ))}

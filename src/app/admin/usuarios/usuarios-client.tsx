@@ -69,14 +69,19 @@ export function UsuariosClient({ initialData, initialPlans, currentUserId }: { i
       defaultExpiresAt = d.toISOString().split('T')[0]
     }
 
+    // Sem pré-seleção de plano: exige escolha explícita do admin
+    // (o default antigo pré-selecionava o primeiro plano da lista)
     setPlanForm({
-      planId: sub?.plan_id || (initialPlans.length > 0 ? initialPlans[0].id : ''),
+      planId: sub?.plan_id || '',
       status: sub?.status || 'active',
       expiresAt: defaultExpiresAt
     })
-    
+
     setIsModalOpen(true)
   }
+
+  const selectedPlan = initialPlans.find((p: Plan) => p.id === planForm.planId) ?? null
+  const isFreePlanSelected = selectedPlan?.duration_months === 0
 
   const closeModal = () => {
     setIsModalOpen(false)
@@ -109,8 +114,8 @@ export function UsuariosClient({ initialData, initialPlans, currentUserId }: { i
     setIsSavingPlan(true)
     const data = new FormData()
     data.append('planId', planForm.planId)
-    data.append('status', planForm.status)
-    data.append('expiresAt', planForm.expiresAt)
+    data.append('status', isFreePlanSelected ? 'active' : planForm.status)
+    data.append('expiresAt', isFreePlanSelected ? '' : planForm.expiresAt)
 
     const result = await assignPlan(editingUser.id, data)
     setIsSavingPlan(false)
@@ -130,7 +135,7 @@ export function UsuariosClient({ initialData, initialPlans, currentUserId }: { i
         {user.role}
       </Badge>
     ),
-    planNode: user.subscription?.plan?.name || 'Nenhum',
+    planNode: (user.subscription?.status === 'active' && user.subscription?.plan?.name) || 'Gratuito',
     statusNode: user.subscription?.status ? (
       <Badge variant={user.subscription.status === 'active' ? 'success' : 'danger'}>
         {user.subscription.status === 'active' ? 'Ativo' : 'Expirado'}
@@ -236,11 +241,20 @@ export function UsuariosClient({ initialData, initialPlans, currentUserId }: { i
                     >
                       <option value="" disabled>Selecione um plano...</option>
                       {initialPlans.map(p => (
-                        <option key={p.id} value={p.id}>{p.name} ({p.duration_months} meses)</option>
+                        <option key={p.id} value={p.id}>
+                          {p.duration_months === 0 ? p.name : `${p.name} (${p.duration_months} ${p.duration_months === 1 ? 'mês' : 'meses'})`}
+                        </option>
                       ))}
                     </select>
                   </div>
 
+                  {isFreePlanSelected && (
+                    <p className="text-sm text-surface-500 bg-surface-50 border border-surface-200 rounded-lg px-3 py-2">
+                      O plano Gratuito não expira: fica sempre ativo e sem data de fim de assinatura.
+                    </p>
+                  )}
+
+                  {!isFreePlanSelected && (
                   <div>
                     <label className="block text-sm font-medium text-surface-700 mb-2">Status da Assinatura</label>
                     <div className="flex items-center gap-4">
@@ -279,17 +293,20 @@ export function UsuariosClient({ initialData, initialPlans, currentUserId }: { i
                       </label>
                     </div>
                   </div>
+                  )}
 
+                  {!isFreePlanSelected && (
                   <div>
                     <label className="block text-sm font-medium text-surface-700 mb-1">Data de Expiração</label>
-                    <input 
-                      type="date" 
+                    <input
+                      type="date"
                       value={planForm.expiresAt}
                       onChange={(e) => setPlanForm({ ...planForm, expiresAt: e.target.value })}
                       className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       required
                     />
                   </div>
+                  )}
 
                   <div className="flex justify-end pt-2">
                     <button type="submit" disabled={isSavingPlan} className="btn-primary py-1.5 px-4 text-sm disabled:opacity-50">

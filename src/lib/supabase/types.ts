@@ -169,18 +169,21 @@ export type Database = {
           created_at: string
           duration_months: number
           id: string
+          is_active: boolean
           name: string
         }
         Insert: {
           created_at?: string
           duration_months: number
           id?: string
+          is_active?: boolean
           name: string
         }
         Update: {
           created_at?: string
           duration_months?: number
           id?: string
+          is_active?: boolean
           name?: string
         }
         Relationships: []
@@ -194,8 +197,12 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          material_type: string | null
           name: string
           price: number
+          promo_price: number | null
+          subject: string | null
+          subject_id: string | null
           tipo: string
           updated_at: string
         }
@@ -207,8 +214,12 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          material_type?: string | null
           name: string
           price: number
+          promo_price?: number | null
+          subject?: string | null
+          subject_id?: string | null
           tipo?: string
           updated_at?: string
         }
@@ -220,8 +231,12 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          material_type?: string | null
           name?: string
           price?: number
+          promo_price?: number | null
+          subject?: string | null
+          subject_id?: string | null
           tipo?: string
           updated_at?: string
         }
@@ -318,6 +333,7 @@ export type Database = {
           enunciado: string
           gabarito: string
           id: string
+          image_url: string | null
           list_id: string | null
           question_type: string
           subject: string
@@ -334,6 +350,7 @@ export type Database = {
           enunciado: string
           gabarito: string
           id?: string
+          image_url?: string | null
           list_id?: string | null
           question_type?: string
           subject: string
@@ -350,6 +367,7 @@ export type Database = {
           enunciado?: string
           gabarito?: string
           id?: string
+          image_url?: string | null
           list_id?: string | null
           question_type?: string
           subject?: string
@@ -501,7 +519,7 @@ export type Database = {
         Row: {
           cancelled_at: string | null
           created_at: string
-          expires_at: string
+          expires_at: string | null
           id: string
           plan_id: string
           status: string
@@ -511,7 +529,7 @@ export type Database = {
         Insert: {
           cancelled_at?: string | null
           created_at?: string
-          expires_at: string
+          expires_at?: string | null
           id?: string
           plan_id: string
           status?: string
@@ -521,7 +539,7 @@ export type Database = {
         Update: {
           cancelled_at?: string | null
           created_at?: string
-          expires_at?: string
+          expires_at?: string | null
           id?: string
           plan_id?: string
           status?: string
@@ -640,6 +658,29 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
+      count_my_answered_questions: { Args: Record<string, never>; Returns: number }
+      get_question_stats: {
+        Args: { p_question_ids?: string[] | null }
+        Returns: {
+          question_id: string
+          total_attempts: number
+          total_users: number
+          correct_attempts: number
+          correct_pct: number
+          answer_distribution: Json | null
+        }[]
+      }
+      get_my_question_stats: {
+        Args: { p_question_ids?: string[] | null }
+        Returns: {
+          question_id: string
+          attempts: number
+          correct: number
+          wrong: number
+          last_answer: string
+          last_is_correct: boolean
+        }[]
+      }
     }
     Enums: {
       difficulty_level: "facil" | "medio" | "dificil"

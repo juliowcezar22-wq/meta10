@@ -37,46 +37,66 @@ export async function updateRole(id: string, formData: FormData) {
 const assignPlanSchema = z.object({
   planId: z.string().uuid('ID do plano inválido'),
   status: z.enum(['active', 'cancelled', 'expired']),
-  expiresAt: z.string().min(1, 'Data de expiração obrigatória')
+  expiresAt: z.string().nullable()
 })
 
 export async function assignPlan(userId: string, formData: FormData) {
   const adminUser = await requireAdmin()
-  
+
   const planIdRaw = formData.get('planId') || formData.get('plan_id')
-  
+
   const validation = assignPlanSchema.safeParse({
     planId: planIdRaw,
     status: formData.get('status') || 'active',
-    expiresAt: formData.get('expiresAt')
+    expiresAt: (formData.get('expiresAt') as string) || null
   })
-  
+
   if (!validation.success) {
     return { success: false, errors: validation.error.flatten().fieldErrors }
   }
 
   const supabase = createClient()
-  const { planId, status, expiresAt } = validation.data
-  
+  const { planId, status } = validation.data
+
+  const { data: plan } = await supabase
+    .from('plans')
+    .select('id, name, duration_months')
+    .eq('id', planId)
+    .single()
+
+  if (!plan) {
+    return { success: false, errors: { _form: ['Plano não encontrado'] } }
+  }
+
+  // Plano Gratuito: sem data de fim, sempre ativo
+  const isFree = plan.duration_months === 0
+
+  if (!isFree && !validation.data.expiresAt) {
+    return { success: false, errors: { expiresAt: ['Data de expiração obrigatória para planos pagos'] } }
+  }
+
+  const expiresAt = isFree ? null : validation.data.expiresAt
+  const finalStatus = isFree ? 'active' : status
+
   const { data: activeSub } = await supabase
     .from('subscriptions')
     .select('*')
     .eq('user_id', userId)
     .eq('status', 'active')
     .single()
-    
+
   let previousExpiresAt = activeSub?.expires_at ?? null
-  
+
   if (activeSub) {
     const { error: updateError } = await supabase
       .from('subscriptions')
       .update({
-        status,
+        status: finalStatus,
         expires_at: expiresAt,
         plan_id: planId
       })
       .eq('id', activeSub.id)
-      
+
     if (updateError) {
       console.error('[assignPlan] update', updateError)
       return { success: false, errors: { _form: ['Erro ao atualizar assinatura'] } }
@@ -87,30 +107,30 @@ export async function assignPlan(userId: string, formData: FormData) {
       .insert({
         user_id: userId,
         plan_id: planId,
-        status,
+        status: finalStatus,
         expires_at: expiresAt
       })
-      
+
     if (insertError) {
       console.error('[assignPlan] insert', insertError)
       return { success: false, errors: { _form: ['Erro ao criar assinatura'] } }
     }
   }
-  
+
   const { error: logError } = await supabase.from('subscription_logs').insert({
     user_id: userId,
     admin_id: adminUser.profile.id,
     plan_id: planId,
-    action: 'manual_assign',
+    action: activeSub ? 'updated' : 'created',
     previous_expires_at: previousExpiresAt,
     new_expires_at: expiresAt,
-    notes: 'Plano atribuído manualmente'
+    notes: 'Plano atribuído manualmente pelo admin'
   })
 
   if (logError) {
     console.error('[assignPlan] log', logError)
   }
-  
+
   revalidatePath('/admin/usuarios')
   revalidatePath('/aluno', 'layout')
   return { success: true }
