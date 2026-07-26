@@ -10,7 +10,6 @@ import { Pencil, Trash2, X, ExternalLink } from 'lucide-react'
 import { createMaterial, updateMaterial, deleteMaterial } from '@/app/actions/admin/materials'
 import { useToast } from '@/components/admin/toast'
 import type { Database } from '@/lib/supabase/types'
-import { SUBJECT_LABELS } from '@/lib/constants'
 
 type Material = Database['public']['Tables']['materials']['Row']
 
@@ -32,7 +31,6 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
     type: 'jogo',
     subject: '',
     file_url: '',
-    is_free: false,
   })
 
   const openModal = (material?: Material) => {
@@ -44,7 +42,6 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
         type: material.type,
         subject: material.subject || '',
         file_url: material.file_url || '',
-        is_free: material.is_free,
       })
     } else {
       setEditingMaterial(null)
@@ -54,7 +51,6 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
         type: 'jogo',
         subject: '',
         file_url: '',
-        is_free: false,
       })
     }
     setIsModalOpen(true)
@@ -75,7 +71,7 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
     data.append('type', formData.type)
     data.append('subject', formData.subject)
     data.append('file_url', formData.file_url)
-    data.append('is_free', formData.is_free.toString())
+    data.append('is_free', 'false')
 
     let result
     if (editingMaterial) {
@@ -113,11 +109,6 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
       <a href={material.file_url} target="_blank" rel="noreferrer" className="text-primary hover:underline flex items-center gap-1 text-sm">
         Link <ExternalLink className="w-3 h-3" />
       </a>
-    ),
-    accessNode: (
-      <Badge variant={material.is_free ? 'success' : 'primary'}>
-        {material.is_free ? 'Gratuito' : 'Premium'}
-      </Badge>
     ),
     actionsNode: (
       <div className="flex items-center gap-2">
@@ -163,7 +154,6 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
               { header: 'Título', accessor: 'title' },
               { header: 'Disciplina', accessor: 'subjectNode' },
               { header: 'Link', accessor: 'linkNode' },
-              { header: 'Plano', accessor: 'accessNode' },
               { header: 'Ações', accessor: 'actionsNode' }
             ]}
           />
@@ -241,19 +231,6 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
                   className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   rows={3}
                 />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  id="is_free"
-                  checked={formData.is_free}
-                  onChange={(e) => setFormData({ ...formData, is_free: e.target.checked })}
-                  className="rounded border-surface-300 text-primary focus:ring-primary"
-                />
-                <label htmlFor="is_free" className="text-sm font-medium text-surface-700">
-                  Material Gratuito
-                </label>
               </div>
 
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-surface-100">
