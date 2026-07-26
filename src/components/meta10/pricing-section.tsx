@@ -1,5 +1,5 @@
 import { Check, Zap } from 'lucide-react'
-import { PLANS } from '@/lib/constants'
+import { PLANS } from '@/lib/plans'
 
 export default function PricingSection() {
   return (
@@ -14,10 +14,10 @@ export default function PricingSection() {
             Invista no seu futuro com planos acessíveis e conteúdo ilimitado.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 max-w-[1400px] mx-auto items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
           {PLANS.map((plan) => (
             <div
-              key={plan.id}
+              key={plan.slug}
               className={`relative rounded-3xl p-6 lg:p-5 xl:p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 ${
                 plan.highlighted
                   ? 'bg-gradient-to-b from-primary to-primary-600 text-white shadow-[0_12px_48px_rgba(241,120,31,0.3)] ring-1 ring-primary/20 scale-[1.02] md:scale-105'
@@ -60,15 +60,14 @@ export default function PricingSection() {
               </ul>
               <a
                 href={plan.link}
-                target="_blank"
-                rel="noopener noreferrer"
+                {...(plan.link.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 className={`w-full text-center font-semibold py-3.5 rounded-xl transition-all duration-300 ${
                   plan.highlighted
                     ? 'bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl'
                     : 'btn-primary'
                 }`}
               >
-                Assinar Agora
+                {plan.cta}
               </a>
             </div>
           ))}
