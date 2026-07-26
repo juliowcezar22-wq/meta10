@@ -3,10 +3,36 @@
 import { createClient } from '@/lib/supabase/server'
 import { requireAuth } from '@/lib/auth/guards'
 import { revalidatePath } from 'next/cache'
+import { hasActiveSubscription } from '@/lib/data/subscriptions'
+import { FREE_PLAN_QUESTION_LIMIT } from '@/lib/plans'
 
 export async function answerStandaloneQuestion(questionId: string, answer: string) {
   const user = await requireAuth()
   const supabase = createClient()
+
+  // Plano Gratuito: limite de QUESTÕES DISTINTAS respondidas
+  // (refazer uma questão já respondida não consome o limite)
+  const isPaid = await hasActiveSubscription()
+  if (!isPaid) {
+    const [{ count: distinctCount }, { data: existing }] = await Promise.all([
+      supabase.rpc('count_my_answered_questions').then(r => ({ count: r.data ?? 0 })),
+      supabase
+        .from('standalone_answers')
+        .select('id')
+        .eq('user_id', user.profile.id)
+        .eq('question_id', questionId)
+        .limit(1)
+        .maybeSingle(),
+    ])
+
+    if (!existing && distinctCount >= FREE_PLAN_QUESTION_LIMIT) {
+      return {
+        success: false,
+        limitReached: true,
+        error: `Você atingiu o limite de ${FREE_PLAN_QUESTION_LIMIT} questões do plano Gratuito. Assine um plano para continuar respondendo.`,
+      }
+    }
+  }
 
   // Buscar a questão
   const { data: question, error: qError } = await supabase
@@ -23,22 +49,19 @@ export async function answerStandaloneQuestion(questionId: string, answer: strin
   // Calcular is_correct
   const is_correct = answer === question.gabarito
 
-  // Upsert em standalone_answers
-  const { error: upsertError } = await supabase
+  // Cada tentativa é uma NOVA linha — refazer preserva o histórico
+  const { error: insertError } = await supabase
     .from('standalone_answers')
-    .upsert(
-      {
-        user_id: user.profile.id,
-        question_id: questionId,
-        answer: answer,
-        is_correct: is_correct,
-        answered_at: new Date().toISOString()
-      },
-      { onConflict: 'user_id,question_id' }
-    )
+    .insert({
+      user_id: user.profile.id,
+      question_id: questionId,
+      answer: answer,
+      is_correct: is_correct,
+      answered_at: new Date().toISOString()
+    })
 
-  if (upsertError) {
-    console.error('[answerStandaloneQuestion]', upsertError)
+  if (insertError) {
+    console.error('[answerStandaloneQuestion]', insertError)
     return { success: false, error: 'Erro ao registrar resposta' }
   }
 

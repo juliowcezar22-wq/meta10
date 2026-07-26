@@ -12,9 +12,10 @@ import { createStandaloneQuestion, updateStandaloneQuestion, deleteStandaloneQue
 import { useToast } from '@/components/admin/toast'
 import type { Question } from '@/lib/types/quiz'
 import { QuestionFormFields, type QuestionFormData } from '@/components/admin/question-form-fields'
-import { SUBJECT_LABELS } from '@/lib/constants'
 
-export function StandaloneClient({ initialQuestions, subjects , disciplines }: { initialQuestions: Question[], subjects: any[] , disciplines: any[] }) {
+type QuestionStatsMap = Record<string, { total_attempts: number, correct_pct: number }>
+
+export function StandaloneClient({ initialQuestions, subjects, disciplines, stats = {} }: { initialQuestions: Question[], subjects: any[], disciplines: any[], stats?: QuestionStatsMap }) {
   const router = useRouter()
   const { toast } = useToast()
   
@@ -33,6 +34,7 @@ export function StandaloneClient({ initialQuestions, subjects , disciplines }: {
     subject: 'matematica',
     subject_id: '',
     enunciado: '',
+    image_url: null,
     alternatives: [
       { letra: 'a', texto: '' },
       { letra: 'b', texto: '' }
@@ -57,6 +59,7 @@ export function StandaloneClient({ initialQuestions, subjects , disciplines }: {
         subject: q.subject || 'matematica',
         subject_id: (q as any).subject_id || '',
         enunciado: q.enunciado,
+        image_url: (q as any).image_url || null,
         alternatives: alts,
         gabarito: q.gabarito,
         comentario: q.comentario || '',
@@ -69,6 +72,7 @@ export function StandaloneClient({ initialQuestions, subjects , disciplines }: {
         subject: 'matematica',
         subject_id: '',
         enunciado: '',
+        image_url: null,
         alternatives: [
           { letra: 'a', texto: '' },
           { letra: 'b', texto: '' }
@@ -108,6 +112,7 @@ export function StandaloneClient({ initialQuestions, subjects , disciplines }: {
     if (formData.subject_id) data.append('subject_id', formData.subject_id)
     data.append('question_type', formData.question_type)
     data.append('enunciado', formData.enunciado)
+    data.append('image_url', formData.image_url || '')
     data.append('gabarito', formData.gabarito)
     data.append('difficulty', formData.difficulty)
     if (formData.comentario) data.append('comentario', formData.comentario)
@@ -170,6 +175,16 @@ export function StandaloneClient({ initialQuestions, subjects , disciplines }: {
       </Badge>
     ),
     enunciadoNode: <span className="truncate max-w-[300px] block" title={q.enunciado}>{q.enunciado}</span>,
+    statsNode: stats[q.id] ? (
+      <div className="text-sm" title={`${stats[q.id].total_attempts} respostas de alunos`}>
+        <Badge variant={stats[q.id].correct_pct >= 70 ? 'success' : stats[q.id].correct_pct >= 40 ? 'warning' : 'danger'}>
+          {Math.round(stats[q.id].correct_pct)}% acerto
+        </Badge>
+        <span className="block text-xs text-surface-400 mt-1">{stats[q.id].total_attempts} resposta{stats[q.id].total_attempts === 1 ? '' : 's'}</span>
+      </div>
+    ) : (
+      <span className="text-xs text-surface-400">Sem respostas</span>
+    ),
     actionsNode: (
       <div className="flex items-center gap-2">
         <button 
@@ -226,6 +241,7 @@ export function StandaloneClient({ initialQuestions, subjects , disciplines }: {
               { header: 'Assunto', accessor: 'assuntoNode' },
               { header: 'Tipo', accessor: 'tipoNode' },
               { header: 'Enunciado', accessor: 'enunciadoNode' },
+              { header: 'Desempenho', accessor: 'statsNode' },
               { header: 'Ações', accessor: 'actionsNode' }
             ]}
           />
