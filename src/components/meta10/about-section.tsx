@@ -33,7 +33,7 @@ export default function AboutSection() {
               O META 10 é um espaço pedagógico criado para oferecer reforço escolar de qualidade a alunos do ensino fundamental e médio.
             </p>
             <p className="text-surface-500 text-lg leading-relaxed mb-10">
-              Nossa plataforma reúne materiais de estudo cuidadosamente elaborados — desde questões, simulados, atividades em PDF, mapas mentais e resumos — tudo organizado para maximizar seu aprendizado.
+              Nossa plataforma reúne materiais de estudo cuidadosamente elaborados — desde questões, atividades em PDF, mapas mentais e resumos — tudo organizado para maximizar seu aprendizado.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

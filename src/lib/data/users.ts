@@ -203,7 +203,6 @@ export async function getProfessores(): Promise<Professor[]> {
 export type ProfessorMetrics = Professor & {
   metricas: {
     questoes: number
-    simulados: number
     atividades: number
     jogos: number
     mapas: number
@@ -237,9 +236,8 @@ export async function getProfessoresWithMetrics(period: '7d' | '30d' | 'total'):
     const profDateFilter = period === 'total' ? prof.created_at : dateFilter
     const actualFilter = profDateFilter > prof.created_at ? profDateFilter : prof.created_at
 
-    const [{ count: qCount }, { count: sCount }, { count: aCount }, { count: jCount }, { count: mCount }, { count: rCount }] = await Promise.all([
+    const [{ count: qCount }, { count: aCount }, { count: jCount }, { count: mCount }, { count: rCount }] = await Promise.all([
       supabase.from('questions').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).gte('created_at', actualFilter),
-      supabase.from('question_lists').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).gte('created_at', actualFilter),
       supabase.from('materials').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).eq('type', 'atividade_pdf').gte('created_at', actualFilter),
       supabase.from('materials').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).eq('type', 'jogo').gte('created_at', actualFilter),
       supabase.from('materials').select('*', { count: 'exact', head: true }).eq('created_by', prof.id).eq('type', 'mapa_mental').gte('created_at', actualFilter),
@@ -247,13 +245,12 @@ export async function getProfessoresWithMetrics(period: '7d' | '30d' | 'total'):
     ])
 
     const dias = Math.max(1, Math.ceil((Date.now() - new Date(actualFilter).getTime()) / (1000 * 60 * 60 * 24)))
-    const totalItens = (qCount || 0) + (sCount || 0) + (aCount || 0) + (jCount || 0) + (mCount || 0) + (rCount || 0)
-    
+    const totalItens = (qCount || 0) + (aCount || 0) + (jCount || 0) + (mCount || 0) + (rCount || 0)
+
     return {
       ...prof,
       metricas: {
         questoes: qCount || 0,
-        simulados: sCount || 0,
         atividades: aCount || 0,
         jogos: jCount || 0,
         mapas: mCount || 0,
