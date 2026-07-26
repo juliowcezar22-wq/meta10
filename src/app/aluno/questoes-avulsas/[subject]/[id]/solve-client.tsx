@@ -29,6 +29,7 @@ export function SolveClient({ question, subject, disciplineName, myStats, collec
   const [selectedAnswer, setSelectedAnswer] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isBlocked, setIsBlocked] = useState(limitInfo.blocked)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [feedback, setFeedback] = useState<{
     is_correct: boolean
     gabarito: string
@@ -49,6 +50,7 @@ export function SolveClient({ question, subject, disciplineName, myStats, collec
   const handleSubmit = async () => {
     if (!selectedAnswer) return
     setIsSubmitting(true)
+    setSubmitError(null)
 
     const result = await answerStandaloneQuestion(question.id, selectedAnswer)
     setIsSubmitting(false)
@@ -65,13 +67,14 @@ export function SolveClient({ question, subject, disciplineName, myStats, collec
       setIsBlocked(true)
     } else {
       setFeedback(null)
-      alert(result.error)
+      setSubmitError(result.error || 'Não foi possível registrar sua resposta. Tente novamente.')
     }
   }
 
   const handleRetry = () => {
     setSelectedAnswer('')
     setFeedback(null)
+    setSubmitError(null)
   }
 
   // Distribuição coletiva de escolhas (modelo QConcursos) — exibida após responder
@@ -249,7 +252,13 @@ export function SolveClient({ question, subject, disciplineName, myStats, collec
         {/* Action / Feedback Area */}
         <div className="p-6 border-t border-surface-100 bg-surface-50">
           {!feedback ? (
-            <div className="flex justify-end">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
+              {submitError && (
+                <p className="flex items-center gap-2 text-sm text-danger-700 bg-danger-50 border border-danger-200 rounded-xl px-4 py-2.5">
+                  <XCircle className="w-4 h-4 shrink-0" />
+                  {submitError}
+                </p>
+              )}
               <button
                 onClick={handleSubmit}
                 disabled={!selectedAnswer || isSubmitting}
