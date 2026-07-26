@@ -10,8 +10,13 @@ import { Pencil, Trash2, X } from 'lucide-react'
 import { createProduct, updateProduct, deleteProduct } from '@/app/actions/admin/products'
 import { useToast } from '@/components/admin/toast'
 import type { Product } from '@/lib/types/product'
+import type { Discipline } from '@/lib/data/disciplines'
+import type { Subject } from '@/lib/data/subjects'
+import { MATERIAL_TYPES, MATERIAL_TYPE_LABELS } from '@/lib/constants'
+import { ImageUploadField } from '@/components/admin/image-upload-field'
+import { ShoppingBag } from 'lucide-react'
 
-export function ProdutosClient({ initialData }: { initialData: Product[] }) {
+export function ProdutosClient({ initialData, disciplines, subjects }: { initialData: Product[], disciplines: Discipline[], subjects: Subject[] }) {
   const router = useRouter()
   const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
@@ -30,7 +35,15 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
     hotmart_link: '',
     arquivo_url: '',
     description: '',
+    material_type: '',
+    subject: '',
+    subject_id: '',
+    promo_price: '',
+    image_url: null as string | null,
   })
+
+  // Materiais de estudo (PDF, resumo, mapa, jogo) são sempre pagos
+  const isMaterial = formData.material_type !== ''
 
   const openModal = (product?: Product) => {
     if (product) {
@@ -42,6 +55,11 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
         hotmart_link: product.hotmart_link || '',
         arquivo_url: product.arquivo_url || '',
         description: product.description || '',
+        material_type: product.material_type || '',
+        subject: product.subject || '',
+        subject_id: product.subject_id || '',
+        promo_price: product.promo_price != null ? product.promo_price.toString() : '',
+        image_url: product.image_url || null,
       })
     } else {
       setEditingProduct(null)
@@ -52,6 +70,11 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
         hotmart_link: '',
         arquivo_url: '',
         description: '',
+        material_type: '',
+        subject: '',
+        subject_id: '',
+        promo_price: '',
+        image_url: null,
       })
     }
     setIsModalOpen(true)
@@ -68,10 +91,15 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
     
     const data = new FormData()
     data.append('name', formData.name)
-    data.append('tipo', formData.tipo)
+    data.append('tipo', isMaterial ? 'pago' : formData.tipo)
     data.append('description', formData.description)
+    data.append('material_type', formData.material_type)
+    data.append('subject', formData.subject)
+    data.append('subject_id', formData.subject_id)
+    if (formData.promo_price) data.append('promo_price', formData.promo_price)
+    if (formData.image_url) data.append('image_url', formData.image_url)
 
-    if (formData.tipo === 'pago') {
+    if (isMaterial || formData.tipo === 'pago') {
       data.append('price', formData.price)
       data.append('hotmart_link', formData.hotmart_link)
     } else {
@@ -109,6 +137,24 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
 
   const formattedProducts = initialData.map(product => ({
     ...product,
+    imageNode: product.image_url ? (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={product.image_url} alt={product.name} className="w-12 h-12 object-cover rounded-lg border border-surface-200" />
+    ) : (
+      <div className="w-12 h-12 rounded-lg bg-surface-100 border border-surface-200 flex items-center justify-center text-surface-300">
+        <ShoppingBag className="w-5 h-5" />
+      </div>
+    ),
+    materialNode: product.material_type ? (
+      <span className="text-surface-700">{MATERIAL_TYPE_LABELS[product.material_type] || product.material_type}</span>
+    ) : (
+      <span className="text-surface-400">—</span>
+    ),
+    subjectNode: product.subject ? (
+      <span className="capitalize">{disciplines.find(d => d.slug === product.subject)?.name || product.subject}</span>
+    ) : (
+      <span className="text-surface-400">—</span>
+    ),
     priceFormatted: product.tipo === 'pago' ? `R$ ${product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '-',
     tipoNode: (
       <Badge variant={product.tipo === 'gratuito' ? 'success' : 'primary'}>
@@ -164,7 +210,10 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
         searchKey="name"
         searchPlaceholder="Buscar por nome..."
         columns={[
+          { header: 'Imagem', accessor: 'imageNode' },
           { header: 'Nome', accessor: 'name' },
+          { header: 'Material', accessor: 'materialNode' },
+          { header: 'Disciplina', accessor: 'subjectNode' },
           { header: 'Tipo', accessor: 'tipoNode' },
           { header: 'Preço', accessor: 'priceFormatted' },
           { header: 'Link', accessor: 'linkNode' },
@@ -199,8 +248,59 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
             
             <form onSubmit={handleSave} className="p-6 space-y-4">
               <div>
+                <label className="block text-sm font-medium text-surface-700 mb-1">Tipo de Material</label>
+                <select
+                  value={formData.material_type}
+                  onChange={(e) => setFormData({ ...formData, material_type: e.target.value })}
+                  className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                >
+                  <option value="">Produto geral (sem categoria)</option>
+                  {MATERIAL_TYPES.map((m) => (
+                    <option key={m.slug} value={m.slug}>{m.label}</option>
+                  ))}
+                </select>
+                {isMaterial && (
+                  <p className="text-xs text-surface-500 mt-1">Materiais de estudo são sempre vendidos (nunca gratuitos).</p>
+                )}
+              </div>
+
+              {isMaterial && (
+                <div>
+                  <label className="block text-sm font-medium text-surface-700 mb-1">Disciplina</label>
+                  <select
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value, subject_id: '' })}
+                    className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    required
+                  >
+                    <option value="">Selecione uma disciplina</option>
+                    {disciplines.map((d) => (
+                      <option key={d.slug} value={d.slug}>{d.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {isMaterial && formData.subject && (
+                <div>
+                  <label className="block text-sm font-medium text-surface-700 mb-1">Assunto (opcional)</label>
+                  <select
+                    value={formData.subject_id}
+                    onChange={(e) => setFormData({ ...formData, subject_id: e.target.value })}
+                    className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  >
+                    <option value="">Sem assunto específico</option>
+                    {subjects.filter(su => su.discipline === formData.subject).map(su => (
+                      <option key={su.id} value={su.id}>{su.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {!isMaterial && (
+              <div>
                 <label className="block text-sm font-medium text-surface-700 mb-1">Tipo</label>
-                <select 
+                <select
                   value={formData.tipo}
                   onChange={(e) => setFormData({ ...formData, tipo: e.target.value as 'pago' | 'gratuito' })}
                   className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
@@ -210,6 +310,7 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
                   <option value="gratuito">Gratuito</option>
                 </select>
               </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-surface-700 mb-1">Nome do Item</label>
@@ -222,7 +323,14 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
                 />
               </div>
 
-              {formData.tipo === 'pago' && (
+              <ImageUploadField
+                bucket="product-images"
+                label="Imagem do Produto"
+                value={formData.image_url}
+                onChange={(url) => setFormData({ ...formData, image_url: url })}
+              />
+
+              {(isMaterial || formData.tipo === 'pago') && (
                 <>
                   <div>
                     <label className="block text-sm font-medium text-surface-700 mb-1">Preço (R$)</label>
@@ -234,6 +342,18 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                       className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-surface-700 mb-1">Preço Promocional (R$, opcional)</label>
+                    <input 
+                      type="number" 
+                      step="0.01"
+                      min="0.01"
+                      value={formData.promo_price}
+                      onChange={(e) => setFormData({ ...formData, promo_price: e.target.value })}
+                      className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                      placeholder="Menor que o preço cheio"
                     />
                   </div>
                   <div>
@@ -250,7 +370,7 @@ export function ProdutosClient({ initialData }: { initialData: Product[] }) {
                 </>
               )}
 
-              {formData.tipo === 'gratuito' && (
+              {!isMaterial && formData.tipo === 'gratuito' && (
                 <div>
                   <label className="block text-sm font-medium text-surface-700 mb-1">Link de Download (Google Drive, etc)</label>
                   <input 
