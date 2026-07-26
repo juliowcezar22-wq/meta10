@@ -14,6 +14,14 @@ const materialSchema = z.object({
   is_free: z.boolean().default(false),
 })
 
+// Regra de negócio: estes tipos são vendidos avulsos na loja e
+// nunca podem ser marcados como gratuitos nem liberados por plano.
+const PAID_ONLY_TYPES = ['atividade_pdf', 'resumo', 'mapa_mental', 'jogo']
+
+function enforcePaidOnly(data: z.infer<typeof materialSchema>) {
+  return PAID_ONLY_TYPES.includes(data.type) ? { ...data, is_free: false } : data
+}
+
 export async function createMaterial(formData: FormData) {
   await requireAdminOrProfessor()
   const validation = materialSchema.safeParse({
@@ -32,13 +40,15 @@ export async function createMaterial(formData: FormData) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  const materialData = enforcePaidOnly(validation.data)
+
   const { error } = await supabase.from('materials').insert({
-    title: validation.data.title,
-    description: validation.data.description,
-    type: validation.data.type,
-    subject: validation.data.subject,
-    file_url: validation.data.file_url,
-    is_free: validation.data.is_free,
+    title: materialData.title,
+    description: materialData.description,
+    type: materialData.type,
+    subject: materialData.subject,
+    file_url: materialData.file_url,
+    is_free: materialData.is_free,
     created_by: user?.id,
   })
   
@@ -71,15 +81,16 @@ export async function updateMaterial(id: string, formData: FormData) {
   }
   
   const supabase = createClient()
+  const materialData = enforcePaidOnly(validation.data)
   const { error } = await supabase
     .from('materials')
     .update({
-      title: validation.data.title,
-      description: validation.data.description,
-      type: validation.data.type,
-      subject: validation.data.subject,
-      file_url: validation.data.file_url,
-      is_free: validation.data.is_free,
+      title: materialData.title,
+      description: materialData.description,
+      type: materialData.type,
+      subject: materialData.subject,
+      file_url: materialData.file_url,
+      is_free: materialData.is_free,
     })
     .eq('id', id)
     

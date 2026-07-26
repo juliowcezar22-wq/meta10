@@ -13,7 +13,7 @@ export default async function ResumosAlunoPage() {
     <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-surface-900">Resumos</h1>
-        <p className="text-surface-500 mt-2">Escolha uma matéria para ver os resumos disponíveis.</p>
+        <p className="text-surface-500 mt-2">Escolha uma matéria para ver os resumos disponíveis na loja.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -21,7 +21,7 @@ export default async function ResumosAlunoPage() {
           return (
             <Link 
               key={sub.id} 
-              href={`/aluno/resumos/${sub.id}`}
+              href={`/aluno/loja?tipo=resumo&disciplina=${sub.id}`}
               className="group block bg-white rounded-2xl p-6 border border-surface-200 shadow-sm hover:shadow-md transition-all hover:border-primary-200"
             >
               <div className="flex items-center gap-4">
@@ -30,7 +30,7 @@ export default async function ResumosAlunoPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-surface-900 group-hover:text-primary transition-colors">{sub.title}</h3>
-                  <p className="text-sm text-surface-500 mt-0.5">Ver resumos</p>
+                  <p className="text-sm text-surface-500 mt-0.5">Ver na loja</p>
                 </div>
               </div>
             </Link>

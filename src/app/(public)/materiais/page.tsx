@@ -1,10 +1,9 @@
 import Link from 'next/link'
-import { ListChecks, ClipboardCheck, FileText, Network, BookOpen, Gamepad2 } from 'lucide-react'
+import { ListChecks, FileText, Network, BookOpen, Gamepad2 } from 'lucide-react'
 import { MATERIALS } from '@/lib/constants'
 
 const iconMap: Record<string, React.ElementType> = {
   ListChecks,
-  ClipboardCheck,
   FileText,
   Network,
   BookOpen,
@@ -27,14 +26,14 @@ export default function MateriaisPage() {
 
       <section className="section-padding bg-white">
         <div className="container-custom">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="flex flex-wrap justify-center gap-8">
             {MATERIALS.map((material) => {
               const Icon = iconMap[material.icon] || BookOpen
               return (
                 <Link
                   key={material.id}
-                  href={`/aluno/${material.slug}`}
-                  className="card card-hover p-8 text-center cursor-pointer"
+                  href={material.href}
+                  className="card card-hover p-8 text-center cursor-pointer w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.375rem)]"
                 >
                   <div className="w-16 h-16 bg-primary-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <Icon className="w-8 h-8 text-primary" />

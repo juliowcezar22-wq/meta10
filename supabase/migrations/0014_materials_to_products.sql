@@ -1,0 +1,71 @@
+-- ============================================================
+-- Migration 0014: Migração de materiais para produtos da loja
+-- ============================================================
+-- STATUS: *** NÃO APLICAR — AGUARDANDO DUAS DECISÕES ***
+--   (a) Unificar ou não as 4 telas do admin na Loja (opções A/B
+--       apresentadas no relatório da entrega)
+--   (b) Destino de cada material hoje marcado como Gratuito
+--       (virar produto pago ou ser arquivado)
+--
+-- Pré-requisito: migration 0013 aplicada (products.material_type/subject).
+--
+-- ============================================================
+-- INVENTÁRIO (somente leitura — rodar e me mostrar o resultado)
+-- ============================================================
+
+-- Todos os materiais dos 4 tipos, com destaque para os gratuitos
+-- (lista pedida no item 5 do escopo):
+-- SELECT m.type AS tipo_material, m.title, d.name AS disciplina,
+--        m.is_free, m.file_url, m.created_at
+-- FROM public.materials m
+-- LEFT JOIN public.disciplines d ON d.slug = m.subject
+-- WHERE m.type IN ('atividade_pdf', 'resumo', 'mapa_mental', 'jogo')
+-- ORDER BY m.is_free DESC, m.type, m.title;
+
+-- Contagem por tipo e acesso:
+-- SELECT type, is_free, count(*)
+-- FROM public.materials
+-- WHERE type IN ('atividade_pdf', 'resumo', 'mapa_mental', 'jogo')
+-- GROUP BY type, is_free ORDER BY type, is_free;
+
+-- ============================================================
+-- MIGRAÇÃO (Opção A — unificação na Loja) — descomentar após decisão
+-- Preserva título, disciplina e arquivo, como pedido.
+-- Produtos entram INATIVOS e com preço 0 para o admin revisar
+-- preço + link Hotmart antes de publicar (material pago exige
+-- checkout; o arquivo migrado fica em arquivo_url como referência
+-- interna do que será entregue ao comprador).
+-- ============================================================
+
+-- INSERT INTO public.products
+--   (name, description, price, tipo, material_type, subject, arquivo_url, hotmart_link, is_active)
+-- SELECT m.title,
+--        m.description,
+--        0,                -- preço a definir pelo admin
+--        'pago',
+--        m.type,
+--        m.subject,
+--        m.file_url,       -- arquivo preservado
+--        NULL,             -- link Hotmart a preencher
+--        false             -- inativo até revisão
+-- FROM public.materials m
+-- WHERE m.type IN ('atividade_pdf', 'resumo', 'mapa_mental', 'jogo');
+--
+-- Obs: chk_products_material_paid exige tipo='pago' para materiais — ok.
+-- Obs: products.price tem NOT NULL; 0 marca "preço pendente".
+
+-- Depois de conferir a cópia em products:
+-- DELETE FROM public.materials
+-- WHERE type IN ('atividade_pdf', 'resumo', 'mapa_mental', 'jogo');
+
+-- E, encerrado o modelo de material por plano, travar o acesso antigo:
+-- DROP POLICY IF EXISTS "Materiais grátis são visíveis a todos logados" ON public.materials;
+-- DROP POLICY IF EXISTS "Materiais pagos apenas para assinantes ativos ou admins" ON public.materials;
+-- (a policy "Apenas admin gerencia materiais" pode ficar para os
+--  tipos legados video/pdf/audio/link, se ainda forem usados)
+
+-- ============================================================
+-- ALTERNATIVA para itens marcados como "arquivar" na decisão (b):
+-- em vez de entrar no INSERT acima, apenas removê-los de materials
+-- após backup (exportar CSV do inventário antes).
+-- ============================================================

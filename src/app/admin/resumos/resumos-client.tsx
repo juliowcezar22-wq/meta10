@@ -10,7 +10,6 @@ import { Pencil, Trash2, X } from 'lucide-react'
 import { createMaterial, updateMaterial, deleteMaterial } from '@/app/actions/admin/materials'
 import { useToast } from '@/components/admin/toast'
 import type { Database } from '@/lib/supabase/types'
-import { SUBJECT_LABELS } from '@/lib/constants'
 
 type Material = Database['public']['Tables']['materials']['Row']
 
@@ -32,7 +31,6 @@ export function ResumosClient({ initialData , disciplines }: { initialData: Mate
     type: 'resumo',
     subject: '',
     file_url: '',
-    is_free: false,
   })
 
   const openModal = (material?: Material) => {
@@ -44,7 +42,6 @@ export function ResumosClient({ initialData , disciplines }: { initialData: Mate
         type: material.type,
         subject: material.subject || '',
         file_url: material.file_url || '',
-        is_free: material.is_free,
       })
     } else {
       setEditingMaterial(null)
@@ -54,7 +51,6 @@ export function ResumosClient({ initialData , disciplines }: { initialData: Mate
         type: 'resumo',
         subject: '',
         file_url: '',
-        is_free: false,
       })
     }
     setIsModalOpen(true)
@@ -75,7 +71,7 @@ export function ResumosClient({ initialData , disciplines }: { initialData: Mate
     data.append('type', formData.type)
     data.append('subject', formData.subject)
     data.append('file_url', formData.file_url)
-    data.append('is_free', formData.is_free.toString())
+    data.append('is_free', 'false')
 
     let result
     if (editingMaterial) {
@@ -109,11 +105,6 @@ export function ResumosClient({ initialData , disciplines }: { initialData: Mate
   const formattedMaterials = initialData.map(material => ({
     ...material,
     subjectNode: <span className="capitalize">{material.subject ? (disciplines.find(d => d.slug === material.subject)?.name || material.subject) : '-'}</span>,
-    accessNode: (
-      <Badge variant={material.is_free ? 'success' : 'primary'}>
-        {material.is_free ? 'Gratuito' : 'Premium'}
-      </Badge>
-    ),
     actionsNode: (
       <div className="flex items-center gap-2">
         <button 
@@ -157,7 +148,6 @@ export function ResumosClient({ initialData , disciplines }: { initialData: Mate
             columns={[
               { header: 'Título', accessor: 'title' },
               { header: 'Disciplina', accessor: 'subjectNode' },
-              { header: 'Acesso', accessor: 'accessNode' },
               { header: 'Ações', accessor: 'actionsNode' }
             ]}
           />
@@ -234,19 +224,6 @@ export function ResumosClient({ initialData , disciplines }: { initialData: Mate
                   className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   rows={3}
                 />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input 
-                  type="checkbox" 
-                  id="is_free"
-                  checked={formData.is_free}
-                  onChange={(e) => setFormData({ ...formData, is_free: e.target.checked })}
-                  className="rounded border-surface-300 text-primary focus:ring-primary"
-                />
-                <label htmlFor="is_free" className="text-sm font-medium text-surface-700">
-                  Resumo Gratuito
-                </label>
               </div>
 
               <div className="pt-4 flex items-center justify-end gap-3 border-t border-surface-100">

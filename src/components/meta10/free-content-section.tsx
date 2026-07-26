@@ -1,27 +1,5 @@
-import { LockOpen, FileText, ClipboardList, Network, BookOpen, Download } from 'lucide-react'
-import { FREE_CONTENTS } from '@/lib/constants'
+import { LockOpen, ListChecks, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-
-const iconMap: Record<string, React.ElementType> = {
-  PDF: FileText, Resumo: BookOpen, 'Mapa Mental': Network, Simulado: ClipboardList,
-}
-
-const themeMap: Record<string, { badge: string, iconBg: string, iconColor: string, gradient: string, border: string }> = {
-  PDF: { 
-    badge: 'bg-primary-50 text-primary-700 ring-1 ring-primary-500/20', 
-    iconBg: 'bg-primary-100', 
-    iconColor: 'text-primary-600',
-    gradient: 'from-primary-500/10 to-transparent',
-    border: 'group-hover:border-primary-500/30'
-  },
-  Resumo: { 
-    badge: 'bg-purple-50 text-purple-700 ring-1 ring-purple-500/20', 
-    iconBg: 'bg-purple-100', 
-    iconColor: 'text-purple-600',
-    gradient: 'from-purple-500/10 to-transparent',
-    border: 'group-hover:border-purple-500/30'
-  },
-}
 
 export default function FreeContentSection() {
   return (
@@ -40,55 +18,44 @@ export default function FreeContentSection() {
             Conteúdos Gratuitos
           </h2>
           <p className="text-surface-500 text-lg max-w-2xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200">
-            Baixe amostras exclusivas do nosso método e descubra na prática como o META 10 pode acelerar a sua aprovação.
+            Crie sua conta gratuita e comece agora a resolver questões do nosso Banco de Questões, sem pagar nada.
           </p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
-          {FREE_CONTENTS.map((content, index) => {
-            const Icon = iconMap[content.type] || FileText
-            const theme = themeMap[content.type] || themeMap['PDF']
-            
-            return (
-              <div 
-                key={index} 
-                className={`group relative bg-white rounded-[2.5rem] p-8 md:p-10 shadow-card hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-surface-200 overflow-hidden ${theme.border} animate-fade-in-up`}
-                style={{ animationDelay: `${300 + (index * 100)}ms` }}
-              >
-                {/* Background Gradient */}
-                <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl ${theme.gradient} rounded-bl-[4rem] opacity-50 group-hover:scale-125 transition-transform duration-700 ease-out`} />
-                
-                <div className="relative z-10 flex flex-col h-full">
-                  <div className="flex items-start justify-between mb-8">
-                    <div className={`w-16 h-16 rounded-2xl ${theme.iconBg} flex items-center justify-center group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500 ease-out`}>
-                      <Icon className={`w-8 h-8 ${theme.iconColor}`} />
-                    </div>
-                    {content.type && (
-                      <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${theme.badge}`}>
-                        {content.type}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="flex-grow">
-                    <h3 className="font-extrabold text-surface-900 text-2xl mb-8 group-hover:text-primary transition-colors duration-300">
-                      {content.title}
-                    </h3>
-                  </div>
-                  
-                  <Link href="/cadastro" className="relative overflow-hidden w-full bg-surface-900 hover:bg-primary text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 group/btn mt-auto">
-                    <span className="relative z-10 flex items-center gap-2">
-                      Acessar Grátis Agora
-                      <Download className="w-5 h-5 group-hover/btn:translate-y-0.5 transition-transform duration-300" />
-                    </span>
-                  </Link>
+
+        <div className="max-w-xl mx-auto">
+          <div className="group relative bg-white rounded-[2.5rem] p-8 md:p-10 shadow-card hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-surface-200 overflow-hidden group-hover:border-primary-500/30 animate-fade-in-up animation-delay-300">
+            {/* Background Gradient */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary-500/10 to-transparent rounded-bl-[4rem] opacity-50 group-hover:scale-125 transition-transform duration-700 ease-out" />
+
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="flex items-start justify-between mb-8">
+                <div className="w-16 h-16 rounded-2xl bg-primary-100 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500 ease-out">
+                  <ListChecks className="w-8 h-8 text-primary-600" />
                 </div>
+                <span className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-success-50 text-success-700 ring-1 ring-success-500/20">
+                  Grátis
+                </span>
               </div>
-            )
-          })}
+
+              <div className="flex-grow">
+                <h3 className="font-extrabold text-surface-900 text-2xl mb-3 group-hover:text-primary transition-colors duration-300">
+                  Banco de Questões
+                </h3>
+                <p className="text-surface-500 mb-8 leading-relaxed">
+                  Questões organizadas por disciplina e assunto, com correção na hora, para você estudar do seu jeito.
+                </p>
+              </div>
+
+              <Link href="/cadastro" className="relative overflow-hidden w-full bg-surface-900 hover:bg-primary text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 group/btn mt-auto">
+                <span className="relative z-10 flex items-center gap-2">
+                  Começar a Resolver Grátis
+                  <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-0.5 transition-transform duration-300" />
+                </span>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   )
 }
-
