@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { SUBJECT_LABELS } from '@/lib/constants'
 import { PageHeader } from '@/components/admin/page-header'
 import { Pencil, Trash2, Plus, X, Search, BookmarkPlus } from 'lucide-react'
 import { createSubject, updateSubject, deleteSubject } from '@/app/actions/admin/subjects'

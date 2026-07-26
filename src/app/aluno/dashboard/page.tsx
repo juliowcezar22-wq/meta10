@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import { ListChecks, ClipboardCheck, FileText, Network, BookOpen, TrendingUp, Clock, Award, BarChart3, Lock, Crown, ArrowRight, CheckCircle2, XCircle, Gamepad2 } from 'lucide-react'
+import { ListChecks, FileText, Network, BookOpen, TrendingUp, Award, BarChart3, Lock, Crown, ArrowRight, CheckCircle2, XCircle, Gamepad2 } from 'lucide-react'
 import { getCurrentSubscription } from '@/lib/data/subscriptions'
-import { getStudentStats } from '@/lib/data/attempts'
+import { getStudentStats } from '@/lib/data/standalone-answers'
 import { requireAuth } from '@/lib/auth/guards'
 
 const quickAccess = [
-  { title: 'Simulados', href: '/aluno/questoes', icon: ListChecks, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-50' },
+  { title: 'Banco de Questões', href: '/aluno/questoes-avulsas', icon: ListChecks, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-50' },
   { title: 'Jogos Pedagógicos', href: '/aluno/jogos-pedagogicos', icon: Gamepad2, gradient: 'from-amber-500 to-amber-600', bg: 'bg-amber-50' },
   { title: 'Atividades em PDF', href: '/aluno/atividades-pdf', icon: FileText, gradient: 'from-purple-500 to-purple-600', bg: 'bg-purple-50' },
   { title: 'Mapas Mentais', href: '/aluno/mapas-mentais', icon: Network, gradient: 'from-success-500 to-success-600', bg: 'bg-success-50' },
@@ -20,14 +20,14 @@ export default async function DashboardPage() {
     getStudentStats(profile.id)
   ])
 
+  // hasSub = assinatura paga ativa; sem ela o plano real é o Gratuito
   const hasSub = subscription !== null
-  const planName = hasSub ? subscription.plan?.name || 'Premium' : 'Plano Gratuito'
+  const planName = subscription?.plan?.name ?? 'Gratuito'
 
   const stats = [
     { label: 'Exercícios Feitos', value: studentStats.exerciciosFeitos, icon: ListChecks, color: 'text-primary', bg: 'bg-primary-50' },
     { label: 'Acertos', value: studentStats.acertos, icon: CheckCircle2, color: 'text-success-600', bg: 'bg-success-50' },
     { label: 'Erros', value: studentStats.erros, icon: XCircle, color: 'text-danger-600', bg: 'bg-danger-50' },
-    { label: 'Horas de Estudo', value: `${studentStats.horasEstudo}h`, icon: Clock, color: 'text-purple-600', bg: 'bg-purple-50' },
     { label: 'Desempenho Médio', value: `${studentStats.desempenhoMedio}%`, icon: BarChart3, color: 'text-cyan-600', bg: 'bg-cyan-50' },
   ]
 
@@ -56,7 +56,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {stats.map((stat) => (
             <div key={stat.label} className="card p-5 group hover:shadow-card-hover transition-all">
               <div className="flex items-center justify-between mb-3">
@@ -91,7 +91,7 @@ export default async function DashboardPage() {
             <h2 className="text-lg font-bold text-surface-900 mb-5">Conteúdo Premium</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { title: 'Simulados Semanais', desc: 'Novos simulados toda semana' },
+                { title: 'Banco de Questões Completo', desc: 'Questões novas toda semana' },
                 { title: 'Mapas Mentais Exclusivos', desc: 'Conteúdo visual completo' },
                 { title: 'Acompanhamento', desc: 'Gráficos detalhados de progresso' },
               ].map((item) => (

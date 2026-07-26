@@ -13,7 +13,7 @@ export default async function QuestoesAvulsasMateriaSelectPage() {
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
       <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-surface-900">Questões Avulsas</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-surface-900">Banco de Questões</h1>
         <p className="text-surface-500 mt-2">Escolha uma matéria para praticar questões de forma livre.</p>
       </div>
 
