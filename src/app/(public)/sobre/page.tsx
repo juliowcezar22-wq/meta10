@@ -4,7 +4,7 @@ import { Brain, BookOpen, TrendingUp, MapPin, MessageCircle, Mail, Instagram, Yo
 import { INSTAGRAM_LINK, YOUTUBE_LINK, WHATSAPP_LINK, EMAIL_LINK, GOOGLE_MAPS_EMBED } from '@/lib/constants'
 
 const metodos = [
-  { title: 'Aprendizado Ativo', description: 'Estudante no centro do processo, resolvendo questões e simulados que reforçam o conteúdo de forma prática.', icon: Brain, color: 'text-primary', bgLight: 'bg-primary/10' },
+  { title: 'Aprendizado Ativo', description: 'Estudante no centro do processo, resolvendo questões que reforçam o conteúdo de forma prática.', icon: Brain, color: 'text-primary', bgLight: 'bg-primary/10' },
   { title: 'Conteúdo Estratégico', description: 'Conteúdo selecionado e organizado por especialistas, eliminando a sobrecarga de informações e focando no essencial.', icon: BookOpen, color: 'text-blue-600', bgLight: 'bg-blue-600/10' },
   { title: 'Acompanhamento', description: 'Indicadores de progresso e feedback constante para que o aluno saiba exatamente onde melhorar.', icon: TrendingUp, color: 'text-purple-600', bgLight: 'bg-purple-600/10' },
 ]

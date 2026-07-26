@@ -4,7 +4,7 @@ import { AlunoShell } from '@/components/aluno/aluno-shell'
 
 export const metadata: Metadata = {
   title: 'Área do Aluno',
-  description: 'Acesse seus materiais de estudo, questões, simulados, PDFs, mapas mentais e resumos.',
+  description: 'Acesse seus materiais de estudo, questões, atividades em PDF, mapas mentais e resumos.',
 }
 
 export default async function AlunoLayout({

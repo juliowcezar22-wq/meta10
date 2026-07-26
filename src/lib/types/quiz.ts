@@ -1,6 +1,6 @@
 import type { Database } from '@/lib/supabase/types'
 
-export type Subject = 
+export type Subject =
   | 'matematica'
   | 'portugues'
   | 'historia'
@@ -14,10 +14,7 @@ export type Subject =
 
 export type DifficultyLevel = Database['public']['Enums']['difficulty_level']
 
-export type QuestionList = Database['public']['Tables']['question_lists']['Row']
-
 export type QuestionType = 'multipla_escolha' | 'verdadeiro_falso'
-export type QuestionContext = 'simulado' | 'avulsa'
 
 export interface Alternative {
   letra: string  // 'a', 'b', 'c', 'd', 'e'
@@ -25,7 +22,3 @@ export interface Alternative {
 }
 
 export type Question = Database['public']['Tables']['questions']['Row']
-
-export type QuestionListItem = Database['public']['Tables']['question_list_items']['Row']
-
-export type Attempt = Database['public']['Tables']['attempts']['Row']

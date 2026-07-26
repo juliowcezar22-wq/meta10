@@ -21,7 +21,6 @@ export function ProfessoresClient({ professores, period }: { professores: Profes
         </div>
       ),
       questoesNode: <Badge variant={p.metricas.questoes > 0 ? 'primary' : 'gray'}>{p.metricas.questoes}</Badge>,
-      simuladosNode: <Badge variant={p.metricas.simulados > 0 ? 'primary' : 'gray'}>{p.metricas.simulados}</Badge>,
       atividadesNode: <Badge variant={p.metricas.atividades > 0 ? 'purple' : 'gray'}>{p.metricas.atividades}</Badge>,
       jogosNode: <Badge variant={p.metricas.jogos > 0 ? 'purple' : 'gray'}>{p.metricas.jogos}</Badge>,
       resumosNode: <Badge variant={p.metricas.resumos > 0 ? 'warning' : 'gray'}>{p.metricas.resumos}</Badge>,
@@ -82,7 +81,6 @@ export function ProfessoresClient({ professores, period }: { professores: Profes
             columns={[
               { header: 'Professor', accessor: 'nomeNode' },
               { header: 'Questões', accessor: 'questoesNode' },
-              { header: 'Simulados', accessor: 'simuladosNode' },
               { header: 'Atividades', accessor: 'atividadesNode' },
               { header: 'Jogos', accessor: 'jogosNode' },
               { header: 'Resumos', accessor: 'resumosNode' },

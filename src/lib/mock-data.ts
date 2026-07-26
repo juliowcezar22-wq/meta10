@@ -60,7 +60,7 @@ export const TESTIMONIALS = [
     id: 1,
     name: 'Ana Silva',
     role: 'Aluna do 9º ano',
-    text: 'A META 10 transformou minha forma de estudar. Os simulados me ajudaram muito na preparação para as provas!',
+    text: 'A META 10 transformou minha forma de estudar. As questões me ajudaram muito na preparação para as provas!',
     rating: 5,
   },
   {

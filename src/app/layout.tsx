@@ -12,8 +12,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: { default: 'META 10 - Espaço Pedagógico | Reforço Escolar Online', template: '%s | META 10' },
-  description: 'Plataforma de reforço escolar com questões, simulados, PDFs, mapas mentais e resumos para alunos do ensino fundamental e médio.',
-  keywords: 'reforço escolar, educação, simulados, questões, PDFs, mapas mentais, ENEM, vestibular, ensino fundamental, ensino médio',
+  description: 'Plataforma de reforço escolar com questões, atividades em PDF, mapas mentais e resumos para alunos do ensino fundamental e médio.',
+  keywords: 'reforço escolar, educação, questões, atividades em PDF, mapas mentais, ENEM, vestibular, ensino fundamental, ensino médio',
   authors: [{ name: 'META 10 Espaço Pedagógico' }],
   openGraph: { title: 'META 10 - Espaço Pedagógico', description: 'Seu reforço escolar começa aqui.', type: 'website', locale: 'pt_BR', siteName: 'META 10' },
   robots: { index: true, follow: true },

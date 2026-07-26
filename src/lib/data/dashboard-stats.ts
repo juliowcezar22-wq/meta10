@@ -6,7 +6,6 @@ export interface DashboardStats {
   activeStudents: number
   inactiveStudents: number
   totalQuestoesAvulsas: number
-  totalSimulados: number
   totalMapasMentais: number
   totalResumos: number
   totalProducts: number
@@ -26,8 +25,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     professores, 
     alunos, 
     activeSubs, 
-    questoes, 
-    simulados, 
+    questoes,
     mapasMentais,
     resumos,
     products, 
@@ -43,7 +41,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     // Usamos um count simplificado das assinaturas ativas para a métrica de dashboard
     supabase.from('subscriptions').select('*', { count: 'exact', head: true }).eq('status', 'active').gt('expires_at', now),
     supabase.from('questions').select('*', { count: 'exact', head: true }).eq('context', 'avulsa'),
-    supabase.from('question_lists').select('*', { count: 'exact', head: true }),
     supabase.from('materials').select('*', { count: 'exact', head: true }).eq('type', 'mapa_mental'),
     supabase.from('materials').select('*', { count: 'exact', head: true }).eq('type', 'resumo'),
     supabase.from('products').select('*', { count: 'exact', head: true }),
@@ -64,7 +61,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     activeStudents: activeStudentsCount,
     inactiveStudents: inactiveStudentsCount,
     totalQuestoesAvulsas: questoes.count ?? 0,
-    totalSimulados: simulados.count ?? 0,
     totalMapasMentais: mapasMentais.count ?? 0,
     totalResumos: resumos.count ?? 0,
     totalProducts: products.count ?? 0,

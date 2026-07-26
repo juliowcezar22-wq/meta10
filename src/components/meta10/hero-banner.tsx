@@ -37,7 +37,7 @@ export default function HeroBanner() {
 
           {/* Subtitle */}
           <p className="animate-fade-in-up animation-delay-300 text-lg sm:text-xl md:text-[1.35rem] text-white/90 max-w-2xl mx-auto font-semibold leading-relaxed mb-10 drop-shadow-lg">
-            Questões, simulados, atividades em PDF, mapas mentais e resumos organizados para você estudar de forma eficiente e conquistar os melhores resultados.
+            Questões, atividades em PDF, mapas mentais e resumos organizados para você estudar de forma eficiente e conquistar os melhores resultados.
           </p>
 
           {/* CTAs */}

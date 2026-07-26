@@ -3,10 +3,9 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  HelpCircle, 
-  ShoppingBag, 
+import {
+  LayoutDashboard,
+  ShoppingBag,
   FileText, 
   Map, 
   BookOpen,
@@ -24,13 +23,12 @@ interface AlunoSidebarProps {
 
 const navItems = [
   { name: 'Dashboard', href: '/aluno/dashboard', icon: LayoutDashboard },
-  { name: 'Simulados', href: '/aluno/questoes', icon: HelpCircle },
   { name: 'Questões', href: '/aluno/questoes-avulsas', icon: ListChecks },
-  { name: 'Loja', href: '/aluno/loja', icon: ShoppingBag },
   { name: 'Atividades em PDF', href: '/aluno/atividades-pdf', icon: FileEdit },
   { name: 'Mapas Mentais', href: '/aluno/mapas-mentais', icon: Map },
   { name: 'Resumos', href: '/aluno/resumos', icon: BookOpen },
   { name: 'Jogos Pedagógicos', href: '/aluno/jogos-pedagogicos', icon: Gamepad2 },
+  { name: 'Loja', href: '/aluno/loja', icon: ShoppingBag },
   { name: 'Sugestões', href: '/aluno/sugestoes', icon: MessageSquarePlus },
 ]
 

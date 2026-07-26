@@ -1,12 +1,12 @@
 import { requireAdmin, requireAuth } from '@/lib/auth/guards'
 import { getDashboardStats } from '@/lib/data/dashboard-stats'
-import { Users, UserCheck, BookOpen, ShoppingBag, Target, GraduationCap, UserX, ListChecks, HelpCircle, MessageSquareQuote, MessageSquarePlus, FileText, Gamepad2, Network, Library } from 'lucide-react'
+import { Users, UserCheck, BookOpen, ShoppingBag, Target, GraduationCap, UserX, ListChecks, MessageSquareQuote, MessageSquarePlus, FileText, Gamepad2, Network, Library } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
 export default async function AdminPage() {
   const session = await requireAuth()
-  if (session.profile.role === 'professor') redirect('/admin/questoes')
+  if (session.profile.role === 'professor') redirect('/admin/questoes-avulsas')
 
   const { profile } = await requireAdmin()
   const stats = await getDashboardStats()
@@ -97,16 +97,6 @@ export default async function AdminPage() {
           <div>
             <p className="text-sm text-surface-500 font-medium">Questões</p>
             <p className="text-2xl font-bold text-surface-900">{stats.totalQuestoesAvulsas}</p>
-          </div>
-        </Link>
-
-        <Link href="/admin/questoes" className="card p-6 flex items-center gap-4 hover:border-blue-500/50 transition-colors group">
-          <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-colors">
-            <HelpCircle className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-sm text-surface-500 font-medium">Simulados</p>
-            <p className="text-2xl font-bold text-surface-900">{stats.totalSimulados}</p>
           </div>
         </Link>
 
