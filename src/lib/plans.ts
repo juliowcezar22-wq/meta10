@@ -11,6 +11,15 @@ export const FREE_PLAN_QUESTION_LIMIT = 20
 
 export type PlanSlug = 'gratuito' | 'mensal' | 'anual'
 
+// Link de checkout só vale se for real: vazio ou placeholder = sem checkout
+// (a UI cai no WhatsApp). Evita botão quebrado em produção por env de exemplo.
+function checkoutLink(value: string | undefined): string | null {
+  if (!value) return null
+  const v = value.trim()
+  if (!v.startsWith('http') || v.includes('placeholder')) return null
+  return v
+}
+
 // Nome do plano Gratuito exatamente como está na tabela `plans`
 export const FREE_PLAN_NAME = 'Gratuito'
 
@@ -55,7 +64,7 @@ export const PLANS: PlanDefinition[] = [
     ],
     highlighted: false,
     cta: 'Assinar Agora',
-    link: process.env.NEXT_PUBLIC_HOTMART_MENSAL || null,
+    link: checkoutLink(process.env.NEXT_PUBLIC_HOTMART_MENSAL),
   },
   {
     slug: 'anual',
@@ -69,6 +78,6 @@ export const PLANS: PlanDefinition[] = [
     ],
     highlighted: true,
     cta: 'Assinar Agora',
-    link: process.env.NEXT_PUBLIC_HOTMART_ANUAL || null,
+    link: checkoutLink(process.env.NEXT_PUBLIC_HOTMART_ANUAL),
   },
 ]
