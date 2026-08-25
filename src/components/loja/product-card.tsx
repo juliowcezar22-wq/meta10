@@ -1,7 +1,7 @@
 import Image from 'next/image'
-import { ShoppingBag, ExternalLink, Download } from 'lucide-react'
+import { ShoppingBag, ExternalLink, Download, MessageCircle } from 'lucide-react'
 import type { Product } from '@/lib/types/product'
-import { MATERIAL_TYPE_LABELS } from '@/lib/constants'
+import { MATERIAL_TYPE_LABELS, whatsappHref } from '@/lib/constants'
 
 const formatBRL = (v: number) => `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
 
@@ -17,7 +17,11 @@ interface ProductCardProps {
  */
 export function ProductCard({ product, disciplineNames }: ProductCardProps) {
   const isGratuito = product.tipo === 'gratuito'
-  const href = isGratuito ? (product.arquivo_url || '#') : (product.hotmart_link || '#')
+  // Sem link de checkout (Hotmart ainda não configurada): venda pelo WhatsApp
+  const viaWhatsapp = !isGratuito && !product.hotmart_link
+  const href = isGratuito
+    ? (product.arquivo_url || '#')
+    : (product.hotmart_link || whatsappHref(`Olá! Tenho interesse em comprar "${product.name}" na META 10.`))
   const hasPromo = !isGratuito && product.promo_price != null && product.promo_price < product.price
   const discount = hasPromo ? Math.round((1 - (product.promo_price as number) / product.price) * 100) : 0
 
@@ -84,7 +88,11 @@ export function ProductCard({ product, disciplineNames }: ProductCardProps) {
             rel="noopener noreferrer"
             className={`shrink-0 flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition-colors ${isGratuito ? 'bg-success-500 hover:bg-success-600 text-white' : 'bg-primary hover:bg-primary-600 text-white'}`}
           >
-            {isGratuito ? (<><Download className="w-3.5 h-3.5" /> Baixar</>) : (<><ExternalLink className="w-3.5 h-3.5" /> Comprar</>)}
+            {isGratuito
+              ? (<><Download className="w-3.5 h-3.5" /> Baixar</>)
+              : viaWhatsapp
+                ? (<><MessageCircle className="w-3.5 h-3.5" /> Comprar pelo WhatsApp</>)
+                : (<><ExternalLink className="w-3.5 h-3.5" /> Comprar</>)}
           </a>
         </div>
       </div>

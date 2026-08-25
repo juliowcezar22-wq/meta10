@@ -1,9 +1,11 @@
-# RUNBOOK — Aplicação manual das migrations 0011 → 0017
+# RUNBOOK — Aplicação manual das migrations 0011 → 0017 (6 migrations)
 
 **Para ser seguido no SQL Editor do Supabase (Dashboard → SQL Editor → New query).**
-Ordem obrigatória: **0011 → 0013 → 0015 → 0016 → 0017**. Aplique uma por vez, rode a verificação, e só então passe para a próxima.
+Ordem obrigatória: **0011 → 0012 → 0013 → 0015 → 0016 → 0017**. Aplique uma por vez, rode a verificação, e só então passe para a próxima.
 
-> As migrations **0010, 0012 e 0014 NÃO entram nesta rodada** — ver seção final "NÃO EXECUTAR".
+> As migrations **0010 e 0014 NÃO entram nesta rodada** — ver seção final "NÃO EXECUTAR".
+
+> **Deploy:** aplique 0011→0016 antes do push; a **0017 é a única que entra logo DEPOIS do deploy concluir** (ela é incompatível com o código antigo que ainda estiver no ar).
 
 ---
 
@@ -15,7 +17,7 @@ Ordem obrigatória: **0011 → 0013 → 0015 → 0016 → 0017**. Aplique uma po
   - **Opção B (sem CLI):** No SQL Editor, rode `SELECT * FROM <tabela>` e use o botão **Export CSV** para cada tabela crítica: `users`, `subscriptions`, `plans`, `standalone_answers`, `materials`, `products`, `questions`, `attempts`, `question_lists`.
   - **Opção C (com CLI instalada):** `supabase db dump -f backup_pre_0011.sql --linked`.
 - [ ] Confirme que está no projeto certo: o nome do projeto é **Meta10** (ref `aohzpfzzmbqtqziugpsj`).
-- [ ] Não faça o deploy do código antes de terminar as 5 migrations (o código novo depende delas).
+- [ ] Não faça o deploy do código antes de terminar as migrations 0011→0016 (o código novo depende delas); a 0017 vai logo após o deploy.
 
 ---
 
@@ -134,6 +136,39 @@ ALTER TABLE public.plans DROP COLUMN IF EXISTS is_active;
 
 ---
 
+## 1b. Migration 0012 — Assinaturas de equipe → Gratuito
+
+**O que faz:** converte as 4 assinaturas Mensal existentes (Maria Emilia, Bruna, Ruan e a conta-aluno de teste do Ruan) para o plano Gratuito, sem apagar nada e registrando no log. Decisão da cliente em 27/07/2026: todas são contas de professores/equipe, nenhuma é pagante.
+
+**Cole e execute** o conteúdo integral de `supabase/migrations/0012_fix_wrongly_paid_users.sql` (é um único comando `WITH ... UPDATE ... INSERT` — copie o arquivo inteiro).
+
+**Verificação:**
+
+```sql
+SELECT count(*) AS assinaturas_pagas_ativas
+FROM public.subscriptions s JOIN public.plans p ON p.id = s.plan_id
+WHERE s.status = 'active' AND p.duration_months > 0;
+-- SUCESSO = 0
+
+SELECT count(*) AS logs_da_conversao FROM public.subscription_logs WHERE notes LIKE 'Migration 0012%';
+-- SUCESSO = 4
+```
+
+**Se falhar** — rollback (recoloca as 4 no Mensal com vencimento em 1 ano, como estavam):
+
+```sql
+UPDATE public.subscriptions s
+SET plan_id = (SELECT id FROM public.plans WHERE name = 'Mensal' LIMIT 1),
+    expires_at = now() + interval '1 year'
+FROM public.subscription_logs l
+WHERE l.user_id = s.user_id AND l.notes LIKE 'Migration 0012%' AND s.status = 'active';
+DELETE FROM public.subscription_logs WHERE notes LIKE 'Migration 0012%';
+```
+
+**Telas que passam a refletir:** coluna "Plano Atual" do admin (todos como Gratuito), badge do dashboard dessas contas, lista "Alunos Ativos" (fica vazia até existir pagante real).
+
+---
+
 ## 2. Migration 0013 — Categorização de produtos
 
 **O que faz:** dá à loja os campos "tipo de material" e "disciplina" nos produtos e grava no banco a regra de que material de estudo nunca pode ser gratuito.
@@ -236,7 +271,7 @@ ALTER TABLE public.questions DROP COLUMN IF EXISTS image_url;
 
 ## 4. Migration 0016 — Busca da loja
 
-**O que faz:** adiciona assunto e preço promocional aos produtos, aceita o tipo "Questões" na loja, e cria os índices que fazem a busca por texto e os filtros serem rápidos.
+**O que faz:** adiciona assunto e preço promocional aos produtos e cria os índices que fazem a busca por texto e os filtros serem rápidos.
 
 **Cole e execute** (`supabase/migrations/0016_store_search.sql`):
 
@@ -252,12 +287,6 @@ ALTER TABLE public.products
 ALTER TABLE public.products
   ADD CONSTRAINT chk_products_promo_price
   CHECK (promo_price IS NULL OR (promo_price > 0 AND promo_price < price));
-
-ALTER TABLE public.products
-  DROP CONSTRAINT IF EXISTS chk_products_material_type;
-ALTER TABLE public.products
-  ADD CONSTRAINT chk_products_material_type
-  CHECK (material_type IS NULL OR material_type IN ('questoes', 'atividade_pdf', 'resumo', 'mapa_mental', 'jogo'));
 
 CREATE INDEX IF NOT EXISTS idx_products_subject_id ON public.products(subject_id);
 CREATE INDEX IF NOT EXISTS idx_products_active_created ON public.products(is_active, created_at DESC);
@@ -292,14 +321,10 @@ DROP INDEX IF EXISTS idx_products_active_created;
 DROP INDEX IF EXISTS idx_products_name_trgm;
 DROP INDEX IF EXISTS idx_products_description_trgm;
 ALTER TABLE public.products DROP CONSTRAINT IF EXISTS chk_products_promo_price;
-ALTER TABLE public.products DROP CONSTRAINT IF EXISTS chk_products_material_type;
-ALTER TABLE public.products
-  ADD CONSTRAINT chk_products_material_type
-  CHECK (material_type IS NULL OR material_type IN ('atividade_pdf', 'resumo', 'mapa_mental', 'jogo'));
 ALTER TABLE public.products DROP COLUMN IF EXISTS subject_id, DROP COLUMN IF EXISTS promo_price;
 ```
 
-**Telas que passam a funcionar:** filtros completos da loja (assunto, tipo "Questões"), preço promocional nos cards, campo de assunto e promoção no admin de produtos.
+**Telas que passam a funcionar:** filtros completos da loja (assunto), preço promocional nos cards, campo de assunto e promoção no admin de produtos.
 
 ---
 
@@ -346,6 +371,7 @@ ALTER TABLE public.standalone_answers
 |---|---|
 | **0017 depois do primeiro "Refazer"** | Assim que um aluno refizer uma questão, existem 2+ registros do mesmo par aluno+questão. A trava de unicidade não pode ser recriada sem **apagar histórico de tentativas**. Este é o único rollback que expira de verdade. |
 | **0015 depois do primeiro upload** | Apagar os buckets apaga os arquivos enviados. Rollback limpo só com buckets vazios. |
+| **0012** | Rollback disponível (ver seção 1b) enquanto os logs da conversão existirem. |
 | **0011 (parcialmente)** | O rollback acima remove as assinaturas Gratuito criadas por backfill/trigger. Funciona enquanto for possível distinguir essas assinaturas (`expires_at IS NULL` + plano Gratuito) — o que continua verdadeiro ao longo do tempo, mas cada dia de operação mistura mais dados novos ao estado antigo. |
 | 0013 e 0016 | Rollback simples (colunas novas, sem dados críticos) — perde apenas o que o admin tiver preenchido nos campos novos. |
 
@@ -356,7 +382,6 @@ ALTER TABLE public.standalone_answers
 | Migration | Motivo (1 linha) |
 |---|---|
 | `0010_drop_simulados.sql` | Apaga as tabelas de simulado (2 listas, 9 tentativas de alunos) — aguarda sua aprovação explícita e backup. |
-| `0012_fix_wrongly_paid_users.sql` | A heurística foi desmentida pelos dados reais (auditoria, Seção 1.4) — as 5 assinaturas devem ser revisadas manualmente com a cliente. |
-| `0014_materials_to_products.sql` | Move os 34 materiais para a loja — aguarda a decisão A/B do admin e o destino item a item dos gratuitos. |
+| `0014_materials_to_products.sql` | **OBSOLETA.** A cliente decidiu migrar aos poucos pelo botão "Enviar para a Loja" do admin; o arquivo fica só como referência. |
 
-*(Os três arquivos estão 100% comentados — colar e executar por engano não faz nada, mas não conte com isso: simplesmente não os abra nesta rodada.)*
+*(Os dois arquivos estão 100% comentados — colar e executar por engano não faz nada, mas não conte com isso: simplesmente não os abra nesta rodada.)*

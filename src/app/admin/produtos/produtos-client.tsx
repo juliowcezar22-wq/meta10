@@ -162,9 +162,13 @@ export function ProdutosClient({ initialData, disciplines, subjects }: { initial
       </Badge>
     ),
     linkNode: product.tipo === 'pago' ? (
-      <a href={product.hotmart_link!} target="_blank" rel="noreferrer" className="text-primary hover:underline truncate max-w-[200px] block">
-        {product.hotmart_link}
-      </a>
+      product.hotmart_link ? (
+        <a href={product.hotmart_link} target="_blank" rel="noreferrer" className="text-primary hover:underline truncate max-w-[200px] block">
+          {product.hotmart_link}
+        </a>
+      ) : (
+        <span className="text-xs text-surface-500">Venda pelo WhatsApp (sem link)</span>
+      )
     ) : (
       <a href={product.arquivo_url!} target="_blank" rel="noreferrer" className="text-success-600 hover:underline truncate max-w-[200px] block">
         Download
@@ -357,15 +361,15 @@ export function ProdutosClient({ initialData, disciplines, subjects }: { initial
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-surface-700 mb-1">Link Hotmart</label>
+                    <label className="block text-sm font-medium text-surface-700 mb-1">Link Hotmart (opcional)</label>
                     <input 
                       type="url" 
                       value={formData.hotmart_link}
                       onChange={(e) => setFormData({ ...formData, hotmart_link: e.target.value })}
                       className="w-full px-3 py-2 bg-surface-50 border border-surface-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                      required
                       placeholder="https://pay.hotmart.com/..."
                     />
+                    <p className="text-xs text-surface-500 mt-1">Sem link, o botão de compra leva o aluno ao WhatsApp da META 10.</p>
                   </div>
                 </>
               )}

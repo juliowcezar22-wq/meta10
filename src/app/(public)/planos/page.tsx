@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react'
 import { PLANS } from '@/lib/plans'
+import { whatsappHref } from '@/lib/constants'
 
 export default function PlanosPage() {
   return (
@@ -47,11 +48,11 @@ export default function PlanosPage() {
                   ))}
                 </ul>
                 <a
-                  href={plan.link}
-                  {...(plan.link.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  href={plan.link ?? whatsappHref(`Olá! Quero assinar o plano ${plan.name} da META 10.`)}
+                  {...(!plan.link || plan.link.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   className={`w-full text-center ${plan.highlighted ? 'btn-primary' : 'btn-outline'}`}
                 >
-                  {plan.cta}
+                  {plan.link ? plan.cta : 'Assinar pelo WhatsApp'}
                 </a>
               </div>
             ))}

@@ -1,11 +1,12 @@
 -- ============================================================
 -- Migration 0014: Migração de materiais para produtos da loja
 -- ============================================================
--- STATUS: *** NÃO APLICAR — AGUARDANDO DUAS DECISÕES ***
---   (a) Unificar ou não as 4 telas do admin na Loja (opções A/B
---       apresentadas no relatório da entrega)
---   (b) Destino de cada material hoje marcado como Gratuito
---       (virar produto pago ou ser arquivado)
+-- STATUS: *** OBSOLETA — NÃO APLICAR ***
+-- Decisão da cliente (27/07/2026): a migração para a Loja será feita
+-- AOS POUCOS, pelo próprio admin, com o botão "Enviar para a Loja" nas
+-- telas de Atividades/Resumos/Mapas/Jogos (action migrateMaterialToProduct).
+-- Este arquivo fica apenas como referência do inventário e da limpeza
+-- final de policies, a ser feita quando a tabela materials esvaziar.
 --
 -- Pré-requisito: migration 0013 aplicada (products.material_type/subject).
 --

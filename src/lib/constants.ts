@@ -1,14 +1,19 @@
 export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5575981122334'
 export const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}`
+
+// Link do WhatsApp com mensagem pré-preenchida (fallback de venda
+// enquanto não existem links de checkout na Hotmart)
+export function whatsappHref(message: string): string {
+  return `${WHATSAPP_LINK}?text=${encodeURIComponent(message)}`
+}
 export const INSTAGRAM_LINK = process.env.NEXT_PUBLIC_INSTAGRAM_LINK || 'https://instagram.com/meta10espacopedagogico'
 export const YOUTUBE_LINK = process.env.NEXT_PUBLIC_YOUTUBE_LINK || 'https://www.youtube.com/@meta10quiz'
 export const EMAIL_LINK = process.env.NEXT_PUBLIC_EMAIL_LINK || 'mailto:contato@meta10.com.br'
 
 // Tipos de material vendidos avulsos na loja (nunca gratuitos, nunca por plano).
-// 'questoes' = apostilas/listas de questões vendidas na loja — não confundir
-// com o Banco de Questões, que é conteúdo de plano.
+// O Banco de Questões (questões interativas) é conteúdo de plano e NÃO é
+// vendido na loja — decisão da cliente.
 export const MATERIAL_TYPES = [
-  { slug: 'questoes', label: 'Questões' },
   { slug: 'atividade_pdf', label: 'Atividades em PDF' },
   { slug: 'resumo', label: 'Resumos' },
   { slug: 'mapa_mental', label: 'Mapas Mentais' },

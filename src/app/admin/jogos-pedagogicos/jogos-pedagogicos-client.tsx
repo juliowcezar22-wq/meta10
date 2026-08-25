@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { DataTable } from '@/components/admin/data-table'
 import { Badge } from '@/components/admin/badge'
 import { ConfirmDialog } from '@/components/admin/confirm-dialog'
 import { PageHeader } from '@/components/admin/page-header'
-import { Pencil, Trash2, X, ExternalLink } from 'lucide-react'
-import { createMaterial, updateMaterial, deleteMaterial } from '@/app/actions/admin/materials'
+import { Pencil, Trash2, X, ExternalLink, Store } from 'lucide-react'
+import { createMaterial, updateMaterial, deleteMaterial, migrateMaterialToProduct } from '@/app/actions/admin/materials'
 import { useToast } from '@/components/admin/toast'
 import type { Database } from '@/lib/supabase/types'
 
@@ -18,6 +19,8 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
   const { toast } = useToast()
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [migrateId, setMigrateId] = useState<string | null>(null)
+  const [isMigrating, setIsMigrating] = useState(false)
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -102,6 +105,20 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
     router.refresh()
   }
 
+  const handleMigrate = async () => {
+    if (!migrateId) return
+    setIsMigrating(true)
+    const result = await migrateMaterialToProduct(migrateId)
+    setIsMigrating(false)
+    setMigrateId(null)
+    if (result.success) {
+      toast(result.message || 'Enviado para a Loja', 'success')
+      router.refresh()
+    } else {
+      toast((result.errors as any)?._form?.[0] || 'Erro ao enviar para a Loja', 'error')
+    }
+  }
+
   const formattedMaterials = initialData.map(material => ({
     ...material,
     subjectNode: <span className="capitalize">{material.subject ? (disciplines.find(d => d.slug === material.subject)?.name || material.subject) : '-'}</span>,
@@ -112,6 +129,13 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
     ),
     actionsNode: (
       <div className="flex items-center gap-2">
+        <button
+          onClick={() => setMigrateId(material.id)}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary-50 hover:bg-primary-100 border border-primary-200 rounded-lg transition-colors" title="Enviar para a Loja"
+        >
+          <Store className="w-3.5 h-3.5" />
+          Enviar para a Loja
+        </button>
         <button 
           onClick={() => openModal(material)}
           className="p-2 text-surface-400 hover:text-primary transition-colors rounded-lg hover:bg-surface-100" title="Editar"
@@ -136,7 +160,7 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
         title="Jogos Pedagógicos" 
         description="Gerencie os links de jogos e dinâmicas iterativas."
         action={
-          <button onClick={() => openModal()} className="btn-primary">Novo Jogo</button>
+          <Link href="/admin/produtos" className="btn-primary">Cadastrar na Loja</Link>
         }
       />
       
@@ -159,6 +183,21 @@ export function JogosPedagogicosClient({ initialData , disciplines }: { initialD
           />
         )}
       </div>
+
+      <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <strong>Novos materiais são cadastrados na Loja.</strong> Esta tela serve para migrar aos poucos os itens abaixo:
+        clique em <em>Enviar para a Loja</em> — o produto é criado inativo, você define o preço na Loja e ativa quando quiser.
+      </div>
+
+      <ConfirmDialog
+        isOpen={!!migrateId}
+        onClose={() => setMigrateId(null)}
+        onConfirm={handleMigrate}
+        title="Enviar para a Loja"
+        description={`"${initialData.find(m => m.id === migrateId)?.title ?? ''}" será criado como produto INATIVO na Loja (com o mesmo título, disciplina e arquivo) e removido desta lista. Você define o preço na Loja antes de ativar.`}
+        confirmText="Enviar"
+        isLoading={isMigrating}
+      />
 
       <ConfirmDialog 
         isOpen={!!deleteId}

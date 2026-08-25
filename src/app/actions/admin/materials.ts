@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { requireAdminOrProfessor } from '@/lib/auth/guards'
+import { requireAdminOrProfessor, requireAdmin } from '@/lib/auth/guards'
 
 const materialSchema = z.object({
   title: z.string().min(1),
@@ -123,4 +123,58 @@ export async function deleteMaterial(id: string) {
   revalidatePath('/admin/jogos-pedagogicos')
   revalidatePath('/aluno/materiais')
   return { success: true, message: 'Material deletado' }
+}
+
+/**
+ * Migração item a item para a Loja (decisão da cliente: migrar aos poucos).
+ * Cria o produto INATIVO com preço 0 — o admin define preço/link na Loja e
+ * ativa — e remove o material de origem. Título, disciplina e arquivo são
+ * preservados.
+ */
+export async function migrateMaterialToProduct(id: string) {
+  await requireAdmin()
+  const supabase = createClient()
+
+  const { data: material, error: fetchError } = await supabase
+    .from('materials')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (fetchError || !material) {
+    return { success: false, errors: { _form: ['Material não encontrado'] } }
+  }
+  if (!PAID_ONLY_TYPES.includes(material.type)) {
+    return { success: false, errors: { _form: ['Este tipo de material não é vendido na loja'] } }
+  }
+
+  const { error: insertError } = await supabase.from('products').insert({
+    name: material.title,
+    description: material.description,
+    tipo: 'pago',
+    price: 0,               // preço pendente — definir na Loja antes de ativar
+    hotmart_link: null,
+    arquivo_url: material.file_url,
+    material_type: material.type,
+    subject: material.subject,
+    is_active: false,       // inativo até o admin revisar
+  })
+
+  if (insertError) {
+    console.error('[migrateMaterialToProduct] insert', insertError)
+    return { success: false, errors: { _form: [insertError.message || 'Erro ao criar produto na loja'] } }
+  }
+
+  const { error: deleteError } = await supabase.from('materials').delete().eq('id', id)
+  if (deleteError) {
+    console.error('[migrateMaterialToProduct] delete', deleteError)
+    return { success: false, errors: { _form: ['Produto criado, mas o material de origem não pôde ser removido'] } }
+  }
+
+  revalidatePath('/admin/produtos')
+  revalidatePath('/admin/mapas-mentais')
+  revalidatePath('/admin/resumos')
+  revalidatePath('/admin/atividades-pdf')
+  revalidatePath('/admin/jogos-pedagogicos')
+  return { success: true, message: 'Enviado para a Loja como produto inativo. Defina o preço e ative.' }
 }

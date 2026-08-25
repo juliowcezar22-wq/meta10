@@ -1,5 +1,6 @@
 import { Check, Zap } from 'lucide-react'
 import { PLANS } from '@/lib/plans'
+import { whatsappHref } from '@/lib/constants'
 
 export default function PricingSection() {
   return (
@@ -59,15 +60,15 @@ export default function PricingSection() {
                 ))}
               </ul>
               <a
-                href={plan.link}
-                {...(plan.link.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                href={plan.link ?? whatsappHref(`Olá! Quero assinar o plano ${plan.name} da META 10.`)}
+                {...(!plan.link || plan.link.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 className={`w-full text-center font-semibold py-3.5 rounded-xl transition-all duration-300 ${
                   plan.highlighted
                     ? 'bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl'
                     : 'btn-primary'
                 }`}
               >
-                {plan.cta}
+                {plan.link ? plan.cta : 'Assinar pelo WhatsApp'}
               </a>
             </div>
           ))}

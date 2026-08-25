@@ -7,7 +7,7 @@
  */
 
 // Limite de questões do plano Gratuito (valor provisório — ajustar aqui).
-export const FREE_PLAN_QUESTION_LIMIT = 10
+export const FREE_PLAN_QUESTION_LIMIT = 20
 
 export type PlanSlug = 'gratuito' | 'mensal' | 'anual'
 
@@ -24,7 +24,9 @@ export interface PlanDefinition {
   features: string[]
   highlighted: boolean
   cta: string
-  link: string
+  /** Link de checkout (Hotmart) ou rota interna. null = sem checkout ainda:
+   *  a UI cai no WhatsApp com mensagem pré-preenchida. */
+  link: string | null
 }
 
 export const PLANS: PlanDefinition[] = [
@@ -53,7 +55,7 @@ export const PLANS: PlanDefinition[] = [
     ],
     highlighted: false,
     cta: 'Assinar Agora',
-    link: process.env.NEXT_PUBLIC_HOTMART_MENSAL || 'https://pay.hotmart.com/placeholder-mensal',
+    link: process.env.NEXT_PUBLIC_HOTMART_MENSAL || null,
   },
   {
     slug: 'anual',
@@ -67,6 +69,6 @@ export const PLANS: PlanDefinition[] = [
     ],
     highlighted: true,
     cta: 'Assinar Agora',
-    link: process.env.NEXT_PUBLIC_HOTMART_ANUAL || 'https://pay.hotmart.com/placeholder-anual',
+    link: process.env.NEXT_PUBLIC_HOTMART_ANUAL || null,
   },
 ]
