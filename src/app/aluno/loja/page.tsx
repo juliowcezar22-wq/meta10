@@ -4,6 +4,7 @@ import { getDisciplines } from '@/lib/data/disciplines'
 import { getAllSubjects } from '@/lib/data/subjects'
 import { StoreSearch } from '@/components/loja/store-search'
 import { StoreResults } from '@/components/loja/store-results'
+import { StoreCategoryNav } from '@/components/loja/store-category-nav'
 import { parseStoreParams, type StoreSearchParamsInput } from '@/lib/store-filters'
 
 export const dynamic = 'force-dynamic'
@@ -43,12 +44,20 @@ export default async function LojaPage({ searchParams }: { searchParams?: StoreS
         />
       </div>
 
-      <StoreResults
-        result={result}
-        basePath="/aluno/loja"
-        filters={filters}
-        disciplineNames={disciplineNames}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6 items-start">
+        <StoreCategoryNav
+          basePath="/aluno/loja"
+          disciplines={disciplines}
+          activeType={filters.tipo || null}
+          activeDiscipline={filters.disciplina || null}
+        />
+        <StoreResults
+          result={result}
+          basePath="/aluno/loja"
+          filters={filters}
+          disciplineNames={disciplineNames}
+        />
+      </div>
     </div>
   )
 }

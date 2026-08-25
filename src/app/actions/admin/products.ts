@@ -8,7 +8,7 @@ import { requireAdmin } from '@/lib/auth/guards'
 const baseProductSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
-  material_type: z.enum(['questoes', 'atividade_pdf', 'resumo', 'mapa_mental', 'jogo']).nullable(),
+  material_type: z.enum(['atividade_pdf', 'resumo', 'mapa_mental', 'jogo']).nullable(),
   subject: z.string().nullable(),
   subject_id: z.string().uuid('ID de assunto inválido').nullable(),
   image_url: z.string().url('URL de imagem inválida').nullable(),
@@ -19,7 +19,8 @@ const productSchema = z.discriminatedUnion('tipo', [
   baseProductSchema.extend({
     tipo: z.literal('pago'),
     price: z.number().positive(),
-    hotmart_link: z.string().url(),
+    // Opcional: sem link de checkout, o botão de compra cai no WhatsApp
+    hotmart_link: z.string().url().optional().or(z.literal('')),
     arquivo_url: z.string().url().optional().or(z.literal('')),
   }),
   baseProductSchema.extend({

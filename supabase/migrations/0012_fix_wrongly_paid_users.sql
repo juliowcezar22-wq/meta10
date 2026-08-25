@@ -1,72 +1,51 @@
 -- ============================================================
--- Migration 0012: Correção de usuários marcados como pagantes
---                 sem pagamento correspondente
+-- Migration 0012: Assinaturas Mensal indevidas -> Gratuito
 -- ============================================================
--- STATUS: *** NÃO APLICAR — AGUARDANDO APROVAÇÃO ***
--- O SQL de correção está comentado. Antes de aprovar, rode o
--- DIAGNÓSTICO abaixo e me informe os números.
+-- Aplicar DEPOIS da 0011 (precisa do plano Gratuito) e ANTES do deploy.
 --
--- Contexto:
---   - Não existe tabela de pagamentos no schema; assinaturas legítimas
---     são atribuídas manualmente pelo admin em "Gerenciar Acesso".
---   - O log dessas atribuições (subscription_logs) NUNCA funcionou:
---     o código gravava action='manual_assign', valor que viola o CHECK
---     da tabela ('created','updated','cancelled','extended'), então o
---     insert falhava silenciosamente. (Corrigido no código nesta entrega;
---     a partir de agora os logs passam a existir.)
---   - Logo, não dá para separar "atribuído pelo admin" de "criado
---     indevidamente no cadastro" pelos logs. O critério usável é o
---     TEMPO: assinatura paga criada no exato momento do cadastro do
---     usuário é assinatura que ninguém atribuiu — é o bug.
+-- Decisão da cliente (27/07/2026): TODAS as contas hoje marcadas como
+-- Mensal são de professores/equipe testando a plataforma (Maria Emilia,
+-- Bruna, Ruan e a conta-aluno de teste do Ruan). Nenhuma é pagante.
+-- Todas passam para o plano Gratuito, preservando o histórico
+-- (nada é apagado: a linha da assinatura é convertida e o log registra).
 --
--- ============================================================
--- DIAGNÓSTICO (somente leitura — rodar e me mostrar o resultado)
+-- Não há tabela de pagamentos; subscription_logs estava vazia por bug
+-- corrigido no código (action inválida). Por isso a conversão é
+-- nominal e explícita, não por heurística.
 -- ============================================================
 
--- Quantos usuários seriam afetados:
--- SELECT count(*) AS usuarios_afetados
+-- Conferência ANTES (esperado: 4 assinaturas ativas no plano Mensal)
+-- SELECT u.email, p.name, s.status, s.expires_at
 -- FROM public.subscriptions s
 -- JOIN public.users u ON u.id = s.user_id
 -- JOIN public.plans p ON p.id = s.plan_id
--- WHERE s.status = 'active'
---   AND p.duration_months > 0                          -- plano pago
---   AND s.created_at - u.created_at < interval '10 minutes';  -- criada junto com o cadastro
+-- WHERE s.status = 'active' AND p.duration_months > 0;
 
--- Lista nominal para conferência:
--- SELECT u.email, u.nome, p.name AS plano, s.created_at AS assinatura_criada,
---        u.created_at AS usuario_criado, s.expires_at
--- FROM public.subscriptions s
--- JOIN public.users u ON u.id = s.user_id
--- JOIN public.plans p ON p.id = s.plan_id
--- WHERE s.status = 'active'
---   AND p.duration_months > 0
---   AND s.created_at - u.created_at < interval '10 minutes'
--- ORDER BY s.created_at DESC;
+WITH convertidas AS (
+  UPDATE public.subscriptions s
+  SET plan_id = (SELECT id FROM public.plans WHERE name = 'Gratuito' LIMIT 1),
+      expires_at = NULL,
+      status = 'active'
+  FROM public.plans p
+  WHERE p.id = s.plan_id
+    AND s.status = 'active'
+    AND p.duration_months > 0           -- somente assinaturas de plano pago
+  RETURNING s.user_id, s.expires_at AS old_expires_at
+)
+INSERT INTO public.subscription_logs (admin_id, user_id, action, plan_id, previous_expires_at, new_expires_at, notes)
+SELECT (SELECT id FROM public.users WHERE role = 'admin' ORDER BY created_at LIMIT 1),
+       c.user_id,
+       'updated',
+       (SELECT id FROM public.plans WHERE name = 'Gratuito' LIMIT 1),
+       NULL, NULL,
+       'Migration 0012: conta de equipe/professor sem pagamento convertida para Gratuito (decisão da cliente)'
+FROM convertidas c;
 
 -- ============================================================
--- CORREÇÃO (descomentar somente após aprovação da lista acima)
--- Converte as assinaturas indevidas para o plano Gratuito
--- (ativa, sem expiração), preservando a linha e o histórico.
+-- Verificação pós-aplicação:
+--   SELECT count(*) FROM public.subscriptions s JOIN public.plans p ON p.id = s.plan_id
+--   WHERE s.status = 'active' AND p.duration_months > 0;
+--   -- esperado: 0 (ninguém mais no Mensal/Anual)
+--   SELECT count(*) FROM public.subscription_logs WHERE notes LIKE 'Migration 0012%';
+--   -- esperado: 4
 -- ============================================================
-
--- Conversão + auditoria em uma única operação atômica:
--- WITH convertidas AS (
---   UPDATE public.subscriptions s
---   SET plan_id = (SELECT id FROM public.plans WHERE name = 'Gratuito' LIMIT 1),
---       expires_at = NULL
---   FROM public.users u, public.plans p
---   WHERE u.id = s.user_id
---     AND p.id = s.plan_id
---     AND s.status = 'active'
---     AND p.duration_months > 0
---     AND s.created_at - u.created_at < interval '10 minutes'
---   RETURNING s.user_id, s.expires_at AS old_expires_at
--- )
--- INSERT INTO public.subscription_logs (admin_id, user_id, action, plan_id, previous_expires_at, new_expires_at, notes)
--- SELECT (SELECT id FROM public.users WHERE role = 'admin' ORDER BY created_at LIMIT 1),
---        c.user_id,
---        'updated',
---        (SELECT id FROM public.plans WHERE name = 'Gratuito' LIMIT 1),
---        NULL, NULL,
---        'Migration 0012: assinatura paga sem pagamento convertida para Gratuito'
--- FROM convertidas c;
