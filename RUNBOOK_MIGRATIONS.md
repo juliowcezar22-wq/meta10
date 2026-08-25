@@ -138,7 +138,7 @@ ALTER TABLE public.plans DROP COLUMN IF EXISTS is_active;
 
 ## 1b. Migration 0012 — Assinaturas de equipe → Gratuito
 
-**O que faz:** converte as 4 assinaturas Mensal existentes (Maria Emilia, Bruna, Ruan e a conta-aluno de teste do Ruan) para o plano Gratuito, sem apagar nada e registrando no log. Decisão da cliente em 27/07/2026: todas são contas de professores/equipe, nenhuma é pagante.
+**O que faz:** converte as 4 assinaturas Mensal existentes para o plano Gratuito, sem apagar nada e registrando no log. Decisão da cliente em 27/07/2026: nenhuma é pagante — são a conta-aluno de teste da Emília (dona da plataforma; sua conta principal `me.avelar@hotmail.com` é admin), os professores Bruna e Ruan, e a conta-aluno de teste do Ruan.
 
 **Cole e execute** o conteúdo integral de `supabase/migrations/0012_fix_wrongly_paid_users.sql` (é um único comando `WITH ... UPDATE ... INSERT` — copie o arquivo inteiro).
 

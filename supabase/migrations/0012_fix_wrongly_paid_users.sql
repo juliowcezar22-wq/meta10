@@ -3,9 +3,10 @@
 -- ============================================================
 -- Aplicar DEPOIS da 0011 (precisa do plano Gratuito) e ANTES do deploy.
 --
--- Decisão da cliente (27/07/2026): TODAS as contas hoje marcadas como
--- Mensal são de professores/equipe testando a plataforma (Maria Emilia,
--- Bruna, Ruan e a conta-aluno de teste do Ruan). Nenhuma é pagante.
+-- Decisão da cliente (27/07/2026): nenhuma das contas hoje marcadas como
+-- Mensal é pagante. São: a conta-aluno de teste da Emília (dona da
+-- plataforma; a conta principal dela é admin), os professores Bruna e
+-- Ruan, e a conta-aluno de teste do Ruan.
 -- Todas passam para o plano Gratuito, preservando o histórico
 -- (nada é apagado: a linha da assinatura é convertida e o log registra).
 --
@@ -38,7 +39,7 @@ SELECT (SELECT id FROM public.users WHERE role = 'admin' ORDER BY created_at LIM
        'updated',
        (SELECT id FROM public.plans WHERE name = 'Gratuito' LIMIT 1),
        NULL, NULL,
-       'Migration 0012: conta de equipe/professor sem pagamento convertida para Gratuito (decisão da cliente)'
+       'Migration 0012: conta interna (dona/professor/teste) sem pagamento convertida para Gratuito (decisão da cliente)'
 FROM convertidas c;
 
 -- ============================================================
