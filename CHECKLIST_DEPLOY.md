@@ -8,15 +8,17 @@ seção "Se a ordem inverter" no final). A **0017** é a exceção: entra logo *
 
 - [ ] 1. Confirmar que a branch `refactor/enxugamento-meta10` está com `git status` limpo e os 9 commits da sequência (`git log --oneline main..`).
 - [ ] 2. Fazer push da branch para o remoto (`git push -u origin refactor/enxugamento-meta10`). **Nada vai para a `main` ainda.**
-- [ ] 3. Backup do banco conforme o item 0 do `RUNBOOK_MIGRATIONS.md` (confirmar plano/retenção + export manual).
+- [x] 3. Backup do banco conforme o item 0 do `RUNBOOK_MIGRATIONS.md` (confirmar plano/retenção + export manual).
 
 ## B. Migrations (SQL Editor do Supabase)
 
-- [ ] 4. Aplicar **0011** e rodar a verificação (4 planos, 0 alunos sem assinatura, trigger atualizado).
-- [ ] 4b. Aplicar **0012** e rodar a verificação (0 assinaturas pagas ativas; 4 logs) — converte as contas de equipe para Gratuito, decisão da cliente.
-- [ ] 5. Aplicar **0013** e rodar a verificação (2 colunas + 3 constraints).
-- [ ] 6. Aplicar **0015** e rodar a verificação (2 buckets + 8 policies + coluna image_url).
-- [ ] 7. Aplicar **0016** e rodar a verificação (2 colunas + 5 índices + pg_trgm).
+> **Aplicadas em 27/07/2026** via Management API (0011, 0012, 0013, 0015, 0016), todas com verificação OK. Backup pré-migration das 13 tabelas salvo localmente. **Pendente: 0017, logo após o deploy.**
+
+- [x] 4. Aplicar **0011** e rodar a verificação (4 planos, 0 alunos sem assinatura, trigger atualizado).
+- [x] 4b. Aplicar **0012** e rodar a verificação (0 assinaturas pagas ativas; 4 logs) — converte as contas de equipe para Gratuito, decisão da cliente.
+- [x] 5. Aplicar **0013** e rodar a verificação (2 colunas + 3 constraints).
+- [x] 6. Aplicar **0015** e rodar a verificação (2 buckets + 8 policies + coluna image_url).
+- [x] 7. Aplicar **0016** e rodar a verificação (2 colunas + 5 índices + pg_trgm).
 - [ ] 8. **Só depois do deploy (item 13) concluir:** aplicar **0017** e rodar a verificação (trava removida + 3 funções + estatísticas retornando). Ela é incompatível com o código antigo, por isso entra após o deploy.
 - [ ] 9. **NÃO** executar 0010 (aguarda aprovação do DROP) nem 0014 (obsoleta) — ver runbook.
 
