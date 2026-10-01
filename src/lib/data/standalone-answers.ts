@@ -41,7 +41,7 @@ export interface MyQuestionStats {
 export async function getQuestionStats(questionIds?: string[]): Promise<Map<string, QuestionCollectiveStats>> {
   const supabase = createClient()
   const { data, error } = await supabase.rpc('get_question_stats', {
-    p_question_ids: questionIds ?? null,
+    p_question_ids: questionIds ?? undefined,
   })
   if (error) { console.error('[getQuestionStats]', error); return new Map() }
   return new Map((data ?? []).map(row => [row.question_id, row as QuestionCollectiveStats]))
@@ -51,7 +51,7 @@ export async function getQuestionStats(questionIds?: string[]): Promise<Map<stri
 export async function getMyQuestionStats(questionIds?: string[]): Promise<Map<string, MyQuestionStats>> {
   const supabase = createClient()
   const { data, error } = await supabase.rpc('get_my_question_stats', {
-    p_question_ids: questionIds ?? null,
+    p_question_ids: questionIds ?? undefined,
   })
   if (error) { console.error('[getMyQuestionStats]', error); return new Map() }
   return new Map((data ?? []).map(row => [row.question_id, row as MyQuestionStats]))

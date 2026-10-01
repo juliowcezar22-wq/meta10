@@ -16,7 +16,7 @@ export function AlunosAtivosClient({ students }: { students: ActiveStudent[] }) 
       planVariant = 'cyan'
     }
 
-    const formatDate = (d: string | null) => d ? new Date(d).toLocaleDateString('pt-BR') : '—'
+    const formatDate = (d: string | null) => d ? new Date(d).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '—'
 
     return {
       ...s,

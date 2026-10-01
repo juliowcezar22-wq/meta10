@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Database } from '@/lib/supabase/types'
 
-// TODO: type assertion temporário antes da regen dos tipos
 type Suggestion = any // Database['public']['Tables']['suggestions']['Row']
 type User = Database['public']['Tables']['users']['Row']
 
@@ -13,8 +12,7 @@ export type SuggestionWithUser = Suggestion & {
 export async function getMySuggestions(userId: string): Promise<Suggestion[]> {
   const supabase = createClient()
   const { data, error } = await supabase
-    // TODO: remover as any após regen dos tipos
-    .from('suggestions' as any)
+    .from('suggestions')
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
@@ -30,8 +28,7 @@ export async function getMySuggestions(userId: string): Promise<Suggestion[]> {
 export async function getAllSuggestions(): Promise<SuggestionWithUser[]> {
   const supabase = createClient()
   const { data, error } = await supabase
-    // TODO: remover as any após regen dos tipos
-    .from('suggestions' as any)
+    .from('suggestions')
     .select(`
       *,
       user:users(id, nome, email)

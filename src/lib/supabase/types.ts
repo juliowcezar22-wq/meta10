@@ -1,3 +1,5 @@
+// Gerado a partir do schema real de produção (Management API, 01/10/2026).
+// Regenerar com: supabase gen types typescript --linked (ou endpoint /types/typescript)
 export type Json =
   | string
   | number
@@ -67,28 +69,31 @@ export type Database = {
       }
       disciplines: {
         Row: {
-          slug: string
-          name: string
-          icon: string | null
           color: string | null
-          order_index: number
           created_at: string
+          created_by: string | null
+          icon: string | null
+          name: string
+          order_index: number | null
+          slug: string
         }
         Insert: {
-          slug: string
-          name: string
-          icon?: string | null
           color?: string | null
-          order_index?: number
           created_at?: string
+          created_by?: string | null
+          icon?: string | null
+          name: string
+          order_index?: number | null
+          slug: string
         }
         Update: {
-          slug?: string
-          name?: string
-          icon?: string | null
           color?: string | null
-          order_index?: number
           created_at?: string
+          created_by?: string | null
+          icon?: string | null
+          name?: string
+          order_index?: number | null
+          slug?: string
         }
         Relationships: []
       }
@@ -129,7 +134,15 @@ export type Database = {
           type?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "materials_subject_fkey"
+            columns: ["subject"]
+            isOneToOne: false
+            referencedRelation: "disciplines"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       messages: {
         Row: {
@@ -240,7 +253,22 @@ export type Database = {
           tipo?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_subject_fkey"
+            columns: ["subject"]
+            isOneToOne: false
+            referencedRelation: "disciplines"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "products_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       question_list_items: {
         Row: {
@@ -314,6 +342,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "question_lists_subject_fkey"
+            columns: ["subject"]
+            isOneToOne: false
+            referencedRelation: "disciplines"
+            referencedColumns: ["slug"]
+          },
+          {
             foreignKeyName: "question_lists_subject_id_fkey"
             columns: ["subject_id"]
             isOneToOne: false
@@ -381,6 +416,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "question_lists"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "questions_subject_fkey"
+            columns: ["subject"]
+            isOneToOne: false
+            referencedRelation: "disciplines"
+            referencedColumns: ["slug"]
           },
           {
             foreignKeyName: "questions_subject_id_fkey"
@@ -455,7 +497,15 @@ export type Database = {
           id?: string
           name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "subjects_discipline_fkey"
+            columns: ["discipline"]
+            isOneToOne: false
+            referencedRelation: "disciplines"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       subscription_logs: {
         Row: {
@@ -657,30 +707,33 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_admin: { Args: never; Returns: boolean }
-      count_my_answered_questions: { Args: Record<string, never>; Returns: number }
-      get_question_stats: {
-        Args: { p_question_ids?: string[] | null }
+      count_my_answered_questions: { Args: never; Returns: number }
+      get_my_question_stats: {
+        Args: { p_question_ids?: string[] }
         Returns: {
+          attempts: number
+          correct: number
+          last_answer: string
+          last_is_correct: boolean
+          question_id: string
+          wrong: number
+        }[]
+      }
+      get_question_stats: {
+        Args: { p_question_ids?: string[] }
+        Returns: {
+          answer_distribution: Json
+          correct_attempts: number
+          correct_pct: number
           question_id: string
           total_attempts: number
           total_users: number
-          correct_attempts: number
-          correct_pct: number
-          answer_distribution: Json | null
         }[]
       }
-      get_my_question_stats: {
-        Args: { p_question_ids?: string[] | null }
-        Returns: {
-          question_id: string
-          attempts: number
-          correct: number
-          wrong: number
-          last_answer: string
-          last_is_correct: boolean
-        }[]
-      }
+      is_admin: { Args: never; Returns: boolean }
+      is_admin_or_professor: { Args: never; Returns: boolean }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       difficulty_level: "facil" | "medio" | "dificil"
@@ -700,12 +753,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -729,11 +782,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -754,11 +807,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -779,11 +832,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -796,11 +849,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

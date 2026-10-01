@@ -18,7 +18,7 @@ export function AlunosInativosClient({ students }: { students: InactiveStudent[]
       statusVariant = 'warning'
     }
 
-    const formatDate = (d: string | null) => d ? new Date(d).toLocaleDateString('pt-BR') : '—'
+    const formatDate = (d: string | null) => d ? new Date(d).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '—'
 
     return {
       ...s,

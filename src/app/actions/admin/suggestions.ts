@@ -9,8 +9,7 @@ export async function deleteSuggestion(suggestionId: string) {
   
   const supabase = createClient()
   const { error } = await supabase
-    // TODO: remover as any após regen dos tipos
-    .from('suggestions' as any)
+    .from('suggestions')
     .delete()
     .eq('id', suggestionId)
   

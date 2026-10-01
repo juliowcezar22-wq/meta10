@@ -24,8 +24,7 @@ export async function createSuggestion(formData: FormData) {
   
   const supabase = createClient()
   const { error } = await supabase
-    // TODO: remover as any após regen dos tipos
-    .from('suggestions' as any)
+    .from('suggestions')
     .insert({
       user_id: session.profile.id,
       content: validation.data.content,

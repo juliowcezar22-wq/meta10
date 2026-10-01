@@ -36,13 +36,6 @@ export const DIFFICULTY_LABELS: Record<string, string> = {
 
 export const GOOGLE_MAPS_EMBED = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3899.0294500875407!2d-38.9050392!3d-12.246285199999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x71437bfdaeb5cd9%3A0xd18ae05b1b8014e2!2sMeta%2010%20Espa%C3%A7o%20Pedag%C3%B3gico%20Refor%C3%A7o%20Escolar!5e0!3m2!1spt-BR!2sbr!4v1779921119710!5m2!1spt-BR!2sbr'
 
-export const YOUTUBE_VIDEO_ID = process.env.NEXT_PUBLIC_YOUTUBE_VIDEO_ID || 'dQw4w9WgXcQ'
-export const YOUTUBE_SHORTS = [
-  'dQw4w9WgXcQ',
-  'dQw4w9WgXcQ',
-  'dQw4w9WgXcQ',
-  'dQw4w9WgXcQ',
-]
 
 // A definição dos planos vive em src/lib/plans.ts (fonte única tipada).
 

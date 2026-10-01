@@ -23,7 +23,7 @@ const questionSchema = z.discriminatedUnion('question_type', [
     gabarito: z.string().regex(/^[a-e]$/, 'Gabarito inválido'),
     comentario: z.string().optional().nullable(),
     difficulty: z.enum(['facil', 'medio', 'dificil']),
-    subject: z.enum(['matematica','portugues','historia','geografia','ciencias','ingles','fisica','quimica','biologia','outros']),
+    subject: z.string().min(1, 'Disciplina obrigatória'),
     subject_id: z.string().uuid('ID de assunto inválido').optional().nullable(),
   }),
   // Verdadeiro ou Falso
@@ -36,7 +36,7 @@ const questionSchema = z.discriminatedUnion('question_type', [
     gabarito: z.enum(['verdadeiro', 'falso']),
     comentario: z.string().optional().nullable(),
     difficulty: z.enum(['facil', 'medio', 'dificil']),
-    subject: z.enum(['matematica','portugues','historia','geografia','ciencias','ingles','fisica','quimica','biologia','outros']),
+    subject: z.string().min(1, 'Disciplina obrigatória'),
     subject_id: z.string().uuid('ID de assunto inválido').optional().nullable(),
   }),
 ])
@@ -63,6 +63,13 @@ function parseFormData(formData: FormData) {
   }
 }
 
+// Disciplinas são dinâmicas (tabela disciplines) — valida contra o banco,
+// não contra lista fixa (lista fixa rejeitava Filosofia/Artes com erro genérico)
+async function validateSubject(supabase: any, slug: string) {
+  const { data } = await supabase.from('disciplines').select('slug').eq('slug', slug).maybeSingle()
+  return data != null
+}
+
 function validateGabarito(data: any) {
   if (data.question_type === 'multipla_escolha') {
     const exists = data.alternatives.some((a: any) => a.letra === data.gabarito)
@@ -82,8 +89,11 @@ export async function createStandaloneQuestion(formData: FormData) {
   
   const gabValidation = validateGabarito(validation.data)
   if (!gabValidation.success) return gabValidation
-  
+
   const supabase = createClient()
+  if (!await validateSubject(supabase, validation.data.subject)) {
+    return { success: false, errors: { _form: ['Disciplina inválida — cadastre-a em Disciplinas antes de usar'] } }
+  }
   const { data: { user } } = await supabase.auth.getUser()
 
   const dbData = {
@@ -117,8 +127,11 @@ export async function updateStandaloneQuestion(id: string, formData: FormData) {
   
   const gabValidation = validateGabarito(validation.data)
   if (!gabValidation.success) return gabValidation
-  
+
   const supabase = createClient()
+  if (!await validateSubject(supabase, validation.data.subject)) {
+    return { success: false, errors: { _form: ['Disciplina inválida — cadastre-a em Disciplinas antes de usar'] } }
+  }
 
   const dbData = {
     ...validation.data,

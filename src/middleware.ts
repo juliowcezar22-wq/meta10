@@ -2,15 +2,16 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 /**
- * Middleware raiz do Next.js
- * Gerencia o refresh de sessão do Supabase e redirecionamento de usuários não autenticados.
+ * Middleware do Next.js (precisa viver em src/ neste projeto).
+ * Renova a sessão do Supabase e redireciona não autenticados.
+ * Roda APENAS nas rotas que usam sessão: o site público não paga
+ * uma chamada ao Supabase por request (e fica imune a lentidão/
+ * timeout do Auth — causa do 504 MIDDLEWARE_INVOCATION_TIMEOUT).
  */
 export async function middleware(request: NextRequest) {
   const { response, user } = await updateSession(request)
 
-  const isProtectedRoute = request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/aluno')
-
-  if (isProtectedRoute && !user) {
+  if (!user) {
     const redirectUrl = new URL('/login', request.url)
     redirectUrl.searchParams.set('redirect', request.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
@@ -20,14 +21,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Aplica o middleware em todas as rotas da aplicação, EXCETO:
-     * - _next/static (arquivos estáticos e chunks)
-     * - _next/image (arquivos otimizados de imagem)
-     * - favicon.ico (ícone do site)
-     * - extensões de imagem públicas (.svg, .png, .jpg, .jpeg, .gif, .webp)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: ['/admin/:path*', '/aluno/:path*'],
 }
