@@ -19,7 +19,7 @@ seção "Se a ordem inverter" no final). A **0017** é a exceção: entra logo *
 - [x] 5. Aplicar **0013** e rodar a verificação (2 colunas + 3 constraints).
 - [x] 6. Aplicar **0015** e rodar a verificação (2 buckets + 8 policies + coluna image_url).
 - [x] 7. Aplicar **0016** e rodar a verificação (2 colunas + 5 índices + pg_trgm).
-- [ ] 8. **Só depois do deploy (item 13) concluir:** aplicar **0017** e rodar a verificação (trava removida + 3 funções + estatísticas retornando). Ela é incompatível com o código antigo, por isso entra após o deploy.
+- [x] 8. *(aplicada em 01/10/2026 — trava removida, 3 funções OK)* Aplicar **0017** e rodar a verificação (trava removida + 3 funções + estatísticas retornando). Ela é incompatível com o código antigo, por isso entra após o deploy.
 - [ ] 9. **NÃO** executar 0010 (aguarda aprovação do DROP) nem 0014 (obsoleta) — ver runbook.
 
 ## C. Variáveis de ambiente na Vercel (projeto de preview e produção)
